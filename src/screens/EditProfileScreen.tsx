@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { RootStackParamList } from '../types';
 import { Button, Input } from '../components';
 import { Theme } from '../constants/theme';
+import { Colors } from '../constants/colors';
 import { useAppDispatch, useAppSelector } from '../store';
 import { updateUser } from '../store/slices/authSlice';
 import * as imageService from '../services/imageService';
@@ -85,11 +86,11 @@ const EditProfileScreen: React.FC<Props> = ({ navigation }) => {
               <Image source={{ uri: avatar }} style={styles.avatar} />
             ) : (
               <View style={[styles.avatar, styles.avatarPlaceholder]}>
-                <Ionicons name="person" size={48} color={Theme.colors.textLight} />
+                <Ionicons name="person" size={48} color={Colors.textLight} />
               </View>
             )}
             <View style={styles.cameraIcon}>
-              <Ionicons name="camera" size={20} color={Theme.colors.background} />
+              <Ionicons name="camera" size={20} color={Colors.background} />
             </View>
           </TouchableOpacity>
         </View>
@@ -129,7 +130,7 @@ const EditProfileScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Theme.colors.background,
+    backgroundColor: Colors.background,
   },
   content: {
     padding: Theme.spacing.md,
@@ -144,7 +145,7 @@ const styles = StyleSheet.create({
     borderRadius: Theme.borderRadius.round,
   },
   avatarPlaceholder: {
-    backgroundColor: Theme.colors.surface,
+    backgroundColor: Colors.surface,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -155,7 +156,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: Theme.borderRadius.round,
-    backgroundColor: Theme.colors.primary,
+    backgroundColor: Colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
   },

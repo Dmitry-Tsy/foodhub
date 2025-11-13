@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Dish } from '../types';
 import { Theme } from '../constants/theme';
+import { Colors } from '../constants/colors';
 import { formatRating, formatPrice } from '../utils/formatters';
 import { getRatingColor } from '../constants/colors';
 
@@ -20,7 +21,7 @@ export const DishCard: React.FC<DishCardProps> = ({ dish, onPress }) => {
         <Image source={{ uri: dish.photo }} style={styles.image} />
       ) : (
         <View style={[styles.image, styles.imagePlaceholder]}>
-          <Ionicons name="fast-food" size={40} color={Theme.colors.textLight} />
+          <Ionicons name="fast-food" size={40} color={Colors.textLight} />
         </View>
       )}
       
@@ -43,7 +44,7 @@ export const DishCard: React.FC<DishCardProps> = ({ dish, onPress }) => {
         
         <View style={styles.footer}>
           <View style={styles.reviewContainer}>
-            <Ionicons name="chatbubble-outline" size={14} color={Theme.colors.textSecondary} />
+            <Ionicons name="chatbubble-outline" size={14} color={Colors.textSecondary} />
             <Text style={styles.reviewCount}>
               {dish.reviewCount} {dish.reviewCount === 1 ? 'отзыв' : 'отзывов'}
             </Text>
@@ -60,7 +61,7 @@ export const DishCard: React.FC<DishCardProps> = ({ dish, onPress }) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Theme.colors.card,
+    backgroundColor: Colors.card,
     borderRadius: Theme.borderRadius.lg,
     marginBottom: Theme.spacing.md,
     overflow: 'hidden',
@@ -71,7 +72,7 @@ const styles = StyleSheet.create({
     height: 200,
   },
   imagePlaceholder: {
-    backgroundColor: Theme.colors.surface,
+    backgroundColor: Colors.surface,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -89,7 +90,7 @@ const styles = StyleSheet.create({
   ratingText: {
     fontSize: Theme.fontSize.lg,
     fontWeight: Theme.fontWeight.bold,
-    color: Theme.colors.background,
+    color: Colors.background,
   },
   content: {
     padding: Theme.spacing.md,
@@ -97,12 +98,12 @@ const styles = StyleSheet.create({
   name: {
     fontSize: Theme.fontSize.lg,
     fontWeight: Theme.fontWeight.semibold,
-    color: Theme.colors.text,
+    color: Colors.text,
     marginBottom: Theme.spacing.xs,
   },
   description: {
     fontSize: Theme.fontSize.md,
-    color: Theme.colors.textSecondary,
+    color: Colors.textSecondary,
     marginBottom: Theme.spacing.sm,
     lineHeight: 20,
   },
@@ -117,13 +118,13 @@ const styles = StyleSheet.create({
   },
   reviewCount: {
     fontSize: Theme.fontSize.sm,
-    color: Theme.colors.textSecondary,
+    color: Colors.textSecondary,
     marginLeft: 4,
   },
   price: {
     fontSize: Theme.fontSize.lg,
     fontWeight: Theme.fontWeight.semibold,
-    color: Theme.colors.primary,
+    color: Colors.primary,
   },
 });
 

@@ -15,8 +15,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { MainTabParamList, RootStackParamList } from '../../types';
 import { Button } from '../../components';
 import { Theme } from '../../constants/theme';
+import { Colors } from '../../constants/colors';
 import { useAppDispatch, useAppSelector } from '../../store';
-import { logout } from '../../store/slices/authSlice';
+import { logout, exitGuestMode } from '../../store/slices/authSlice';
 import { formatCount } from '../../utils/formatters';
 
 type NavigationProp = CompositeNavigationProp<
@@ -30,7 +31,7 @@ interface Props {
 
 const ProfileScreen: React.FC<Props> = ({ navigation }) => {
   const dispatch = useAppDispatch();
-  const { user } = useAppSelector((state) => state.auth);
+  const { user, isGuest } = useAppSelector((state) => state.auth);
 
   const handleLogout = () => {
     Alert.alert(
@@ -49,26 +50,112 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
 
   const menuItems = [
     {
+      icon: 'restaurant' as const,
+      title: '⚙️ Вкусовой профиль',
+      subtitle: 'Настройте предпочтения',
+      color: Colors.primary,
+      onPress: () => navigation.navigate('TasteProfile'),
+    },
+    {
+      icon: 'sparkles' as const,
+      title: '✨ Рекомендации AI',
+      subtitle: 'Подобрано для вас',
+      color: Colors.secondary,
+      onPress: () => navigation.navigate('Recommendations'),
+    },
+    {
+      icon: 'trophy' as const,
+      title: '🏆 Достижения',
+      subtitle: 'Ваши награды и прогресс',
+      color: Colors.warning,
+      onPress: () => navigation.navigate('Achievements'),
+    },
+    {
       icon: 'person-outline' as const,
       title: 'Редактировать профиль',
+      subtitle: 'Фото, имя, био',
+      color: Colors.text,
       onPress: () => navigation.navigate('EditProfile'),
     },
     {
       icon: 'heart-outline' as const,
       title: 'Избранное',
+      subtitle: 'Любимые рестораны',
+      color: Colors.error,
       onPress: () => {},
     },
     {
       icon: 'chatbubbles-outline' as const,
       title: 'Мои отзывы',
+      subtitle: 'История активности',
+      color: Colors.info,
       onPress: () => {},
+    },
+    {
+      icon: 'wifi' as const,
+      title: '🔧 Тест подключения',
+      subtitle: 'Проверка связи с сервером',
+      color: Colors.info,
+      onPress: () => navigation.navigate('ConnectivityTest'),
     },
     {
       icon: 'settings-outline' as const,
       title: 'Настройки',
+      subtitle: 'Конфиденциальность',
+      color: Colors.textSecondary,
       onPress: () => {},
     },
   ];
+
+  // Режим гостя - показываем приглашение войти
+  if (isGuest) {
+    return (
+      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+        <View style={styles.guestContainer}>
+          <View style={styles.guestIconContainer}>
+            <Ionicons name="person-outline" size={80} color={Colors.primary} />
+          </View>
+          
+          <Text style={styles.guestTitle}>Режим гостя</Text>
+          <Text style={styles.guestSubtitle}>
+            Войдите в систему чтобы получить полный доступ к функциям приложения
+          </Text>
+          
+          <View style={styles.guestFeatures}>
+            <View style={styles.featureItem}>
+              <Ionicons name="checkmark-circle" size={20} color={Colors.success} />
+              <Text style={styles.featureText}>Оставлять отзывы и рейтинги</Text>
+            </View>
+            <View style={styles.featureItem}>
+              <Ionicons name="checkmark-circle" size={20} color={Colors.success} />
+              <Text style={styles.featureText}>Добавлять фотографии блюд</Text>
+            </View>
+            <View style={styles.featureItem}>
+              <Ionicons name="checkmark-circle" size={20} color={Colors.success} />
+              <Text style={styles.featureText}>Подписываться на пользователей</Text>
+            </View>
+            <View style={styles.featureItem}>
+              <Ionicons name="checkmark-circle" size={20} color={Colors.success} />
+              <Text style={styles.featureText}>Добавлять блюда в меню</Text>
+            </View>
+          </View>
+          
+          <Button
+            title="Войти"
+            onPress={() => dispatch(exitGuestMode())}
+            size="large"
+            style={styles.loginButton}
+          />
+          
+          <TouchableOpacity onPress={() => dispatch(exitGuestMode())}>
+            <Text style={styles.registerText}>
+              Еще нет аккаунта? <Text style={styles.registerLink}>Зарегистрироваться</Text>
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    );
+  }
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -77,7 +164,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
           <Image source={{ uri: user.avatar }} style={styles.avatar} />
         ) : (
           <View style={[styles.avatar, styles.avatarPlaceholder]}>
-            <Ionicons name="person" size={48} color={Theme.colors.textLight} />
+            <Ionicons name="person" size={48} color={Colors.textLight} />
           </View>
         )}
         
@@ -100,7 +187,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
           <View style={styles.statDivider} />
           
           <View style={styles.statItem}>
-            <Text style={[styles.statValue, { color: Theme.colors.trust }]}>
+            <Text style={[styles.statValue, { color: Colors.trust }]}>
               {user?.trustScore.toFixed(1)}
             </Text>
             <Text style={styles.statLabel}>Доверие</Text>
@@ -121,13 +208,13 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
             activeOpacity={0.7}
           >
             <View style={styles.menuItemLeft}>
-              <Ionicons name={item.icon} size={24} color={Theme.colors.text} />
+              <Ionicons name={item.icon} size={24} color={Colors.text} />
               <Text style={styles.menuItemText}>{item.title}</Text>
             </View>
             <Ionicons
               name="chevron-forward"
               size={20}
-              color={Theme.colors.textSecondary}
+              color={Colors.textSecondary}
             />
           </TouchableOpacity>
         ))}
@@ -146,7 +233,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Theme.colors.background,
+    backgroundColor: Colors.background,
   },
   content: {
     padding: Theme.spacing.md,
@@ -162,24 +249,24 @@ const styles = StyleSheet.create({
     marginBottom: Theme.spacing.md,
   },
   avatarPlaceholder: {
-    backgroundColor: Theme.colors.surface,
+    backgroundColor: Colors.surface,
     justifyContent: 'center',
     alignItems: 'center',
   },
   username: {
     fontSize: Theme.fontSize.xxl,
     fontWeight: Theme.fontWeight.bold,
-    color: Theme.colors.text,
+    color: Colors.text,
     marginBottom: Theme.spacing.xs,
   },
   email: {
     fontSize: Theme.fontSize.md,
-    color: Theme.colors.textSecondary,
+    color: Colors.textSecondary,
     marginBottom: Theme.spacing.md,
   },
   statsContainer: {
     flexDirection: 'row',
-    backgroundColor: Theme.colors.surface,
+    backgroundColor: Colors.surface,
     borderRadius: Theme.borderRadius.lg,
     padding: Theme.spacing.md,
     marginBottom: Theme.spacing.md,
@@ -191,26 +278,26 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: Theme.fontSize.xl,
     fontWeight: Theme.fontWeight.bold,
-    color: Theme.colors.text,
+    color: Colors.text,
     marginBottom: 4,
   },
   statLabel: {
     fontSize: Theme.fontSize.sm,
-    color: Theme.colors.textSecondary,
+    color: Colors.textSecondary,
   },
   statDivider: {
     width: 1,
-    backgroundColor: Theme.colors.border,
+    backgroundColor: Colors.border,
     marginHorizontal: Theme.spacing.md,
   },
   bio: {
     fontSize: Theme.fontSize.md,
-    color: Theme.colors.text,
+    color: Colors.text,
     textAlign: 'center',
     lineHeight: 20,
   },
   menuContainer: {
-    backgroundColor: Theme.colors.card,
+    backgroundColor: Colors.card,
     borderRadius: Theme.borderRadius.lg,
     marginBottom: Theme.spacing.xl,
     overflow: 'hidden',
@@ -222,7 +309,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: Theme.spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: Theme.colors.borderLight,
+    borderBottomColor: Colors.borderLight,
   },
   menuItemLeft: {
     flexDirection: 'row',
@@ -231,10 +318,67 @@ const styles = StyleSheet.create({
   },
   menuItemText: {
     fontSize: Theme.fontSize.md,
-    color: Theme.colors.text,
+    color: Colors.text,
   },
   logoutButton: {
     marginBottom: Theme.spacing.xl,
+  },
+  guestContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: Theme.spacing.xl,
+  },
+  guestIconContainer: {
+    width: 140,
+    height: 140,
+    borderRadius: Theme.borderRadius.round,
+    backgroundColor: `${Colors.primary}20`,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: Theme.spacing.lg,
+  },
+  guestTitle: {
+    fontSize: Theme.fontSize.xxl,
+    fontWeight: Theme.fontWeight.bold,
+    color: Colors.text,
+    marginBottom: Theme.spacing.sm,
+  },
+  guestSubtitle: {
+    fontSize: Theme.fontSize.md,
+    color: Colors.textSecondary,
+    textAlign: 'center',
+    marginBottom: Theme.spacing.xl,
+    lineHeight: 22,
+  },
+  guestFeatures: {
+    width: '100%',
+    backgroundColor: Colors.surface,
+    borderRadius: Theme.borderRadius.lg,
+    padding: Theme.spacing.lg,
+    marginBottom: Theme.spacing.xl,
+    gap: Theme.spacing.md,
+  },
+  featureItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Theme.spacing.sm,
+  },
+  featureText: {
+    fontSize: Theme.fontSize.md,
+    color: Colors.text,
+  },
+  loginButton: {
+    width: '100%',
+    marginBottom: Theme.spacing.md,
+  },
+  registerText: {
+    fontSize: Theme.fontSize.md,
+    color: Colors.textSecondary,
+  },
+  registerLink: {
+    color: Colors.primary,
+    fontWeight: Theme.fontWeight.semibold,
   },
 });
 

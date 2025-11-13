@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Theme } from '../constants/theme';
+import { Colors } from '../constants/colors';
 
 interface InputProps extends TextInputProps {
   label?: string;
@@ -36,14 +37,14 @@ export const Input: React.FC<InputProps> = ({
           <Ionicons
             name={icon}
             size={20}
-            color={Theme.colors.textSecondary}
+            color={Colors.textSecondary}
             style={styles.icon}
           />
         )}
         
         <TextInput
           style={[styles.input, style]}
-          placeholderTextColor={Theme.colors.textLight}
+          placeholderTextColor={Colors.textLight}
           secureTextEntry={isPassword && !showPassword}
           {...props}
         />
@@ -56,7 +57,7 @@ export const Input: React.FC<InputProps> = ({
             <Ionicons
               name={showPassword ? 'eye-off-outline' : 'eye-outline'}
               size={20}
-              color={Theme.colors.textSecondary}
+              color={Colors.textSecondary}
             />
           </TouchableOpacity>
         )}
@@ -74,20 +75,20 @@ const styles = StyleSheet.create({
   label: {
     fontSize: Theme.fontSize.md,
     fontWeight: Theme.fontWeight.medium,
-    color: Theme.colors.text,
+    color: Colors.text,
     marginBottom: Theme.spacing.xs,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Theme.colors.surface,
+    backgroundColor: Colors.surface,
     borderRadius: Theme.borderRadius.md,
     borderWidth: 1,
-    borderColor: Theme.colors.border,
+    borderColor: Colors.border,
     paddingHorizontal: Theme.spacing.md,
   },
   inputContainer_error: {
-    borderColor: Theme.colors.error,
+    borderColor: Colors.error,
   },
   icon: {
     marginRight: Theme.spacing.sm,
@@ -95,7 +96,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: Theme.fontSize.md,
-    color: Theme.colors.text,
+    color: Colors.text,
     paddingVertical: Theme.spacing.md,
   },
   eyeIcon: {
@@ -103,7 +104,7 @@ const styles = StyleSheet.create({
   },
   error: {
     fontSize: Theme.fontSize.sm,
-    color: Theme.colors.error,
+    color: Colors.error,
     marginTop: Theme.spacing.xs,
   },
 });

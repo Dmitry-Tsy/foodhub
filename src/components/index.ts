@@ -6,4 +6,8 @@ export { RestaurantCard } from './RestaurantCard';
 export { DishCard } from './DishCard';
 export { ReviewItem } from './ReviewItem';
 export { ImageUploader } from './ImageUploader';
+export { GuestPrompt } from './GuestPrompt';
+export { RestaurantMap } from './RestaurantMap';
+export { AchievementBadge } from './AchievementBadge';
+export { PairingCard } from './PairingCard';
 

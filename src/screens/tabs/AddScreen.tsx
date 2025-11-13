@@ -11,7 +11,11 @@ import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { MainTabParamList, RootStackParamList } from '../../types';
+import { Button } from '../../components';
 import { Theme } from '../../constants/theme';
+import { Colors } from '../../constants/colors';
+import { useAppDispatch, useAppSelector } from '../../store';
+import { exitGuestMode } from '../../store/slices/authSlice';
 
 type NavigationProp = CompositeNavigationProp<
   BottomTabNavigationProp<MainTabParamList, 'Add'>,
@@ -23,13 +27,15 @@ interface Props {
 }
 
 const AddScreen: React.FC<Props> = ({ navigation }) => {
+  const dispatch = useAppDispatch();
+  const { isGuest } = useAppSelector((state) => state.auth);
   const quickActions = [
     {
       id: 'review',
       title: 'Добавить отзыв',
       description: 'Поделитесь мнением о блюде',
       icon: 'star-outline' as const,
-      color: Theme.colors.warning,
+      color: Colors.warning,
       action: () => {
         // В реальном приложении здесь будет выбор ресторана/блюда
         // Для примера перейдем на экран поиска
@@ -41,7 +47,7 @@ const AddScreen: React.FC<Props> = ({ navigation }) => {
       title: 'Добавить блюдо',
       description: 'Внесите новое блюдо в меню',
       icon: 'restaurant-outline' as const,
-      color: Theme.colors.primary,
+      color: Colors.primary,
       action: () => {
         // В реальном приложении здесь будет выбор ресторана
         navigation.navigate('Search');
@@ -52,12 +58,43 @@ const AddScreen: React.FC<Props> = ({ navigation }) => {
       title: 'Найти ресторан',
       description: 'Найдите место, чтобы оставить отзыв',
       icon: 'location-outline' as const,
-      color: Theme.colors.secondary,
+      color: Colors.secondary,
       action: () => {
         navigation.navigate('Search');
       },
     },
   ];
+
+  // Режим гостя - показываем приглашение
+  if (isGuest) {
+    return (
+      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+        <View style={styles.guestContainer}>
+          <View style={styles.guestIconContainer}>
+            <Ionicons name="create-outline" size={60} color={Colors.primary} />
+          </View>
+          
+          <Text style={styles.guestTitle}>Создание контента</Text>
+          <Text style={styles.guestSubtitle}>
+            Войдите в систему чтобы добавлять отзывы, фотографии и новые блюда
+          </Text>
+          
+          <Button
+            title="Войти"
+            onPress={() => dispatch(exitGuestMode())}
+            size="large"
+            style={styles.loginButton}
+          />
+          
+          <TouchableOpacity onPress={() => dispatch(exitGuestMode())}>
+            <Text style={styles.registerText}>
+              Нет аккаунта? <Text style={styles.registerLink}>Зарегистрироваться</Text>
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    );
+  }
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -88,14 +125,14 @@ const AddScreen: React.FC<Props> = ({ navigation }) => {
             <Ionicons
               name="chevron-forward"
               size={24}
-              color={Theme.colors.textSecondary}
+              color={Colors.textSecondary}
             />
           </TouchableOpacity>
         ))}
       </View>
 
       <View style={styles.infoContainer}>
-        <Ionicons name="information-circle-outline" size={24} color={Theme.colors.info} />
+        <Ionicons name="information-circle-outline" size={24} color={Colors.info} />
         <Text style={styles.infoText}>
           Ваши отзывы помогают другим гурманам находить лучшие блюда и рестораны!
         </Text>
@@ -107,7 +144,7 @@ const AddScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Theme.colors.background,
+    backgroundColor: Colors.background,
   },
   content: {
     padding: Theme.spacing.md,
@@ -118,12 +155,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: Theme.fontSize.xxl,
     fontWeight: Theme.fontWeight.bold,
-    color: Theme.colors.text,
+    color: Colors.text,
     marginBottom: Theme.spacing.xs,
   },
   subtitle: {
     fontSize: Theme.fontSize.md,
-    color: Theme.colors.textSecondary,
+    color: Colors.textSecondary,
   },
   actionsContainer: {
     gap: Theme.spacing.md,
@@ -132,7 +169,7 @@ const styles = StyleSheet.create({
   actionCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Theme.colors.card,
+    backgroundColor: Colors.card,
     borderRadius: Theme.borderRadius.lg,
     padding: Theme.spacing.md,
     ...Theme.shadows.md,
@@ -151,16 +188,16 @@ const styles = StyleSheet.create({
   actionTitle: {
     fontSize: Theme.fontSize.lg,
     fontWeight: Theme.fontWeight.semibold,
-    color: Theme.colors.text,
+    color: Colors.text,
     marginBottom: 4,
   },
   actionDescription: {
     fontSize: Theme.fontSize.sm,
-    color: Theme.colors.textSecondary,
+    color: Colors.textSecondary,
   },
   infoContainer: {
     flexDirection: 'row',
-    backgroundColor: `${Theme.colors.info}15`,
+    backgroundColor: `${Colors.info}15`,
     borderRadius: Theme.borderRadius.md,
     padding: Theme.spacing.md,
     gap: Theme.spacing.sm,
@@ -168,8 +205,48 @@ const styles = StyleSheet.create({
   infoText: {
     flex: 1,
     fontSize: Theme.fontSize.sm,
-    color: Theme.colors.text,
+    color: Colors.text,
     lineHeight: 20,
+  },
+  guestContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: Theme.spacing.xl,
+  },
+  guestIconContainer: {
+    width: 120,
+    height: 120,
+    borderRadius: Theme.borderRadius.round,
+    backgroundColor: `${Colors.primary}20`,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: Theme.spacing.lg,
+  },
+  guestTitle: {
+    fontSize: Theme.fontSize.xxl,
+    fontWeight: Theme.fontWeight.bold,
+    color: Colors.text,
+    marginBottom: Theme.spacing.sm,
+  },
+  guestSubtitle: {
+    fontSize: Theme.fontSize.md,
+    color: Colors.textSecondary,
+    textAlign: 'center',
+    marginBottom: Theme.spacing.xl,
+    lineHeight: 22,
+  },
+  loginButton: {
+    width: '100%',
+    marginBottom: Theme.spacing.md,
+  },
+  registerText: {
+    fontSize: Theme.fontSize.md,
+    color: Colors.textSecondary,
+  },
+  registerLink: {
+    color: Colors.primary,
+    fontWeight: Theme.fontWeight.semibold,
   },
 });
 

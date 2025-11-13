@@ -1,0 +1,16 @@
+--- a/node_modules/expo-modules-core/android/ExpoModulesCorePlugin.gradle
++++ b/node_modules/expo-modules-core/android/ExpoModulesCorePlugin.gradle
+@@ -73,7 +73,11 @@
+   afterEvaluate {
+     publishing {
+       publications {
+-        release(MavenPublication) {
++        // Закомментировано для локальной сборки - components.release не всегда доступен
++        /*
++        release(MavenPublication) {  
+           from components.release
+         }
++        */
+       }
+       repositories {
+         maven {

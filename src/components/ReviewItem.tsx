@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { DishReview, User } from '../types';
 import { Theme } from '../constants/theme';
+import { Colors } from '../constants/colors';
 import { formatRelativeTime, formatRating } from '../utils/formatters';
 import { getRatingColor } from '../constants/colors';
 
@@ -33,7 +34,7 @@ export const ReviewItem: React.FC<ReviewItemProps> = ({
           <Image source={{ uri: author.avatar }} style={styles.avatar} />
         ) : (
           <View style={[styles.avatar, styles.avatarPlaceholder]}>
-            <Ionicons name="person" size={24} color={Theme.colors.textLight} />
+            <Ionicons name="person" size={24} color={Colors.textLight} />
           </View>
         )}
         
@@ -41,7 +42,7 @@ export const ReviewItem: React.FC<ReviewItemProps> = ({
           <Text style={styles.username}>{author?.username || 'Пользователь'}</Text>
           <View style={styles.metaRow}>
             <View style={styles.trustBadge}>
-              <Ionicons name="shield-checkmark" size={12} color={Theme.colors.trust} />
+              <Ionicons name="shield-checkmark" size={12} color={Colors.trust} />
               <Text style={styles.trustScore}>
                 {author?.trustScore.toFixed(1) || '0.0'}
               </Text>
@@ -63,7 +64,7 @@ export const ReviewItem: React.FC<ReviewItemProps> = ({
       
       {review.foodPairing && (
         <View style={styles.pairingContainer}>
-          <Ionicons name="wine" size={16} color={Theme.colors.secondary} />
+          <Ionicons name="wine" size={16} color={Colors.secondary} />
           <Text style={styles.pairingText}>Рекомендует: {review.foodPairing}</Text>
         </View>
       )}
@@ -82,7 +83,7 @@ export const ReviewItem: React.FC<ReviewItemProps> = ({
           onPress={onHelpfulPress}
           activeOpacity={0.7}
         >
-          <Ionicons name="thumbs-up-outline" size={16} color={Theme.colors.textSecondary} />
+          <Ionicons name="thumbs-up-outline" size={16} color={Colors.textSecondary} />
           <Text style={styles.helpfulText}>
             Полезно ({review.helpfulCount || 0})
           </Text>
@@ -94,7 +95,7 @@ export const ReviewItem: React.FC<ReviewItemProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Theme.colors.card,
+    backgroundColor: Colors.card,
     borderRadius: Theme.borderRadius.lg,
     padding: Theme.spacing.md,
     marginBottom: Theme.spacing.md,
@@ -111,7 +112,7 @@ const styles = StyleSheet.create({
     borderRadius: Theme.borderRadius.round,
   },
   avatarPlaceholder: {
-    backgroundColor: Theme.colors.surface,
+    backgroundColor: Colors.surface,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -122,7 +123,7 @@ const styles = StyleSheet.create({
   username: {
     fontSize: Theme.fontSize.md,
     fontWeight: Theme.fontWeight.semibold,
-    color: Theme.colors.text,
+    color: Colors.text,
     marginBottom: 2,
   },
   metaRow: {
@@ -136,12 +137,12 @@ const styles = StyleSheet.create({
   },
   trustScore: {
     fontSize: Theme.fontSize.xs,
-    color: Theme.colors.trust,
+    color: Colors.trust,
     marginLeft: 2,
   },
   date: {
     fontSize: Theme.fontSize.xs,
-    color: Theme.colors.textSecondary,
+    color: Colors.textSecondary,
   },
   ratingBadge: {
     paddingHorizontal: Theme.spacing.sm,
@@ -155,21 +156,21 @@ const styles = StyleSheet.create({
   },
   comment: {
     fontSize: Theme.fontSize.md,
-    color: Theme.colors.text,
+    color: Colors.text,
     lineHeight: 20,
     marginBottom: Theme.spacing.sm,
   },
   pairingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Theme.colors.surface,
+    backgroundColor: Colors.surface,
     padding: Theme.spacing.sm,
     borderRadius: Theme.borderRadius.md,
     marginBottom: Theme.spacing.sm,
   },
   pairingText: {
     fontSize: Theme.fontSize.sm,
-    color: Theme.colors.text,
+    color: Colors.text,
     marginLeft: Theme.spacing.xs,
     fontStyle: 'italic',
   },
@@ -185,7 +186,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     borderTopWidth: 1,
-    borderTopColor: Theme.colors.borderLight,
+    borderTopColor: Colors.borderLight,
     paddingTop: Theme.spacing.sm,
   },
   helpfulButton: {
@@ -194,7 +195,7 @@ const styles = StyleSheet.create({
   },
   helpfulText: {
     fontSize: Theme.fontSize.sm,
-    color: Theme.colors.textSecondary,
+    color: Colors.textSecondary,
     marginLeft: Theme.spacing.xs,
   },
 });

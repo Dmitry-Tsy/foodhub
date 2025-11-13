@@ -6,15 +6,24 @@ import {
   Image,
   SafeAreaView,
   StatusBar,
+  TouchableOpacity,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../types';
 import { Button } from '../../components';
 import { Theme } from '../../constants/theme';
+import { Colors } from '../../constants/colors';
+import { useAppDispatch } from '../../store';
+import { continueAsGuest } from '../../store/slices/authSlice';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Welcome'>;
 
 const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
+  const dispatch = useAppDispatch();
+
+  const handleGuestMode = () => {
+    dispatch(continueAsGuest());
+  };
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
@@ -51,6 +60,16 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
             size="large"
             style={styles.button}
           />
+          
+          <TouchableOpacity
+            style={styles.guestButton}
+            onPress={handleGuestMode}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.guestButtonText}>
+              Продолжить как гость
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>
@@ -60,7 +79,7 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Theme.colors.background,
+    backgroundColor: Colors.background,
   },
   content: {
     flex: 1,
@@ -78,12 +97,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: Theme.fontSize.xxxl,
     fontWeight: Theme.fontWeight.bold,
-    color: Theme.colors.primary,
+    color: Colors.primary,
     marginBottom: Theme.spacing.md,
   },
   subtitle: {
     fontSize: Theme.fontSize.md,
-    color: Theme.colors.textSecondary,
+    color: Colors.textSecondary,
     textAlign: 'center',
     lineHeight: 22,
   },
@@ -101,6 +120,16 @@ const styles = StyleSheet.create({
   },
   button: {
     width: '100%',
+  },
+  guestButton: {
+    alignItems: 'center',
+    paddingVertical: Theme.spacing.md,
+    marginTop: Theme.spacing.sm,
+  },
+  guestButtonText: {
+    fontSize: Theme.fontSize.md,
+    color: Colors.textSecondary,
+    textDecorationLine: 'underline',
   },
 });
 

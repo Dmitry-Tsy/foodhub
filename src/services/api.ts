@@ -1,8 +1,18 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import * as secureStorage from './secureStorage';
+import { getApiUrl } from '../config/api.config';
 
-// Для разработки используем локальный сервер или mock API
-const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:3000/api';
+// Автоматическое определение: эмулятор или реальное устройство
+// Измените isEmulator на false если используете реальное устройство
+const isEmulator = true; // true = эмулятор, false = реальное устройство
+
+const API_BASE_URL = getApiUrl(isEmulator);
+
+// Логирование для отладки
+console.log('📡 API Configuration:', {
+  baseUrl: API_BASE_URL,
+  isEmulator,
+});
 
 class ApiService {
   private api: AxiosInstance;

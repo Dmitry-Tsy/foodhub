@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, ActivityIndicator, Text, StyleSheet } from 'react-native';
 import { Theme } from '../constants/theme';
+import { Colors } from '../constants/colors';
 
 interface LoadingProps {
   text?: string;
@@ -11,7 +12,7 @@ export const Loading: React.FC<LoadingProps> = ({ text, fullScreen = false }) =>
   if (fullScreen) {
     return (
       <View style={styles.fullScreenContainer}>
-        <ActivityIndicator size="large" color={Theme.colors.primary} />
+        <ActivityIndicator size="large" color={Colors.primary} />
         {text && <Text style={styles.text}>{text}</Text>}
       </View>
     );
@@ -19,7 +20,7 @@ export const Loading: React.FC<LoadingProps> = ({ text, fullScreen = false }) =>
 
   return (
     <View style={styles.container}>
-      <ActivityIndicator size="large" color={Theme.colors.primary} />
+      <ActivityIndicator size="large" color={Colors.primary} />
       {text && <Text style={styles.text}>{text}</Text>}
     </View>
   );
@@ -30,7 +31,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: Theme.colors.background,
+    backgroundColor: Colors.background,
   },
   container: {
     padding: Theme.spacing.xl,
@@ -40,7 +41,7 @@ const styles = StyleSheet.create({
   text: {
     marginTop: Theme.spacing.md,
     fontSize: Theme.fontSize.md,
-    color: Theme.colors.textSecondary,
+    color: Colors.textSecondary,
   },
 });
 

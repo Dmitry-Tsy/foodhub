@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { MainTabParamList, RootStackParamList, FeedItem } from '../../types';
 import { ReviewItem, Loading } from '../../components';
 import { Theme } from '../../constants/theme';
+import { Colors } from '../../constants/colors';
 import { useAppDispatch, useAppSelector } from '../../store';
 import { fetchFeed, refreshFeed } from '../../store/slices/feedSlice';
 
@@ -74,7 +75,7 @@ const FeedScreen: React.FC<Props> = ({ navigation }) => {
       return (
         <View style={styles.feedCard}>
           <View style={styles.feedHeader}>
-            <Ionicons name="restaurant" size={24} color={Theme.colors.primary} />
+            <Ionicons name="restaurant" size={24} color={Colors.primary} />
             <Text style={styles.feedText}>
               <Text style={styles.feedUsername}>{item.user?.username}</Text>
               {' добавил(а) новое блюдо '}
@@ -103,14 +104,14 @@ const FeedScreen: React.FC<Props> = ({ navigation }) => {
             <RefreshControl
               refreshing={isRefreshing}
               onRefresh={handleRefresh}
-              colors={[Theme.colors.primary]}
+              colors={[Colors.primary]}
             />
           }
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.5}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
-              <Ionicons name="newspaper-outline" size={64} color={Theme.colors.textLight} />
+              <Ionicons name="newspaper-outline" size={64} color={Colors.textLight} />
               <Text style={styles.emptyText}>
                 Лента пуста
               </Text>
@@ -133,13 +134,13 @@ const FeedScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Theme.colors.background,
+    backgroundColor: Colors.background,
   },
   listContent: {
     padding: Theme.spacing.md,
   },
   feedCard: {
-    backgroundColor: Theme.colors.card,
+    backgroundColor: Colors.surface,
     borderRadius: Theme.borderRadius.lg,
     padding: Theme.spacing.md,
     marginBottom: Theme.spacing.md,
@@ -153,12 +154,12 @@ const styles = StyleSheet.create({
   feedText: {
     flex: 1,
     fontSize: Theme.fontSize.md,
-    color: Theme.colors.text,
+    color: Colors.text,
     lineHeight: 20,
   },
   feedUsername: {
     fontWeight: Theme.fontWeight.semibold,
-    color: Theme.colors.primary,
+    color: Colors.primary,
   },
   feedDishName: {
     fontWeight: Theme.fontWeight.semibold,
@@ -171,13 +172,13 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: Theme.fontSize.lg,
     fontWeight: Theme.fontWeight.semibold,
-    color: Theme.colors.textSecondary,
+    color: Colors.textSecondary,
     marginTop: Theme.spacing.md,
     textAlign: 'center',
   },
   emptySubtext: {
     fontSize: Theme.fontSize.md,
-    color: Theme.colors.textLight,
+    color: Colors.textLight,
     marginTop: Theme.spacing.xs,
     textAlign: 'center',
   },

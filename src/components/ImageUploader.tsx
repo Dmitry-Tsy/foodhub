@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Theme } from '../constants/theme';
+import { Colors } from '../constants/colors';
 import * as imageService from '../services/imageService';
 
 interface ImageUploaderProps {
@@ -100,7 +101,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
                 style={styles.removeButton}
                 onPress={() => handleRemoveImage(index)}
               >
-                <Ionicons name="close-circle" size={24} color={Theme.colors.error} />
+                <Ionicons name="close-circle" size={24} color={Colors.error} />
               </TouchableOpacity>
             </View>
           ))}
@@ -112,10 +113,10 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
               disabled={loading}
             >
               {loading ? (
-                <ActivityIndicator color={Theme.colors.primary} />
+                <ActivityIndicator color={Colors.primary} />
               ) : (
                 <>
-                  <Ionicons name="camera" size={32} color={Theme.colors.primary} />
+                  <Ionicons name="camera" size={32} color={Colors.primary} />
                   <Text style={styles.addButtonText}>Добавить</Text>
                 </>
               )}
@@ -134,7 +135,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: Theme.fontSize.md,
     fontWeight: Theme.fontWeight.medium,
-    color: Theme.colors.text,
+    color: Colors.text,
     marginBottom: Theme.spacing.sm,
   },
   imagesContainer: {
@@ -153,7 +154,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: -8,
     right: -8,
-    backgroundColor: Theme.colors.background,
+    backgroundColor: Colors.background,
     borderRadius: Theme.borderRadius.round,
   },
   addButton: {
@@ -161,15 +162,15 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: Theme.borderRadius.md,
     borderWidth: 2,
-    borderColor: Theme.colors.primary,
+    borderColor: Colors.primary,
     borderStyle: 'dashed',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: Theme.colors.surface,
+    backgroundColor: Colors.surface,
   },
   addButtonText: {
     fontSize: Theme.fontSize.sm,
-    color: Theme.colors.primary,
+    color: Colors.primary,
     marginTop: Theme.spacing.xs,
   },
 });

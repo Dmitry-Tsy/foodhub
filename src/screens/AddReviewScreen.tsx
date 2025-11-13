@@ -12,6 +12,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types';
 import { Button, Input, RatingSlider, ImageUploader } from '../components';
 import { Theme } from '../constants/theme';
+import { Colors } from '../constants/colors';
 import { useAppDispatch, useAppSelector } from '../store';
 import { addReview } from '../store/slices/reviewSlice';
 import { validateReview } from '../utils/validation';
@@ -125,7 +126,7 @@ const AddReviewScreen: React.FC<Props> = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Theme.colors.background,
+    backgroundColor: Colors.background,
   },
   content: {
     padding: Theme.spacing.md,
@@ -136,14 +137,14 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: Theme.fontSize.lg,
     fontWeight: Theme.fontWeight.semibold,
-    color: Theme.colors.text,
+    color: Colors.text,
     marginBottom: Theme.spacing.md,
   },
   commentInput: {
     height: 120,
   },
   errorText: {
-    color: Theme.colors.error,
+    color: Colors.error,
     fontSize: Theme.fontSize.md,
     textAlign: 'center',
     marginBottom: Theme.spacing.md,

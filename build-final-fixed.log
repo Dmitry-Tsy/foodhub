@@ -1,0 +1,45 @@
+Starting a Gradle Daemon, 1 incompatible and 1 stopped Daemons could not be reused, use --status for details
+> Task :gradle-plugin:compileKotlin UP-TO-DATE
+> Task :gradle-plugin:compileJava NO-SOURCE
+> Task :gradle-plugin:pluginDescriptors UP-TO-DATE
+> Task :gradle-plugin:processResources UP-TO-DATE
+> Task :gradle-plugin:classes UP-TO-DATE
+> Task :gradle-plugin:jar UP-TO-DATE
+> Task :gradle-plugin:inspectClassesForKotlinIC UP-TO-DATE
+
+FAILURE: Build completed with 2 failures.
+
+1: Task failed with an exception.
+-----------
+* Where:
+Script '/Users/dmitrytsymlyakov/AndroidStudioProjects/FoodHub/node_modules/expo-modules-core/android/ExpoModulesCorePlugin.gradle' line: 109
+
+* What went wrong:
+Could not compile script '/Users/dmitrytsymlyakov/AndroidStudioProjects/FoodHub/node_modules/expo-modules-core/android/ExpoModulesCorePlugin.gradle'.
+> startup failed:
+  script '/Users/dmitrytsymlyakov/AndroidStudioProjects/FoodHub/node_modules/expo-modules-core/android/ExpoModulesCorePlugin.gradle': 109: Unexpected input: '<EOF>' @ line 109, column 1.
+  1 error
+
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+==============================================================================
+
+2: Task failed with an exception.
+-----------
+* What went wrong:
+A problem occurred configuring project ':expo'.
+> compileSdkVersion is not specified. Please add it to build.gradle
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+==============================================================================
+
+BUILD FAILED in 22s
+5 actionable tasks: 5 up-to-date

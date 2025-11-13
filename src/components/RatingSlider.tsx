@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { Theme } from '../constants/theme';
+import { Colors } from '../constants/colors';
 import { getRatingColor } from '../constants/colors';
 
 interface RatingSliderProps {
@@ -42,7 +43,7 @@ export const RatingSlider: React.FC<RatingSliderProps> = ({
         maximumValue={10}
         step={0.1}
         minimumTrackTintColor={ratingColor}
-        maximumTrackTintColor={Theme.colors.borderLight}
+        maximumTrackTintColor={Colors.borderLight}
         thumbTintColor={ratingColor}
         disabled={disabled}
       />
@@ -69,7 +70,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: Theme.fontSize.md,
     fontWeight: Theme.fontWeight.medium,
-    color: Theme.colors.text,
+    color: Colors.text,
   },
   ratingText: {
     fontSize: Theme.fontSize.xxl,
@@ -86,7 +87,7 @@ const styles = StyleSheet.create({
   },
   scaleText: {
     fontSize: Theme.fontSize.sm,
-    color: Theme.colors.textSecondary,
+    color: Colors.textSecondary,
   },
 });
 

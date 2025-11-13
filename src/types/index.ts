@@ -98,6 +98,7 @@ export interface AuthState {
   token: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+  isGuest: boolean; // Режим гостя - просмотр без авторизации
   error: string | null;
 }
 
@@ -148,6 +149,10 @@ export type RootStackParamList = {
   AddDish: { restaurantId: string };
   UserProfile: { userId: string };
   EditProfile: undefined;
+  TasteProfile: undefined;
+  Achievements: undefined;
+  Recommendations: undefined;
+  ConnectivityTest: undefined;
 };
 
 export type MainTabParamList = {
@@ -156,4 +161,7 @@ export type MainTabParamList = {
   Feed: undefined;
   Profile: undefined;
 };
+
+// Re-export profile types
+export * from './profile';
 

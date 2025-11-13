@@ -13,6 +13,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList, RegisterData } from '../../types';
 import { Button, Input } from '../../components';
 import { Theme } from '../../constants/theme';
+import { Colors } from '../../constants/colors';
 import { useAppDispatch, useAppSelector } from '../../store';
 import { register } from '../../store/slices/authSlice';
 import { validateRegisterForm } from '../../utils/validation';
@@ -139,7 +140,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Theme.colors.background,
+    backgroundColor: Colors.background,
   },
   keyboardView: {
     flex: 1,
@@ -155,18 +156,18 @@ const styles = StyleSheet.create({
   title: {
     fontSize: Theme.fontSize.xxxl,
     fontWeight: Theme.fontWeight.bold,
-    color: Theme.colors.text,
+    color: Colors.text,
     marginBottom: Theme.spacing.sm,
   },
   subtitle: {
     fontSize: Theme.fontSize.md,
-    color: Theme.colors.textSecondary,
+    color: Colors.textSecondary,
   },
   form: {
     marginBottom: Theme.spacing.xl,
   },
   errorText: {
-    color: Theme.colors.error,
+    color: Colors.error,
     fontSize: Theme.fontSize.md,
     textAlign: 'center',
     marginBottom: Theme.spacing.md,
@@ -182,11 +183,11 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: Theme.fontSize.md,
-    color: Theme.colors.textSecondary,
+    color: Colors.textSecondary,
   },
   footerLink: {
     fontSize: Theme.fontSize.md,
-    color: Theme.colors.primary,
+    color: Colors.primary,
     fontWeight: Theme.fontWeight.semibold,
   },
 });

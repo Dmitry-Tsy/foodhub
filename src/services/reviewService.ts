@@ -1,148 +1,123 @@
 import { DishReview, PaginatedResponse } from '../types';
-import { mockReviews, mockDishes, simulateDelay } from './mockData';
+import api from './api';
 
+// Получить отзывы на блюдо
 export const getDishReviews = async (
   dishId: string,
   page: number = 1,
   limit: number = 20
 ): Promise<PaginatedResponse<DishReview>> => {
-  await simulateDelay();
-  
-  const dishReviews = mockReviews
-    .filter(review => review.dishId === dishId)
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  
-  const startIndex = (page - 1) * limit;
-  const endIndex = startIndex + limit;
-  const paginatedReviews = dishReviews.slice(startIndex, endIndex);
-  
-  return {
-    data: paginatedReviews,
-    page,
-    limit,
-    total: dishReviews.length,
-    hasMore: endIndex < dishReviews.length,
-  };
+  try {
+    console.log('📝 Загрузка отзывов для блюда:', dishId);
+    const response = await api.get<{ reviews: DishReview[] }>(`/dishes/${dishId}/reviews`);
+    
+    // Простая пагинация на клиенте (можно переделать на серверную)
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedReviews = response.reviews.slice(startIndex, endIndex);
+    
+    console.log(`✅ Загружено отзывов: ${response.reviews.length}`);
+    
+    return {
+      data: paginatedReviews,
+      page,
+      limit,
+      total: response.reviews.length,
+      hasMore: endIndex < response.reviews.length,
+    };
+  } catch (error: any) {
+    console.error('❌ Ошибка загрузки отзывов:', error.response?.data || error.message);
+    // Возвращаем пустой результат в случае ошибки
+    return {
+      data: [],
+      page,
+      limit,
+      total: 0,
+      hasMore: false,
+    };
+  }
 };
 
+// Получить отзывы пользователя
 export const getUserReviews = async (
   userId: string,
   page: number = 1,
   limit: number = 20
 ): Promise<PaginatedResponse<DishReview>> => {
-  await simulateDelay();
-  
-  const userReviews = mockReviews
-    .filter(review => review.authorId === userId)
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-  
-  const startIndex = (page - 1) * limit;
-  const endIndex = startIndex + limit;
-  const paginatedReviews = userReviews.slice(startIndex, endIndex);
-  
-  return {
-    data: paginatedReviews,
-    page,
-    limit,
-    total: userReviews.length,
-    hasMore: endIndex < userReviews.length,
-  };
+  try {
+    console.log('📝 Загрузка отзывов пользователя:', userId);
+    const response = await api.get<{ reviews: DishReview[] }>(`/users/${userId}/reviews`);
+    
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedReviews = response.reviews.slice(startIndex, endIndex);
+    
+    return {
+      data: paginatedReviews,
+      page,
+      limit,
+      total: response.reviews.length,
+      hasMore: endIndex < response.reviews.length,
+    };
+  } catch (error: any) {
+    console.error('❌ Ошибка загрузки отзывов пользователя:', error.response?.data || error.message);
+    return {
+      data: [],
+      page,
+      limit,
+      total: 0,
+      hasMore: false,
+    };
+  }
 };
 
+// Создать отзыв
 export const createReview = async (reviewData: Partial<DishReview>): Promise<DishReview> => {
-  await simulateDelay();
-  
-  const newReview: DishReview = {
-    id: `review_${Date.now()}`,
-    dishId: reviewData.dishId || '',
-    authorId: reviewData.authorId || '',
-    rating: reviewData.rating || 0,
-    comment: reviewData.comment,
-    foodPairing: reviewData.foodPairing,
-    photos: reviewData.photos || [],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    helpfulCount: 0,
-  };
-  
-  mockReviews.push(newReview);
-  
-  // Обновляем средний рейтинг блюда
-  const dish = mockDishes.find(d => d.id === newReview.dishId);
-  if (dish) {
-    const dishReviews = mockReviews.filter(r => r.dishId === dish.id);
-    const avgRating = dishReviews.reduce((sum, r) => sum + r.rating, 0) / dishReviews.length;
-    dish.averageRating = Math.round(avgRating * 10) / 10;
-    dish.reviewCount = dishReviews.length;
+  try {
+    console.log('✍️ Создание отзыва для блюда:', reviewData.dishId);
+    const response = await api.post<{ review: DishReview }>(`/dishes/${reviewData.dishId}/reviews`, reviewData);
+    console.log('✅ Отзыв создан');
+    return response.review;
+  } catch (error: any) {
+    console.error('❌ Ошибка создания отзыва:', error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || 'Ошибка создания отзыва');
   }
-  
-  return newReview;
 };
 
+// Обновить отзыв
 export const updateReview = async (reviewId: string, updates: Partial<DishReview>): Promise<DishReview> => {
-  await simulateDelay();
-  
-  const review = mockReviews.find(r => r.id === reviewId);
-  
-  if (!review) {
-    throw new Error('Отзыв не найден');
+  try {
+    console.log('✏️ Обновление отзыва:', reviewId);
+    const response = await api.put<{ review: DishReview }>(`/reviews/${reviewId}`, updates);
+    console.log('✅ Отзыв обновлен');
+    return response.review;
+  } catch (error: any) {
+    console.error('❌ Ошибка обновления отзыва:', error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || 'Ошибка обновления отзыва');
   }
-  
-  Object.assign(review, {
-    ...updates,
-    updatedAt: new Date().toISOString(),
-  });
-  
-  // Обновляем средний рейтинг блюда при изменении рейтинга
-  if (updates.rating) {
-    const dish = mockDishes.find(d => d.id === review.dishId);
-    if (dish) {
-      const dishReviews = mockReviews.filter(r => r.dishId === dish.id);
-      const avgRating = dishReviews.reduce((sum, r) => sum + r.rating, 0) / dishReviews.length;
-      dish.averageRating = Math.round(avgRating * 10) / 10;
-    }
-  }
-  
-  return review;
 };
 
+// Удалить отзыв
 export const deleteReview = async (reviewId: string): Promise<void> => {
-  await simulateDelay();
-  
-  const index = mockReviews.findIndex(r => r.id === reviewId);
-  
-  if (index === -1) {
-    throw new Error('Отзыв не найден');
-  }
-  
-  const review = mockReviews[index];
-  mockReviews.splice(index, 1);
-  
-  // Обновляем средний рейтинг блюда
-  const dish = mockDishes.find(d => d.id === review.dishId);
-  if (dish) {
-    const dishReviews = mockReviews.filter(r => r.dishId === dish.id);
-    if (dishReviews.length > 0) {
-      const avgRating = dishReviews.reduce((sum, r) => sum + r.rating, 0) / dishReviews.length;
-      dish.averageRating = Math.round(avgRating * 10) / 10;
-      dish.reviewCount = dishReviews.length;
-    } else {
-      dish.averageRating = 0;
-      dish.reviewCount = 0;
-    }
+  try {
+    console.log('🗑️ Удаление отзыва:', reviewId);
+    await api.delete(`/reviews/${reviewId}`);
+    console.log('✅ Отзыв удален');
+  } catch (error: any) {
+    console.error('❌ Ошибка удаления отзыва:', error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || 'Ошибка удаления отзыва');
   }
 };
 
+// Отметить отзыв как полезный
 export const markReviewHelpful = async (reviewId: string): Promise<DishReview> => {
-  await simulateDelay();
-  
-  const review = mockReviews.find(r => r.id === reviewId);
-  
-  if (!review) {
-    throw new Error('Отзыв не найден');
+  try {
+    console.log('👍 Отметка отзыва полезным:', reviewId);
+    const response = await api.post<{ review: DishReview }>(`/reviews/${reviewId}/helpful`);
+    console.log('✅ Отзыв отмечен полезным');
+    return response.review;
+  } catch (error: any) {
+    console.error('❌ Ошибка отметки отзыва:', error.response?.data || error.message);
+    throw new Error(error.response?.data?.message || 'Ошибка отметки отзыва');
   }
-  
-  review.helpfulCount = (review.helpfulCount || 0) + 1;
-  return review;
 };
-

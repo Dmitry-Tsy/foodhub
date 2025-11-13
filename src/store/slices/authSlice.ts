@@ -8,6 +8,7 @@ const initialState: AuthState = {
   token: null,
   isLoading: false,
   isAuthenticated: false,
+  isGuest: false,
   error: null,
 };
 
@@ -78,6 +79,15 @@ const authSlice = createSlice({
         state.user = { ...state.user, ...action.payload };
       }
     },
+    continueAsGuest: (state) => {
+      state.isGuest = true;
+      state.isAuthenticated = false;
+      state.user = null;
+      state.token = null;
+    },
+    exitGuestMode: (state) => {
+      state.isGuest = false;
+    },
   },
   extraReducers: (builder) => {
     // Login
@@ -121,6 +131,7 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
+      state.isGuest = false;
       state.error = null;
     });
 
@@ -144,6 +155,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { clearError, updateUser } = authSlice.actions;
+export const { clearError, updateUser, continueAsGuest, exitGuestMode } = authSlice.actions;
 export default authSlice.reducer;
 

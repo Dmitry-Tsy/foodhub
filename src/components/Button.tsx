@@ -8,6 +8,7 @@ import {
   TextStyle,
 } from 'react-native';
 import { Theme } from '../constants/theme';
+import { Colors } from '../constants/colors';
 
 interface ButtonProps {
   title: string;
@@ -55,7 +56,7 @@ export const Button: React.FC<ButtonProps> = ({
     >
       {loading ? (
         <ActivityIndicator
-          color={variant === 'outline' ? Theme.colors.primary : Theme.colors.background}
+          color={variant === 'outline' ? Colors.primary : Colors.background}
         />
       ) : (
         <Text style={textStyles}>{title}</Text>
@@ -72,15 +73,15 @@ const styles = StyleSheet.create({
     ...Theme.shadows.sm,
   },
   button_primary: {
-    backgroundColor: Theme.colors.primary,
+    backgroundColor: Colors.primary,
   },
   button_secondary: {
-    backgroundColor: Theme.colors.secondary,
+    backgroundColor: Colors.secondary,
   },
   button_outline: {
-    backgroundColor: Theme.colors.transparent,
+    backgroundColor: Colors.transparent,
     borderWidth: 2,
-    borderColor: Theme.colors.primary,
+    borderColor: Colors.primary,
   },
   button_small: {
     paddingVertical: Theme.spacing.sm,
@@ -101,13 +102,13 @@ const styles = StyleSheet.create({
     fontWeight: Theme.fontWeight.semibold,
   },
   text_primary: {
-    color: Theme.colors.background,
+    color: Colors.background,
   },
   text_secondary: {
-    color: Theme.colors.background,
+    color: Colors.background,
   },
   text_outline: {
-    color: Theme.colors.primary,
+    color: Colors.primary,
   },
   text_small: {
     fontSize: Theme.fontSize.sm,
@@ -119,7 +120,7 @@ const styles = StyleSheet.create({
     fontSize: Theme.fontSize.lg,
   },
   text_disabled: {
-    color: Theme.colors.textLight,
+    color: Colors.textLight,
   },
 });
 

@@ -1,0 +1,32 @@
+services:
+  # Web Service (Backend API)
+  - type: web
+    name: foodhub-backend
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: foodhub-db
+          property: connectionString
+      - key: ALLOWED_ORIGINS
+        value: "*"
+    healthCheckPath: /health
+
+databases:
+  # PostgreSQL Database
+  - name: foodhub-db
+    databaseName: foodhub
+    user: foodhub_user
+    region: oregon
+    plan: free
+

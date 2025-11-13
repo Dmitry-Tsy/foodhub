@@ -13,6 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { RootStackParamList } from '../types';
 import { Button, Loading } from '../components';
 import { Theme } from '../constants/theme';
+import { Colors } from '../constants/colors';
 import { useAppDispatch, useAppSelector } from '../store';
 import {
   fetchUserProfile,
@@ -74,7 +75,7 @@ const UserProfileScreen: React.FC<Props> = ({ route }) => {
           <Image source={{ uri: currentProfile.avatar }} style={styles.avatar} />
         ) : (
           <View style={[styles.avatar, styles.avatarPlaceholder]}>
-            <Ionicons name="person" size={48} color={Theme.colors.textLight} />
+            <Ionicons name="person" size={48} color={Colors.textLight} />
           </View>
         )}
 
@@ -103,7 +104,7 @@ const UserProfileScreen: React.FC<Props> = ({ route }) => {
           <View style={styles.statDivider} />
 
           <View style={styles.statItem}>
-            <Text style={[styles.statValue, { color: Theme.colors.trust }]}>
+            <Text style={[styles.statValue, { color: Colors.trust }]}>
               {currentProfile.trustScore.toFixed(1)}
             </Text>
             <Text style={styles.statLabel}>Доверие</Text>
@@ -123,7 +124,7 @@ const UserProfileScreen: React.FC<Props> = ({ route }) => {
               style={styles.trustButton}
               onPress={() => setShowTrustRating(!showTrustRating)}
             >
-              <Ionicons name="shield-checkmark" size={24} color={Theme.colors.trust} />
+              <Ionicons name="shield-checkmark" size={24} color={Colors.trust} />
             </TouchableOpacity>
           </View>
         )}
@@ -151,7 +152,7 @@ const UserProfileScreen: React.FC<Props> = ({ route }) => {
       <View style={styles.contentContainer}>
         <Text style={styles.sectionTitle}>Отзывы</Text>
         <View style={styles.emptyState}>
-          <Ionicons name="chatbubbles-outline" size={48} color={Theme.colors.textLight} />
+          <Ionicons name="chatbubbles-outline" size={48} color={Colors.textLight} />
           <Text style={styles.emptyText}>Отзывов пока нет</Text>
         </View>
       </View>
@@ -162,12 +163,12 @@ const UserProfileScreen: React.FC<Props> = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Theme.colors.background,
+    backgroundColor: Colors.background,
   },
   header: {
     alignItems: 'center',
     padding: Theme.spacing.md,
-    backgroundColor: Theme.colors.surface,
+    backgroundColor: Colors.surface,
   },
   avatar: {
     width: 100,
@@ -176,26 +177,26 @@ const styles = StyleSheet.create({
     marginBottom: Theme.spacing.md,
   },
   avatarPlaceholder: {
-    backgroundColor: Theme.colors.border,
+    backgroundColor: Colors.border,
     justifyContent: 'center',
     alignItems: 'center',
   },
   username: {
     fontSize: Theme.fontSize.xxl,
     fontWeight: Theme.fontWeight.bold,
-    color: Theme.colors.text,
+    color: Colors.text,
     marginBottom: Theme.spacing.xs,
   },
   bio: {
     fontSize: Theme.fontSize.md,
-    color: Theme.colors.textSecondary,
+    color: Colors.textSecondary,
     textAlign: 'center',
     marginBottom: Theme.spacing.md,
     paddingHorizontal: Theme.spacing.md,
   },
   statsContainer: {
     flexDirection: 'row',
-    backgroundColor: Theme.colors.background,
+    backgroundColor: Colors.background,
     borderRadius: Theme.borderRadius.lg,
     padding: Theme.spacing.md,
     marginBottom: Theme.spacing.md,
@@ -207,16 +208,16 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: Theme.fontSize.xl,
     fontWeight: Theme.fontWeight.bold,
-    color: Theme.colors.text,
+    color: Colors.text,
     marginBottom: 4,
   },
   statLabel: {
     fontSize: Theme.fontSize.sm,
-    color: Theme.colors.textSecondary,
+    color: Colors.textSecondary,
   },
   statDivider: {
     width: 1,
-    backgroundColor: Theme.colors.border,
+    backgroundColor: Colors.border,
     marginHorizontal: Theme.spacing.md,
   },
   actionsContainer: {
@@ -231,22 +232,22 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: Theme.borderRadius.md,
-    backgroundColor: Theme.colors.background,
+    backgroundColor: Colors.background,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: Theme.colors.trust,
+    borderColor: Colors.trust,
   },
   trustRatingContainer: {
     width: '100%',
-    backgroundColor: Theme.colors.background,
+    backgroundColor: Colors.background,
     borderRadius: Theme.borderRadius.lg,
     padding: Theme.spacing.md,
     marginTop: Theme.spacing.md,
   },
   trustRatingTitle: {
     fontSize: Theme.fontSize.md,
-    color: Theme.colors.text,
+    color: Colors.text,
     textAlign: 'center',
     marginBottom: Theme.spacing.sm,
   },
@@ -258,14 +259,14 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: Theme.borderRadius.round,
-    backgroundColor: Theme.colors.trust,
+    backgroundColor: Colors.trust,
     justifyContent: 'center',
     alignItems: 'center',
   },
   trustRatingButtonText: {
     fontSize: Theme.fontSize.lg,
     fontWeight: Theme.fontWeight.bold,
-    color: Theme.colors.background,
+    color: Colors.background,
   },
   contentContainer: {
     padding: Theme.spacing.md,
@@ -273,7 +274,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: Theme.fontSize.xl,
     fontWeight: Theme.fontWeight.bold,
-    color: Theme.colors.text,
+    color: Colors.text,
     marginBottom: Theme.spacing.md,
   },
   emptyState: {
@@ -282,7 +283,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: Theme.fontSize.md,
-    color: Theme.colors.textSecondary,
+    color: Colors.textSecondary,
     marginTop: Theme.spacing.md,
   },
 });

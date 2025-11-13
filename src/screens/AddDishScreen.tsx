@@ -13,6 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { RootStackParamList } from '../types';
 import { Button, Input, ImageUploader } from '../components';
 import { Theme } from '../constants/theme';
+import { Colors } from '../constants/colors';
 import { useAppDispatch, useAppSelector } from '../store';
 import { addDish, fetchRestaurantMenu } from '../store/slices/dishSlice';
 import { checkDuplicateDish } from '../utils/duplicateChecker';
@@ -144,7 +145,7 @@ const AddDishScreen: React.FC<Props> = ({ route, navigation }) => {
 
         {duplicateWarning && (
           <View style={styles.warningContainer}>
-            <Ionicons name="warning" size={20} color={Theme.colors.warning} />
+            <Ionicons name="warning" size={20} color={Colors.warning} />
             <Text style={styles.warningText}>{duplicateWarning}</Text>
           </View>
         )}
@@ -197,7 +198,7 @@ const AddDishScreen: React.FC<Props> = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Theme.colors.background,
+    backgroundColor: Colors.background,
   },
   content: {
     padding: Theme.spacing.md,
@@ -205,7 +206,7 @@ const styles = StyleSheet.create({
   warningContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: `${Theme.colors.warning}20`,
+    backgroundColor: `${Colors.warning}20`,
     padding: Theme.spacing.md,
     borderRadius: Theme.borderRadius.md,
     marginBottom: Theme.spacing.md,
@@ -214,7 +215,7 @@ const styles = StyleSheet.create({
   warningText: {
     flex: 1,
     fontSize: Theme.fontSize.sm,
-    color: Theme.colors.text,
+    color: Colors.text,
     lineHeight: 18,
   },
   descriptionInput: {

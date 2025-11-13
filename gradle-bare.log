@@ -1,0 +1,39 @@
+> Task :expo-module-gradle-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :expo-module-gradle-plugin:pluginDescriptors UP-TO-DATE
+> Task :expo-module-gradle-plugin:processResources UP-TO-DATE
+> Task :gradle-plugin:compileKotlin UP-TO-DATE
+> Task :gradle-plugin:compileJava NO-SOURCE
+> Task :gradle-plugin:pluginDescriptors UP-TO-DATE
+> Task :gradle-plugin:processResources UP-TO-DATE
+> Task :gradle-plugin:classes UP-TO-DATE
+> Task :gradle-plugin:jar UP-TO-DATE
+> Task :gradle-plugin:inspectClassesForKotlinIC UP-TO-DATE
+
+> Task :expo-module-gradle-plugin:compileKotlin FAILED
+e: file:///Users/dmitrytsymlyakov/AndroidStudioProjects/FoodHub/node_modules/expo-modules-core/expo-module-gradle-plugin/src/main/kotlin/expo/modules/plugin/ExpoModulesGradlePlugin.kt:10:28 Unresolved reference 'extensions'.
+e: file:///Users/dmitrytsymlyakov/AndroidStudioProjects/FoodHub/node_modules/expo-modules-core/expo-module-gradle-plugin/src/main/kotlin/expo/modules/plugin/ExpoModulesGradlePlugin.kt:45:32 Unresolved reference 'extra'.
+e: file:///Users/dmitrytsymlyakov/AndroidStudioProjects/FoodHub/node_modules/expo-modules-core/expo-module-gradle-plugin/src/main/kotlin/expo/modules/plugin/ExpoModulesGradlePlugin.kt:50:32 Unresolved reference 'extra'.
+e: file:///Users/dmitrytsymlyakov/AndroidStudioProjects/FoodHub/node_modules/expo-modules-core/expo-module-gradle-plugin/src/main/kotlin/expo/modules/plugin/ProjectConfiguration.kt:18:28 Unresolved reference 'extensions'.
+e: file:///Users/dmitrytsymlyakov/AndroidStudioProjects/FoodHub/node_modules/expo-modules-core/expo-module-gradle-plugin/src/main/kotlin/expo/modules/plugin/ProjectConfiguration.kt:34:3 Unresolved reference 'extra'.
+e: file:///Users/dmitrytsymlyakov/AndroidStudioProjects/FoodHub/node_modules/expo-modules-core/expo-module-gradle-plugin/src/main/kotlin/expo/modules/plugin/ProjectConfiguration.kt:35:3 Unresolved reference 'extra'.
+e: file:///Users/dmitrytsymlyakov/AndroidStudioProjects/FoodHub/node_modules/expo-modules-core/expo-module-gradle-plugin/src/main/kotlin/expo/modules/plugin/ProjectConfiguration.kt:53:32 Unresolved reference 'extra'.
+e: file:///Users/dmitrytsymlyakov/AndroidStudioProjects/FoodHub/node_modules/expo-modules-core/expo-module-gradle-plugin/src/main/kotlin/expo/modules/plugin/ProjectConfiguration.kt:55:28 Unresolved reference 'extra'.
+e: file:///Users/dmitrytsymlyakov/AndroidStudioProjects/FoodHub/node_modules/expo-modules-core/expo-module-gradle-plugin/src/main/kotlin/expo/modules/plugin/ProjectConfiguration.kt:57:31 Unresolved reference 'extra'.
+e: file:///Users/dmitrytsymlyakov/AndroidStudioProjects/FoodHub/node_modules/expo-modules-core/expo-module-gradle-plugin/src/main/kotlin/expo/modules/plugin/gradle/ExpoModuleExtension.kt:10:28 Unresolved reference 'extensions'.
+e: file:///Users/dmitrytsymlyakov/AndroidStudioProjects/FoodHub/node_modules/expo-modules-core/expo-module-gradle-plugin/src/main/kotlin/expo/modules/plugin/gradle/ExpoModuleExtension.kt:34:32 Unresolved reference 'extra'.
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':expo-module-gradle-plugin:compileKotlin'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 7s
+8 actionable tasks: 1 executed, 7 up-to-date

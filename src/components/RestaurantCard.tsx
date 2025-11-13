@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Restaurant } from '../types';
 import { Theme } from '../constants/theme';
+import { Colors } from '../constants/colors';
 import { formatDistance, formatRating } from '../utils/formatters';
 
 interface RestaurantCardProps {
@@ -17,7 +18,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant, onPr
         <Image source={{ uri: restaurant.photos[0] }} style={styles.image} />
       ) : (
         <View style={[styles.image, styles.imagePlaceholder]}>
-          <Ionicons name="restaurant" size={40} color={Theme.colors.textLight} />
+          <Ionicons name="restaurant" size={40} color={Colors.textLight} />
         </View>
       )}
       
@@ -28,7 +29,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant, onPr
           </Text>
           {restaurant.averageRating && (
             <View style={styles.ratingBadge}>
-              <Ionicons name="star" size={14} color={Theme.colors.warning} />
+              <Ionicons name="star" size={14} color={Colors.warning} />
               <Text style={styles.ratingText}>
                 {formatRating(restaurant.averageRating)}
               </Text>
@@ -42,7 +43,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant, onPr
         
         <View style={styles.footer}>
           <View style={styles.locationContainer}>
-            <Ionicons name="location-outline" size={16} color={Theme.colors.textSecondary} />
+            <Ionicons name="location-outline" size={16} color={Colors.textSecondary} />
             <Text style={styles.distance}>
               {restaurant.distance ? formatDistance(restaurant.distance) : 'Неизвестно'}
             </Text>
@@ -62,7 +63,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant, onPr
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    backgroundColor: Theme.colors.card,
+    backgroundColor: Colors.card,
     borderRadius: Theme.borderRadius.lg,
     padding: Theme.spacing.md,
     marginBottom: Theme.spacing.md,
@@ -74,7 +75,7 @@ const styles = StyleSheet.create({
     borderRadius: Theme.borderRadius.md,
   },
   imagePlaceholder: {
-    backgroundColor: Theme.colors.surface,
+    backgroundColor: Colors.surface,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -92,13 +93,13 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: Theme.fontSize.lg,
     fontWeight: Theme.fontWeight.semibold,
-    color: Theme.colors.text,
+    color: Colors.text,
     marginRight: Theme.spacing.sm,
   },
   ratingBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Theme.colors.surface,
+    backgroundColor: Colors.surface,
     paddingHorizontal: Theme.spacing.sm,
     paddingVertical: Theme.spacing.xs,
     borderRadius: Theme.borderRadius.sm,
@@ -106,12 +107,12 @@ const styles = StyleSheet.create({
   ratingText: {
     fontSize: Theme.fontSize.sm,
     fontWeight: Theme.fontWeight.semibold,
-    color: Theme.colors.text,
+    color: Colors.text,
     marginLeft: 4,
   },
   cuisine: {
     fontSize: Theme.fontSize.md,
-    color: Theme.colors.textSecondary,
+    color: Colors.textSecondary,
     marginVertical: Theme.spacing.xs,
   },
   footer: {
@@ -125,12 +126,12 @@ const styles = StyleSheet.create({
   },
   distance: {
     fontSize: Theme.fontSize.sm,
-    color: Theme.colors.textSecondary,
+    color: Colors.textSecondary,
     marginLeft: 4,
   },
   reviewCount: {
     fontSize: Theme.fontSize.sm,
-    color: Theme.colors.textSecondary,
+    color: Colors.textSecondary,
   },
 });
 

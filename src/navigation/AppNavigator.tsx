@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAppDispatch, useAppSelector } from '../store';
 import { loadUser } from '../store/slices/authSlice';
 import { RootStackParamList } from '../types';
+import { Colors } from '../constants/colors';
 
 // Auth Screens
 import WelcomeScreen from '../screens/auth/WelcomeScreen';
@@ -21,13 +22,19 @@ import AddDishScreen from '../screens/AddDishScreen';
 import UserProfileScreen from '../screens/UserProfileScreen';
 import EditProfileScreen from '../screens/EditProfileScreen';
 
+// AI & Gamification Screens
+import TasteProfileScreen from '../screens/TasteProfileScreen';
+import AchievementsScreen from '../screens/AchievementsScreen';
+import RecommendationsScreen from '../screens/RecommendationsScreen';
+import ConnectivityTestScreen from '../screens/ConnectivityTestScreen';
+
 import { Loading } from '../components';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const AppNavigator: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { isAuthenticated, isLoading } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, isGuest, isLoading } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
     // Проверяем наличие сохраненного токена при запуске
@@ -45,7 +52,7 @@ const AppNavigator: React.FC = () => {
           headerShown: false,
         }}
       >
-        {!isAuthenticated ? (
+        {!isAuthenticated && !isGuest ? (
           // Auth Stack
           <>
             <Stack.Screen name="Welcome" component={WelcomeScreen} />
@@ -85,6 +92,46 @@ const AppNavigator: React.FC = () => {
               name="EditProfile"
               component={EditProfileScreen}
               options={{ headerShown: true, title: 'Редактировать профиль' }}
+            />
+            <Stack.Screen
+              name="TasteProfile"
+              component={TasteProfileScreen}
+              options={{ 
+                headerShown: true, 
+                title: 'Вкусовой профиль',
+                headerStyle: { backgroundColor: Colors.primary },
+                headerTintColor: Colors.textInverse,
+              }}
+            />
+            <Stack.Screen
+              name="Achievements"
+              component={AchievementsScreen}
+              options={{ 
+                headerShown: true, 
+                title: 'Достижения',
+                headerStyle: { backgroundColor: Colors.warning },
+                headerTintColor: Colors.textInverse,
+              }}
+            />
+            <Stack.Screen
+              name="Recommendations"
+              component={RecommendationsScreen}
+              options={{ 
+                headerShown: true, 
+                title: 'Рекомендации для вас',
+                headerStyle: { backgroundColor: Colors.secondary },
+                headerTintColor: Colors.textInverse,
+              }}
+            />
+            <Stack.Screen
+              name="ConnectivityTest"
+              component={ConnectivityTestScreen}
+              options={{ 
+                headerShown: true, 
+                title: '🔧 Тест подключения',
+                headerStyle: { backgroundColor: Colors.info },
+                headerTintColor: Colors.textInverse,
+              }}
             />
           </>
         )}
