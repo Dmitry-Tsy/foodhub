@@ -38,8 +38,29 @@ const AddDishScreen: React.FC<Props> = ({ route, navigation }) => {
 
   useEffect(() => {
     // Load existing dishes for duplicate checking
-    dispatch(fetchRestaurantMenu(restaurantId));
-  }, [restaurantId]);
+    // Сначала конвертируем Google Places ID в UUID если нужно
+    const loadMenu = async () => {
+      try {
+        let dbRestaurantId = restaurantId;
+        
+        // Если restaurantId похож на Google Places ID (начинается с ChIJ)
+        if (restaurantId.startsWith('ChIJ') && currentRestaurant) {
+          console.log('🔄 Конвертация Google Places ID в UUID для загрузки меню...');
+          dbRestaurantId = await getOrCreateRestaurantInDB(currentRestaurant);
+          console.log('✅ Получен UUID из БД для меню:', dbRestaurantId);
+        }
+        
+        dispatch(fetchRestaurantMenu(dbRestaurantId));
+      } catch (error: any) {
+        console.error('❌ Ошибка конвертации restaurantId для меню:', error);
+        // Попробуем загрузить с исходным ID (может быть уже UUID)
+        dispatch(fetchRestaurantMenu(restaurantId));
+      }
+    };
+    
+    loadMenu();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [restaurantId, currentRestaurant]);
 
   const checkForDuplicates = useCallback(
     async (dishName: string) => {
