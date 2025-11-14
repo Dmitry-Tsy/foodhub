@@ -27,6 +27,7 @@ import TasteProfileScreen from '../screens/TasteProfileScreen';
 import AchievementsScreen from '../screens/AchievementsScreen';
 import RecommendationsScreen from '../screens/RecommendationsScreen';
 import ConnectivityTestScreen from '../screens/ConnectivityTestScreen';
+import LogViewerScreen from '../screens/LogViewerScreen';
 
 import { Loading } from '../components';
 
@@ -130,6 +131,16 @@ const AppNavigator: React.FC = () => {
                 headerShown: true, 
                 title: '🔧 Тест подключения',
                 headerStyle: { backgroundColor: Colors.info },
+                headerTintColor: Colors.textInverse,
+              }}
+            />
+            <Stack.Screen
+              name="LogViewer"
+              component={LogViewerScreen}
+              options={{ 
+                headerShown: true, 
+                title: '📝 Логи приложения',
+                headerStyle: { backgroundColor: Colors.textSecondary },
                 headerTintColor: Colors.textInverse,
               }}
             />

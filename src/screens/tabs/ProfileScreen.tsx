@@ -19,6 +19,7 @@ import { Colors } from '../../constants/colors';
 import { useAppDispatch, useAppSelector } from '../../store';
 import { logout, exitGuestMode } from '../../store/slices/authSlice';
 import { formatCount } from '../../utils/formatters';
+import logger from '../../services/logger';
 
 type NavigationProp = CompositeNavigationProp<
   BottomTabNavigationProp<MainTabParamList, 'Profile'>,
@@ -34,6 +35,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
   const { user, isGuest } = useAppSelector((state) => state.auth);
 
   const handleLogout = () => {
+    logger.info('PROFILE', 'Попытка выхода');
     Alert.alert(
       'Выход',
       'Вы уверены, что хотите выйти?',
@@ -42,12 +44,15 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
         {
           text: 'Выйти',
           style: 'destructive',
-          onPress: () => dispatch(logout()),
+          onPress: () => {
+            logger.info('PROFILE', 'Выход подтвержден');
+            dispatch(logout());
+          },
         },
       ]
     );
   };
-
+  
   const menuItems = [
     {
       icon: 'restaurant' as const,
@@ -157,50 +162,88 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
     );
   }
 
-  return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <View style={styles.header}>
-        {user?.avatar ? (
-          <Image source={{ uri: user.avatar }} style={styles.avatar} />
-        ) : (
-          <View style={[styles.avatar, styles.avatarPlaceholder]}>
-            <Ionicons name="person" size={48} color={Colors.textLight} />
-          </View>
-        )}
-        
-        <Text style={styles.username}>{user?.username || 'Пользователь'}</Text>
-        <Text style={styles.email}>{user?.email || ''}</Text>
-        
-        <View style={styles.statsContainer}>
-          <View style={styles.statItem}>
-            <Text style={styles.statValue}>{formatCount(user?.followersCount || 0)}</Text>
-            <Text style={styles.statLabel}>Подписчики</Text>
-          </View>
-          
-          <View style={styles.statDivider} />
-          
-          <View style={styles.statItem}>
-            <Text style={styles.statValue}>{formatCount(user?.followingCount || 0)}</Text>
-            <Text style={styles.statLabel}>Подписки</Text>
-          </View>
-          
-          <View style={styles.statDivider} />
-          
-          <View style={styles.statItem}>
-            <Text style={[styles.statValue, { color: Colors.trust }]}>
-              {(user?.trustScore ?? 0).toFixed(1)}
-            </Text>
-            <Text style={styles.statLabel}>Доверие</Text>
-          </View>
+  // Вспомогательные функции для рендера (разбиение на функции помогает избежать проблем с рендерингом)
+  const renderHeader = () => {
+    try {
+      const avatarElement = user?.avatar ? (
+        <Image source={{ uri: user.avatar }} style={styles.avatar} />
+      ) : (
+        <View style={[styles.avatar, styles.avatarPlaceholder]}>
+          <Ionicons name="person" size={48} color={Colors.textLight} />
         </View>
-        
-        {user?.bio && (
-          <Text style={styles.bio}>{user.bio}</Text>
-        )}
-      </View>
+      );
 
-      <View style={styles.menuContainer}>
-        {menuItems.map((item, index) => (
+      const usernameText = user?.username || 'Пользователь';
+      const emailText = user?.email || '';
+
+      // Безопасная обработка formatCount
+      let followersFormatted, followingFormatted;
+      try {
+        followersFormatted = formatCount(user?.followersCount || 0);
+      } catch (e: any) {
+        logger.error('PROFILE', 'Ошибка formatCount followers', e);
+        followersFormatted = String(user?.followersCount || 0);
+      }
+
+      try {
+        followingFormatted = formatCount(user?.followingCount || 0);
+      } catch (e: any) {
+        logger.error('PROFILE', 'Ошибка formatCount following', e);
+        followingFormatted = String(user?.followingCount || 0);
+      }
+
+      const trustScoreText = (user?.trustScore ?? 0).toFixed(1);
+
+      return (
+        <View style={styles.header}>
+          {avatarElement}
+          <Text style={styles.username}>{usernameText}</Text>
+          <Text style={styles.email}>{emailText}</Text>
+          <View style={styles.statsContainer}>
+            <View style={styles.statItem}>
+              <Text style={styles.statValue}>{followersFormatted}</Text>
+              <Text style={styles.statLabel}>Подписчики</Text>
+            </View>
+            <View style={styles.statDivider} />
+            <View style={styles.statItem}>
+              <Text style={styles.statValue}>{followingFormatted}</Text>
+              <Text style={styles.statLabel}>Подписки</Text>
+            </View>
+            <View style={styles.statDivider} />
+            <View style={styles.statItem}>
+              <Text style={[styles.statValue, { color: Colors.trust }]}>
+                {trustScoreText}
+              </Text>
+              <Text style={styles.statLabel}>Доверие</Text>
+            </View>
+          </View>
+          {user?.bio && (
+            <Text style={styles.bio}>{user.bio}</Text>
+          )}
+        </View>
+      );
+    } catch (e: any) {
+      logger.error('PROFILE', 'Ошибка рендера header', {
+        error: e.message,
+        stack: e.stack,
+      });
+      return (
+        <View style={styles.header}>
+          <Text style={styles.username}>Ошибка загрузки</Text>
+        </View>
+      );
+    }
+  };
+
+  const renderMenu = () => {
+    try {
+      const menuElements = menuItems.map((item, index) => {
+        if (!item.icon) {
+          logger.error('PROFILE', `Menu item ${index} не имеет icon`);
+          return null;
+        }
+
+        return (
           <TouchableOpacity
             key={index}
             style={styles.menuItem}
@@ -217,17 +260,53 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
               color={Colors.textSecondary}
             />
           </TouchableOpacity>
-        ))}
-      </View>
+        );
+      });
 
-      <Button
-        title="Выйти"
-        onPress={handleLogout}
-        variant="outline"
-        style={styles.logoutButton}
-      />
-    </ScrollView>
-  );
+      return (
+        <View style={styles.menuContainer}>
+          {menuElements}
+        </View>
+      );
+    } catch (e: any) {
+      logger.error('PROFILE', 'Ошибка рендера menu', {
+        error: e.message,
+        stack: e.stack,
+      });
+      return (
+        <View style={styles.menuContainer}>
+          <Text style={styles.menuItemText}>Ошибка загрузки меню</Text>
+        </View>
+      );
+    }
+  };
+
+  try {
+    return (
+      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+        {renderHeader()}
+        {renderMenu()}
+        <Button
+          title="Выйти"
+          onPress={handleLogout}
+          variant="outline"
+          style={styles.logoutButton}
+        />
+      </ScrollView>
+    );
+  } catch (e: any) {
+    logger.error('PROFILE', 'Критическая ошибка рендера', {
+      error: e.message,
+      stack: e.stack,
+    });
+    return (
+      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+        <View style={styles.header}>
+          <Text style={styles.username}>Ошибка загрузки профиля</Text>
+        </View>
+      </ScrollView>
+    );
+  }
 };
 
 const styles = StyleSheet.create({

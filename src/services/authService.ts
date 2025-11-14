@@ -1,5 +1,6 @@
 import { User, LoginCredentials, RegisterData } from '../types';
 import api from './api';
+import logger from './logger';
 
 interface AuthResponse {
   user: User;
@@ -9,17 +10,15 @@ interface AuthResponse {
 // Реальный API для авторизации
 export const login = async (credentials: LoginCredentials): Promise<AuthResponse> => {
   try {
-    console.log('🔐 Авторизация:', credentials.email);
-    console.log('📡 Login attempt');
+    logger.info('AUTH', `Попытка входа: ${credentials.email}`);
     const response = await api.post<AuthResponse>('/auth/login', credentials);
-    console.log('✅ Авторизация успешна:', response.user?.username);
+    logger.info('AUTH', `Авторизация успешна: ${response.user?.username}`);
     return response;
   } catch (error: any) {
-    console.error('❌ Ошибка авторизации:', {
+    logger.error('AUTH', 'Ошибка авторизации', {
       message: error.message,
       response: error.response?.data,
       status: error.response?.status,
-      url: error.config?.url,
     });
     
     // Более подробные сообщения об ошибках
@@ -33,13 +32,12 @@ export const login = async (credentials: LoginCredentials): Promise<AuthResponse
 
 export const register = async (data: RegisterData): Promise<AuthResponse> => {
   try {
-    console.log('📝 Регистрация:', data.email);
-    console.log('📡 Register attempt');
+    logger.info('AUTH', `Попытка регистрации: ${data.email}`);
     const response = await api.post<AuthResponse>('/auth/register', data);
-    console.log('✅ Регистрация успешна:', response.user?.username);
+    logger.info('AUTH', `Регистрация успешна: ${response.user?.username}`);
     return response;
   } catch (error: any) {
-    console.error('❌ Ошибка регистрации:', {
+    logger.error('AUTH', 'Ошибка регистрации', {
       message: error.message,
       response: error.response?.data,
       status: error.response?.status,
@@ -55,36 +53,36 @@ export const register = async (data: RegisterData): Promise<AuthResponse> => {
 
 export const getCurrentUser = async (token: string): Promise<User> => {
   try {
-    console.log('👤 Загрузка профиля пользователя');
+    logger.debug('AUTH', 'Загрузка профиля пользователя');
     // Пробуем /auth/profile, если 404 - пробуем /auth/me (для обратной совместимости)
     try {
       const response = await api.get<{ user: User }>('/auth/profile');
-      console.log('✅ Профиль загружен:', response.user.username);
+      logger.info('AUTH', `Профиль загружен: ${response.user.username}`);
       return response.user;
     } catch (profileError: any) {
       if (profileError.response?.status === 404) {
         // Fallback на /auth/me если /profile еще не задеплоен
-        console.log('⚠️ Fallback на /auth/me');
+        logger.warn('AUTH', 'Fallback на /auth/me (endpoint /profile не найден)');
         const response = await api.get<{ user: User }>('/auth/me');
-        console.log('✅ Профиль загружен (через /me):', response.user.username);
+        logger.info('AUTH', `Профиль загружен через /me: ${response.user.username}`);
         return response.user;
       }
       throw profileError;
     }
   } catch (error: any) {
-    console.error('❌ Ошибка загрузки профиля:', error.response?.data || error.message);
+    logger.error('AUTH', 'Ошибка загрузки профиля', error.response?.data || error.message);
     throw new Error(error.response?.data?.message || 'Ошибка загрузки профиля. Проверьте подключение к серверу.');
   }
 };
 
 export const updateProfile = async (userId: string, updates: Partial<User>): Promise<User> => {
   try {
-    console.log('✏️ Обновление профиля');
+    logger.info('AUTH', 'Обновление профиля', updates);
     const response = await api.put<{ user: User }>('/auth/profile', updates);
-    console.log('✅ Профиль обновлен');
+    logger.info('AUTH', `Профиль обновлен: ${response.user.username}`);
     return response.user;
   } catch (error: any) {
-    console.error('❌ Ошибка обновления профиля:', error.response?.data || error.message);
+    logger.error('AUTH', 'Ошибка обновления профиля', error.response?.data || error.message);
     throw new Error(error.response?.data?.message || 'Ошибка обновления профиля');
   }
 };

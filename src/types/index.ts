@@ -153,12 +153,14 @@ export type RootStackParamList = {
   Achievements: undefined;
   Recommendations: undefined;
   ConnectivityTest: undefined;
+  LogViewer: undefined;
 };
 
 export type MainTabParamList = {
   Search: undefined;
   Add: undefined;
   Feed: undefined;
+  Logs: undefined;
   Profile: undefined;
 };
 

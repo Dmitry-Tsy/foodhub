@@ -9,6 +9,7 @@ import SearchScreen from '../screens/tabs/SearchScreen';
 import AddScreen from '../screens/tabs/AddScreen';
 import FeedScreen from '../screens/tabs/FeedScreen';
 import ProfileScreen from '../screens/tabs/ProfileScreen';
+import LogViewerScreen from '../screens/LogViewerScreen';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
@@ -25,6 +26,8 @@ const MainTabNavigator: React.FC = () => {
             iconName = focused ? 'add-circle' : 'add-circle-outline';
           } else if (route.name === 'Feed') {
             iconName = focused ? 'newspaper' : 'newspaper-outline';
+          } else if (route.name === 'Logs') {
+            iconName = focused ? 'document-text' : 'document-text-outline';
           } else if (route.name === 'Profile') {
             iconName = focused ? 'person' : 'person-outline';
           } else {
@@ -64,6 +67,14 @@ const MainTabNavigator: React.FC = () => {
         name="Feed"
         component={FeedScreen}
         options={{ title: 'Лента' }}
+      />
+      <Tab.Screen
+        name="Logs"
+        component={LogViewerScreen}
+        options={{ 
+          title: 'Логи',
+          headerShown: false, // LogViewerScreen имеет свой header
+        }}
       />
       <Tab.Screen
         name="Profile"

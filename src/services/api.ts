@@ -1,17 +1,20 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import * as secureStorage from './secureStorage';
-import { getApiUrl } from '../config/api.config';
+import { getApiUrl, getCurrentConfig } from '../config/api.config';
+import logger from './logger';
 
 // Автоматическое определение: эмулятор или реальное устройство
 // Измените isEmulator на false если используете реальное устройство
 const isEmulator = true; // true = эмулятор, false = реальное устройство
 
 const API_BASE_URL = getApiUrl(isEmulator);
+const config = getCurrentConfig(isEmulator);
 
-// Логирование для отладки
-console.log('📡 API Configuration:', {
-  baseUrl: API_BASE_URL,
-  isEmulator,
+// Логирование конфигурации
+logger.info('API', 'API инициализирован', {
+  environment: config.environment,
+  baseUrl: config.baseUrl,
+  isEmulator: config.isEmulator,
 });
 
 class ApiService {
