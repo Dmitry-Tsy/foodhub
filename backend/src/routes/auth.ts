@@ -113,6 +113,29 @@ router.get('/me', authenticate, getCurrentUser);
 /**
  * @swagger
  * /api/auth/profile:
+ *   get:
+ *     tags: [Auth]
+ *     summary: Получить профиль текущего пользователя (alias для /me)
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Профиль пользователя
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user:
+ *                   $ref: '#/components/schemas/User'
+ *       401:
+ *         description: Не авторизован
+ */
+router.get('/profile', authenticate, getCurrentUser);
+
+/**
+ * @swagger
+ * /api/auth/profile:
  *   put:
  *     tags: [Auth]
  *     summary: Обновить профиль пользователя

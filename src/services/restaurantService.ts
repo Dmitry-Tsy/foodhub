@@ -1,6 +1,7 @@
 import { Restaurant, Location } from '../types';
 import { mockRestaurants, simulateDelay } from './mockData';
 import * as googlePlacesService from './googlePlacesService';
+import api from './api';
 
 // Вычисление расстояния между двумя точками (формула Haversine)
 const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
@@ -162,5 +163,33 @@ export const getRestaurantsByCuisine = async (cuisineType: string): Promise<Rest
   return mockRestaurants.filter(r => 
     r.cuisineType.toLowerCase() === cuisineType.toLowerCase()
   );
+};
+
+/**
+ * Получить или создать ресторан в БД
+ * Конвертирует Google Places ID в UUID из нашей базы
+ */
+export const getOrCreateRestaurantInDB = async (restaurant: Restaurant): Promise<string> => {
+  try {
+    console.log('🏪 Получение/создание ресторана в БД:', restaurant.name);
+    
+    // Отправляем данные ресторана на backend
+    const response = await api.post<{ restaurant: { id: string } }>('/restaurants', {
+      googlePlaceId: restaurant.id, // Google Places ID
+      name: restaurant.name,
+      address: restaurant.address,
+      phone: restaurant.phone,
+      latitude: restaurant.location.latitude,
+      longitude: restaurant.location.longitude,
+      cuisineType: restaurant.cuisineType,
+      photos: restaurant.photos,
+    });
+    
+    console.log('✅ Ресторан в БД, UUID:', response.restaurant.id);
+    return response.restaurant.id; // Возвращаем UUID из базы
+  } catch (error: any) {
+    console.error('❌ Ошибка создания ресторана в БД:', error);
+    throw new Error('Не удалось создать ресторан в базе данных');
+  }
 };
 

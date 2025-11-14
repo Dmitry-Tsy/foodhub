@@ -17,6 +17,7 @@ import { Colors } from '../constants/colors';
 import { useAppDispatch, useAppSelector } from '../store';
 import { addDish, fetchRestaurantMenu } from '../store/slices/dishSlice';
 import { checkDuplicateDish } from '../utils/duplicateChecker';
+import { getOrCreateRestaurantInDB } from '../services/restaurantService';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'AddDish'>;
 
@@ -25,6 +26,7 @@ const AddDishScreen: React.FC<Props> = ({ route, navigation }) => {
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
   const { dishes, isLoading } = useAppSelector((state) => state.dishes);
+  const { currentRestaurant } = useAppSelector((state) => state.restaurants);
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -103,11 +105,21 @@ const AddDishScreen: React.FC<Props> = ({ route, navigation }) => {
 
   const submitDish = async () => {
     try {
+      // Сначала получаем/создаем ресторан в БД чтобы получить UUID
+      let dbRestaurantId = restaurantId;
+      
+      // Если restaurantId похож на Google Places ID (начинается с ChIJ)
+      if (restaurantId.startsWith('ChIJ') && currentRestaurant) {
+        console.log('🔄 Конвертация Google Places ID в UUID...');
+        dbRestaurantId = await getOrCreateRestaurantInDB(currentRestaurant);
+        console.log('✅ Получен UUID из БД:', dbRestaurantId);
+      }
+
       await dispatch(
         addDish({
           name: name.trim(),
           description: description.trim() || undefined,
-          restaurantId,
+          restaurantId: dbRestaurantId, // Используем UUID из БД
           // addedBy берется из токена на backend автоматически
           price: price ? Number(price) : undefined,
           category: category.trim() || undefined,
@@ -122,6 +134,7 @@ const AddDishScreen: React.FC<Props> = ({ route, navigation }) => {
         },
       ]);
     } catch (error: any) {
+      console.error('❌ Ошибка добавления блюда:', error);
       Alert.alert('Ошибка', error || 'Не удалось добавить блюдо');
     }
   };

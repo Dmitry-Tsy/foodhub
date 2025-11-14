@@ -56,12 +56,24 @@ export const register = async (data: RegisterData): Promise<AuthResponse> => {
 export const getCurrentUser = async (token: string): Promise<User> => {
   try {
     console.log('👤 Загрузка профиля пользователя');
-    const response = await api.get<{ user: User }>('/auth/profile');
-    console.log('✅ Профиль загружен:', response.user.username);
-    return response.user;
+    // Пробуем /auth/profile, если 404 - пробуем /auth/me (для обратной совместимости)
+    try {
+      const response = await api.get<{ user: User }>('/auth/profile');
+      console.log('✅ Профиль загружен:', response.user.username);
+      return response.user;
+    } catch (profileError: any) {
+      if (profileError.response?.status === 404) {
+        // Fallback на /auth/me если /profile еще не задеплоен
+        console.log('⚠️ Fallback на /auth/me');
+        const response = await api.get<{ user: User }>('/auth/me');
+        console.log('✅ Профиль загружен (через /me):', response.user.username);
+        return response.user;
+      }
+      throw profileError;
+    }
   } catch (error: any) {
     console.error('❌ Ошибка загрузки профиля:', error.response?.data || error.message);
-    throw new Error(error.response?.data?.message || 'Ошибка загрузки профиля');
+    throw new Error(error.response?.data?.message || 'Ошибка загрузки профиля. Проверьте подключение к серверу.');
   }
 };
 
