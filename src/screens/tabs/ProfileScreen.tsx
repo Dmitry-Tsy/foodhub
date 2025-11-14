@@ -168,8 +168,8 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
           </View>
         )}
         
-        <Text style={styles.username}>{user?.username}</Text>
-        <Text style={styles.email}>{user?.email}</Text>
+        <Text style={styles.username}>{user?.username || 'Пользователь'}</Text>
+        <Text style={styles.email}>{user?.email || ''}</Text>
         
         <View style={styles.statsContainer}>
           <View style={styles.statItem}>
@@ -188,7 +188,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
           
           <View style={styles.statItem}>
             <Text style={[styles.statValue, { color: Colors.trust }]}>
-              {user?.trustScore.toFixed(1)}
+              {(user?.trustScore ?? 0).toFixed(1)}
             </Text>
             <Text style={styles.statLabel}>Доверие</Text>
           </View>

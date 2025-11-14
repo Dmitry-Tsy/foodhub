@@ -30,20 +30,19 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
       
       <View style={styles.content}>
         <View style={styles.logoContainer}>
-          <Text style={styles.logo}>🍽️</Text>
+          <Image 
+            source={require('../../../assets/icon.png')} 
+            style={styles.logoImage}
+            resizeMode="contain"
+          />
           <Text style={styles.title}>FoodHub</Text>
           <Text style={styles.subtitle}>
             Оценивайте блюда, делитесь впечатлениями и находите лучшие рестораны
           </Text>
         </View>
         
-        <View style={styles.illustrationContainer}>
-          <Text style={styles.illustration}>
-            🍕 🍣 🍜{'\n'}
-            🍔 ⭐ 🍰{'\n'}
-            🥗 🍷 ☕
-          </Text>
-        </View>
+        {/* Spacer для центрирования */}
+        <View style={styles.spacer} />
         
         <View style={styles.buttonContainer}>
           <Button
@@ -90,8 +89,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: Theme.spacing.xxl,
   },
-  logo: {
-    fontSize: 80,
+  logoImage: {
+    width: 120,
+    height: 120,
     marginBottom: Theme.spacing.md,
   },
   title: {
@@ -106,14 +106,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 22,
   },
-  illustrationContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  illustration: {
-    fontSize: 48,
-    textAlign: 'center',
-    lineHeight: 60,
+  spacer: {
+    flex: 1,
   },
   buttonContainer: {
     gap: Theme.spacing.md,

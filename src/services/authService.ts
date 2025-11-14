@@ -10,7 +10,7 @@ interface AuthResponse {
 export const login = async (credentials: LoginCredentials): Promise<AuthResponse> => {
   try {
     console.log('🔐 Авторизация:', credentials.email);
-    console.log('📡 API URL:', 'http://192.168.31.212:3000/api/auth/login');
+    console.log('📡 Login attempt');
     const response = await api.post<AuthResponse>('/auth/login', credentials);
     console.log('✅ Авторизация успешна:', response.user?.username);
     return response;
@@ -24,7 +24,7 @@ export const login = async (credentials: LoginCredentials): Promise<AuthResponse
     
     // Более подробные сообщения об ошибках
     if (error.message === 'Network Error' || error.code === 'ECONNABORTED') {
-      throw new Error('Не удается подключиться к серверу. Убедитесь что бэкенд запущен на http://192.168.31.212:3000');
+      throw new Error('Не удается подключиться к серверу. Проверьте подключение к интернету.');
     }
     
     throw new Error(error.response?.data?.error || error.response?.data?.message || 'Ошибка входа');
@@ -34,7 +34,7 @@ export const login = async (credentials: LoginCredentials): Promise<AuthResponse
 export const register = async (data: RegisterData): Promise<AuthResponse> => {
   try {
     console.log('📝 Регистрация:', data.email);
-    console.log('📡 API URL:', 'http://192.168.31.212:3000/api/auth/register');
+    console.log('📡 Register attempt');
     const response = await api.post<AuthResponse>('/auth/register', data);
     console.log('✅ Регистрация успешна:', response.user?.username);
     return response;

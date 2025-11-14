@@ -33,10 +33,12 @@ yarn-error.log
 Thumbs.db
 
 # Android
-*.apk
-*.aab
 android/app/build/
+android/app/debug.keystore
 android/.gradle/
+android/build/
+app/build/
+local.properties
 
 # iOS
 ios/Pods/
@@ -47,3 +49,37 @@ ios/Pods/
 
 # TypeScript
 *.tsbuildinfo
+
+# ============================================
+# Project organization
+# ============================================
+
+# Builds folder - APK files stored here
+builds/*.apk
+builds/*.aab
+!builds/README.md
+!builds/.gitkeep
+
+# Logs folder - log files stored here
+logs/*.log
+logs/**/*.log
+!logs/README.md
+!logs/.gitkeep
+
+# Backend artifacts
+backend/dist/
+backend/*.log
+
+# ============================================
+# Temporary files
+# ============================================
+
+# Build scripts (временные)
+build-*.sh
+*.sh
+!gradlew
+!gradlew.bat
+
+# Patch files
+*.patch
+*.orig

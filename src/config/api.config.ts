@@ -7,7 +7,7 @@
 export type Environment = 'local' | 'production';
 
 // 🔧 ИЗМЕНИТЕ ЭТУ НАСТРОЙКУ ДЛЯ ПЕРЕКЛЮЧЕНИЯ МЕЖДУ ОКРУЖЕНИЯМИ
-export const CURRENT_ENV: Environment = 'local'; // 'local' или 'production'
+export const CURRENT_ENV: Environment = 'production'; // 'local' или 'production'
 
 export const API_CONFIG = {
   local: {
@@ -17,8 +17,8 @@ export const API_CONFIG = {
     device: 'http://192.168.31.212:3000',
   },
   production: {
-    // Ваш Render URL (будет доступен после деплоя)
-    url: 'https://foodhub-backend.onrender.com',
+    // Ваш Render URL
+    url: 'https://foodhub-backend-96im.onrender.com',
   },
 };
 

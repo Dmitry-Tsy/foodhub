@@ -108,7 +108,7 @@ const AddDishScreen: React.FC<Props> = ({ route, navigation }) => {
           name: name.trim(),
           description: description.trim() || undefined,
           restaurantId,
-          addedBy: user?.id,
+          // addedBy берется из токена на backend автоматически
           price: price ? Number(price) : undefined,
           category: category.trim() || undefined,
           photo: photo[0],

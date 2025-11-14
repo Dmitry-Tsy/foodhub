@@ -113,7 +113,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
               <View style={styles.errorContainer}>
                 <Text style={styles.errorText}>⚠️ {error}</Text>
                 <Text style={styles.errorHint}>
-                  Проверьте подключение к серверу (http://192.168.31.212:3000)
+                  Проверьте подключение к интернету
                 </Text>
               </View>
             )}

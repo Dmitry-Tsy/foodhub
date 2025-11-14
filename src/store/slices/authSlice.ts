@@ -6,7 +6,7 @@ import * as secureStorage from '../../services/secureStorage';
 const initialState: AuthState = {
   user: null,
   token: null,
-  isLoading: false,
+  isLoading: true, // Показываем loading пока проверяем сохраненный токен
   isAuthenticated: false,
   isGuest: false,
   error: null,
@@ -56,13 +56,18 @@ export const loadUser = createAsyncThunk(
     try {
       const token = await secureStorage.getToken();
       if (!token) {
-        return rejectWithValue('Нет токена');
+        // Токена нет - это нормально, пользователь просто не входил
+        return rejectWithValue({ type: 'NO_TOKEN' });
       }
       const user = await authService.getCurrentUser(token);
       return { user, token };
     } catch (error: any) {
+      // Ошибка при загрузке - токен может быть невалидным
       await secureStorage.deleteToken();
-      return rejectWithValue(error.message || 'Ошибка загрузки пользователя');
+      return rejectWithValue({ 
+        type: 'ERROR', 
+        message: error.message || 'Ошибка загрузки пользователя' 
+      });
     }
   }
 );
@@ -99,12 +104,14 @@ const authSlice = createSlice({
       .addCase(login.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isAuthenticated = true;
+        state.isGuest = false; // Убираем режим гостя при логине
         state.user = action.payload.user;
         state.token = action.payload.token;
         state.error = null;
       })
       .addCase(login.rejected, (state, action) => {
         state.isLoading = false;
+        state.isAuthenticated = false;
         state.error = action.payload as string;
       });
 
@@ -117,12 +124,14 @@ const authSlice = createSlice({
       .addCase(register.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isAuthenticated = true;
+        state.isGuest = false; // Убираем режим гостя при регистрации
         state.user = action.payload.user;
         state.token = action.payload.token;
         state.error = null;
       })
       .addCase(register.rejected, (state, action) => {
         state.isLoading = false;
+        state.isAuthenticated = false;
         state.error = action.payload as string;
       });
 
@@ -138,16 +147,23 @@ const authSlice = createSlice({
     // Load User
     builder
       .addCase(loadUser.pending, (state) => {
-        state.isLoading = true;
+        // Не меняем isLoading - он уже true из initialState
       })
       .addCase(loadUser.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isAuthenticated = true;
         state.user = action.payload.user;
         state.token = action.payload.token;
+        state.error = null;
       })
-      .addCase(loadUser.rejected, (state) => {
+      .addCase(loadUser.rejected, (state, action: any) => {
         state.isLoading = false;
+        // Если просто нет токена - это нормально
+        // Если ошибка - показываем её
+        if (action.payload?.type === 'ERROR') {
+          state.error = action.payload.message;
+        }
+        // В любом случае пользователь не аутентифицирован
         state.isAuthenticated = false;
         state.user = null;
         state.token = null;

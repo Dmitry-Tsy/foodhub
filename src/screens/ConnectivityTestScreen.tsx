@@ -129,7 +129,7 @@ const ConnectivityTestScreen = () => {
           </Text>
           <Text style={styles.helpText}>
             2. Проверьте в браузере телефона:{'\n'}
-               http://192.168.31.212:3000/health
+               {API_BASE_URL}/health
           </Text>
           <Text style={styles.helpText}>
             3. Устройство и компьютер должны быть в одной Wi-Fi сети!
