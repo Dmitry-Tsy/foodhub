@@ -37,22 +37,78 @@ class Logger {
 
   /**
    * Инициализация - загрузка сохраненных логов
+   * Добавлен таймаут и защита от зависаний на Android 15
    */
   async init() {
     if (this.isInitialized) return;
     
+    // Флаг для предотвращения повторных вызовов
+    if ((this as any)._isInitializing) {
+      // Ждем завершения текущей инициализации
+      return new Promise<void>((resolve) => {
+        const checkInterval = setInterval(() => {
+          if (this.isInitialized) {
+            clearInterval(checkInterval);
+            resolve();
+          }
+        }, 50);
+        // Таймаут на случай зависания
+        setTimeout(() => {
+          clearInterval(checkInterval);
+          resolve();
+        }, 3000);
+      });
+    }
+    
+    (this as any)._isInitializing = true;
+    
     try {
-      const savedLogs = await AsyncStorage.getItem(LOG_STORAGE_KEY);
-      if (savedLogs) {
-        this.logs = JSON.parse(savedLogs);
-        // Очистка старых логов
-        this.cleanOldLogs();
-      }
+      // Таймаут для AsyncStorage на Android 15
+      const initPromise = (async () => {
+        try {
+          const savedLogs = await AsyncStorage.getItem(LOG_STORAGE_KEY);
+          if (savedLogs) {
+            try {
+              const parsed = JSON.parse(savedLogs);
+              if (Array.isArray(parsed)) {
+                this.logs = parsed;
+                // Очистка старых логов
+                this.cleanOldLogs();
+              } else {
+                this.logs = [];
+              }
+            } catch (parseError) {
+              console.error('❌ Ошибка парсинга логов:', parseError);
+              this.logs = [];
+            }
+          } else {
+            this.logs = [];
+          }
+        } catch (storageError) {
+          console.error('❌ Ошибка AsyncStorage при инициализации:', storageError);
+          this.logs = [];
+        }
+      })();
+      
+      // Таймаут 5 секунд для инициализации
+      const timeoutPromise = new Promise<void>((resolve) => {
+        setTimeout(() => {
+          console.warn('⚠️ Таймаут инициализации logger, используем пустой массив');
+          this.logs = [];
+          resolve();
+        }, 5000);
+      });
+      
+      await Promise.race([initPromise, timeoutPromise]);
+      
       this.isInitialized = true;
       console.log('✅ Logger initialized, logs:', this.logs.length);
     } catch (error) {
-      console.error('❌ Error initializing logger:', error);
+      console.error('❌ Критическая ошибка инициализации logger:', error);
       this.logs = [];
+      this.isInitialized = true; // Все равно помечаем как инициализированный
+    } finally {
+      (this as any)._isInitializing = false;
     }
   }
 
@@ -119,12 +175,23 @@ class Logger {
 
   /**
    * Сохранение логов в AsyncStorage
+   * Добавлен таймаут для защиты от зависаний
    */
   private async saveLogs() {
     try {
-      await AsyncStorage.setItem(LOG_STORAGE_KEY, JSON.stringify(this.logs));
+      // Не блокируем приложение при сохранении
+      const savePromise = AsyncStorage.setItem(LOG_STORAGE_KEY, JSON.stringify(this.logs));
+      const timeoutPromise = new Promise<void>((resolve) => {
+        setTimeout(() => {
+          console.warn('⚠️ Таймаут сохранения логов, пропускаем');
+          resolve();
+        }, 2000);
+      });
+      
+      await Promise.race([savePromise, timeoutPromise]);
     } catch (error) {
       console.error('Error saving logs:', error);
+      // Не бросаем ошибку, просто логируем
     }
   }
 
@@ -297,8 +364,9 @@ class Logger {
 // Singleton instance
 const logger = new Logger();
 
-// Инициализируем при импорте
-logger.init();
+// НЕ инициализируем при импорте - это может вызывать проблемы на Android 15
+// Инициализация будет происходить при первом вызове getAllLogs() или getStats()
+// logger.init(); // УБРАНО - вызывается лениво
 
 export default logger;
 

@@ -28,17 +28,20 @@ const LogViewerScreen = () => {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    // Устанавливаем флаг монтирования после первого рендера
+    console.log('📝 LogViewer: useEffect - монтирование компонента');
+    
+    // Устанавливаем флаг монтирования
     setIsMounted(true);
-    // Загружаем логи с небольшой задержкой для Android 15
-    const timer = setTimeout(() => {
-      loadLogsAndStats();
-    }, 100);
+    
+    // Загружаем логи сразу (задержка не нужна, она вызывала проблемы)
+    console.log('📝 LogViewer: Запускаю loadLogsAndStats...');
+    loadLogsAndStats();
     
     return () => {
-      clearTimeout(timer);
+      console.log('📝 LogViewer: useEffect cleanup - размонтирование компонента');
       setIsMounted(false);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -47,41 +50,83 @@ const LogViewerScreen = () => {
     // Защита от выполнения до загрузки логов
     if (isLoading) return;
     
-    filterLogs();
+    try {
+      filterLogs();
+    } catch (err: any) {
+      console.error('❌ Ошибка в filterLogs:', err);
+      // Устанавливаем пустой массив при ошибке
+      setFilteredLogs([]);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [logs, selectedLevel, searchQuery, isMounted, isLoading]);
 
   const loadLogsAndStats = async () => {
+    console.log('📝 LogViewer: Начинаю загрузку логов...');
+    
     try {
       setIsLoading(true);
       setError(null);
       
-      // Защита от выполнения после размонтирования
-      if (!isMounted) return;
+      // Загружаем логи и статистику с защитой от ошибок и таймаутом
+      let allLogs: LogEntry[] = [];
+      let logStats: any = { total: 0, error: 0, warn: 0, info: 0, debug: 0 };
       
-      const [allLogs, logStats] = await Promise.all([
-        logger.getAllLogs(),
-        logger.getStats(),
-      ]);
+      // Загрузка логов с таймаутом
+      try {
+        console.log('📝 LogViewer: Вызываю logger.getAllLogs()...');
+        const logsPromise = logger.getAllLogs();
+        const logsTimeout = new Promise<LogEntry[]>((resolve) => {
+          setTimeout(() => {
+            console.warn('⚠️ Таймаут getAllLogs, возвращаем пустой массив');
+            resolve([]);
+          }, 3000); // 3 секунды таймаут
+        });
+        allLogs = await Promise.race([logsPromise, logsTimeout]);
+        console.log('📝 LogViewer: getAllLogs() завершен', { count: Array.isArray(allLogs) ? allLogs.length : 0 });
+      } catch (err: any) {
+        console.error('❌ Ошибка getAllLogs:', err);
+        allLogs = [];
+      }
       
-      // Проверяем монтирование перед установкой состояния
-      if (!isMounted) return;
+      // Загрузка статистики с таймаутом
+      try {
+        console.log('📝 LogViewer: Вызываю logger.getStats()...');
+        const statsPromise = logger.getStats();
+        const statsTimeout = new Promise<any>((resolve) => {
+          setTimeout(() => {
+            console.warn('⚠️ Таймаут getStats, возвращаем дефолтные значения');
+            resolve({ total: 0, error: 0, warn: 0, info: 0, debug: 0 });
+          }, 3000); // 3 секунды таймаут
+        });
+        logStats = await Promise.race([statsPromise, statsTimeout]);
+        console.log('📝 LogViewer: getStats() завершен', { hasStats: !!logStats });
+      } catch (err: any) {
+        console.error('❌ Ошибка getStats:', err);
+        logStats = { total: 0, error: 0, warn: 0, info: 0, debug: 0 };
+      }
       
+      // ВСЕГДА обновляем состояние, даже если логи пустые
+      console.log('📝 LogViewer: Обновляю состояние...', {
+        logsCount: Array.isArray(allLogs) ? allLogs.length : 0,
+        isMounted,
+      });
+      
+      // Обновляем состояние БЕЗ проверки isMounted - React сам обработает
       setLogs(Array.isArray(allLogs) ? allLogs : []);
       setStats(logStats || { total: 0, error: 0, warn: 0, info: 0, debug: 0 });
+      console.log('📝 LogViewer: Состояние обновлено успешно');
+      
     } catch (err: any) {
-      console.error('❌ Ошибка загрузки логов:', err);
-      
-      // Проверяем монтирование перед установкой ошибки
-      if (!isMounted) return;
-      
-      setError(err.message || 'Ошибка загрузки логов');
+      console.error('❌ Критическая ошибка загрузки логов:', err);
+      // Даже при ошибке показываем пустые данные
       setLogs([]);
       setStats({ total: 0, error: 0, warn: 0, info: 0, debug: 0 });
+      setError(err.message || 'Ошибка загрузки логов');
     } finally {
-      if (isMounted) {
-        setIsLoading(false);
-      }
+      // КРИТИЧНО: ВСЕГДА снимаем флаг загрузки в finally, БЕЗ проверки isMounted
+      // React сам проверит монтирование и проигнорирует setState на размонтированном компоненте
+      console.log('📝 LogViewer: Устанавливаю isLoading = false (finally)');
+      setIsLoading(false);
     }
   };
 
@@ -235,13 +280,18 @@ const LogViewerScreen = () => {
 
   const renderLogItem = ({ item, index }: { item: LogEntry; index: number }) => {
     try {
+      // Защита от null/undefined
+      if (!item) {
+        return null;
+      }
+
       const isExpanded = expandedIndex === index;
-      const color = getColorForLevel(item.level);
-      const icon = getIconForLevel(item.level);
+      const color = getColorForLevel(item.level || LogLevel.DEBUG);
+      const icon = getIconForLevel(item.level || LogLevel.DEBUG);
 
       // Безопасная сериализация данных
       const renderLogData = () => {
-        if (!item.data) return null;
+        if (!item || !item.data) return null;
         
         try {
           let dataString: string;
@@ -273,24 +323,29 @@ const LogViewerScreen = () => {
             </View>
           );
         } catch (e) {
-          return (
-            <View style={styles.logData}>
-              <Text style={styles.logDataLabel}>Ошибка отображения данных</Text>
-            </View>
-          );
+          return null;
+        }
+      };
+
+      // Безопасный обработчик нажатия
+      const handlePress = () => {
+        try {
+          setExpandedIndex(isExpanded ? null : index);
+        } catch (e) {
+          console.error('Ошибка при изменении expandedIndex:', e);
         }
       };
 
       return (
         <TouchableOpacity
           style={[styles.logItem, { borderLeftColor: color }]}
-          onPress={() => setExpandedIndex(isExpanded ? null : index)}
+          onPress={handlePress}
           activeOpacity={0.7}
         >
           <View style={styles.logHeader}>
             <Ionicons name={icon as any} size={16} color={color} />
-            <Text style={[styles.logLevel, { color }]}>{item.level}</Text>
-            <Text style={styles.logTime}>{formatTimestamp(item.timestamp)}</Text>
+            <Text style={[styles.logLevel, { color }]}>{item.level || 'N/A'}</Text>
+            <Text style={styles.logTime}>{formatTimestamp(item.timestamp || new Date().toISOString())}</Text>
           </View>
 
           <View style={styles.logContent}>
@@ -312,13 +367,10 @@ const LogViewerScreen = () => {
           )}
         </TouchableOpacity>
       );
-    } catch (e) {
-      // Fallback для проблемных элементов
-      return (
-        <View style={styles.logItem}>
-          <Text style={styles.logMessage}>Ошибка отображения лога</Text>
-        </View>
-      );
+    } catch (e: any) {
+      console.error('❌ Ошибка renderLogItem:', e);
+      // Fallback для проблемных элементов - возвращаем null вместо ошибки
+      return null;
     }
   };
 
@@ -368,12 +420,17 @@ const LogViewerScreen = () => {
     );
   }
 
-  // Показываем loading если загружаются логи
-  if (isLoading) {
+  // Показываем loading ТОЛЬКО если реально загружается И еще нет данных
+  // Это важно: если isLoading=true но данные уже есть (например после переключения вкладки),
+  // показываем данные, а не loading
+  if (isLoading && (!logs || logs.length === 0) && !error) {
     return (
       <View style={styles.container}>
         <View style={styles.loadingContainer}>
           <Text style={styles.loadingText}>Загрузка логов...</Text>
+          <Text style={[styles.loadingText, { fontSize: 12, marginTop: 10, opacity: 0.7 }]}>
+            Если загрузка долгая, попробуйте перезапустить приложение
+          </Text>
         </View>
       </View>
     );
@@ -508,76 +565,126 @@ const LogViewerScreen = () => {
     }
   };
 
-  // Финальная защита - проверяем что данные готовы
-  if (!isMounted || isLoading) {
-    return (
-      <View style={styles.container}>
-        <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Загрузка...</Text>
-        </View>
-      </View>
-    );
-  }
-
+  // Безопасный рендер с глобальной защитой
   try {
     // Убеждаемся что filteredLogs это массив
-    const safeFilteredLogs = Array.isArray(filteredLogs) ? filteredLogs : [];
+    const safeFilteredLogs = Array.isArray(filteredLogs) ? filteredLogs.filter(item => item != null) : [];
+    
+    console.log('📝 LogViewer: Рендеринг основного контента', {
+      filteredLogsCount: safeFilteredLogs.length,
+      isLoading,
+      hasError: !!error,
+    });
     
     return (
       <View style={styles.container}>
-        {renderHeader()}
-        {renderSearchBar()}
-        {renderFilters()}
+        {(() => {
+          try {
+            return renderHeader();
+          } catch (e) {
+            console.error('Ошибка renderHeader:', e);
+            return <View style={styles.header}><Text style={styles.title}>📝 Логи</Text></View>;
+          }
+        })()}
         
-        {safeFilteredLogs.length > 0 || !searchQuery ? (
-          <FlatList
-            data={safeFilteredLogs}
-            renderItem={renderLogItem}
-            keyExtractor={(item, index) => {
-              try {
-                return `${item.timestamp || Date.now()}-${item.category || 'N/A'}-${index}`;
-              } catch (e) {
-                return `log-${index}`;
-              }
-            }}
-            contentContainerStyle={styles.logsList}
-            initialNumToRender={5}
-            maxToRenderPerBatch={5}
-            windowSize={3}
-            removeClippedSubviews={true}
-            updateCellsBatchingPeriod={50}
-            ListEmptyComponent={
+        {(() => {
+          try {
+            return renderSearchBar();
+          } catch (e) {
+            console.error('Ошибка renderSearchBar:', e);
+            return null;
+          }
+        })()}
+        
+        {(() => {
+          try {
+            return renderFilters();
+          } catch (e) {
+            console.error('Ошибка renderFilters:', e);
+            return null;
+          }
+        })()}
+        
+        {(() => {
+          try {
+            if (safeFilteredLogs.length > 0 || !searchQuery) {
+              return (
+                <FlatList
+                  data={safeFilteredLogs}
+                  renderItem={(props) => {
+                    try {
+                      return renderLogItem(props);
+                    } catch (e) {
+                      console.error('Ошибка renderLogItem в FlatList:', e);
+                      return null;
+                    }
+                  }}
+                  keyExtractor={(item, index) => {
+                    try {
+                      if (!item) return `log-null-${index}`;
+                      return `${item.timestamp || Date.now()}-${item.category || 'N/A'}-${index}`;
+                    } catch (e) {
+                      return `log-${index}`;
+                    }
+                  }}
+                  contentContainerStyle={styles.logsList}
+                  initialNumToRender={3}
+                  maxToRenderPerBatch={3}
+                  windowSize={2}
+                  removeClippedSubviews={true}
+                  updateCellsBatchingPeriod={100}
+                  ListEmptyComponent={
+                    <View style={styles.emptyContainer}>
+                      <Ionicons name="document-text-outline" size={64} color={Colors.textLight} />
+                      <Text style={styles.emptyText}>
+                        {searchQuery ? 'Логи не найдены' : 'Логов пока нет'}
+                      </Text>
+                      <Text style={styles.emptyHint}>
+                        {searchQuery ? 'Попробуйте другой запрос' : 'Логи появятся при использовании приложения'}
+                      </Text>
+                    </View>
+                  }
+                  refreshControl={
+                    <RefreshControl
+                      refreshing={refreshing}
+                      onRefresh={handleRefresh}
+                      tintColor={Colors.primary}
+                    />
+                  }
+                />
+              );
+            } else {
+              return (
+                <View style={styles.emptyContainer}>
+                  <Ionicons name="document-text-outline" size={64} color={Colors.textLight} />
+                  <Text style={styles.emptyText}>Логи не найдены</Text>
+                  <Text style={styles.emptyHint}>Попробуйте другой запрос</Text>
+                </View>
+              );
+            }
+          } catch (e: any) {
+            console.error('Ошибка рендера списка логов:', e);
+            return (
               <View style={styles.emptyContainer}>
-                <Ionicons name="document-text-outline" size={64} color={Colors.textLight} />
-                <Text style={styles.emptyText}>
-                  {searchQuery ? 'Логи не найдены' : 'Логов пока нет'}
-                </Text>
-                <Text style={styles.emptyHint}>
-                  {searchQuery ? 'Попробуйте другой запрос' : 'Логи появятся при использовании приложения'}
-                </Text>
+                <Text style={styles.emptyText}>Ошибка отображения списка</Text>
               </View>
-            }
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={handleRefresh}
-                tintColor={Colors.primary}
-              />
-            }
-          />
-        ) : (
-          <View style={styles.emptyContainer}>
-            <Ionicons name="document-text-outline" size={64} color={Colors.textLight} />
-            <Text style={styles.emptyText}>Логи не найдены</Text>
-            <Text style={styles.emptyHint}>Попробуйте другой запрос</Text>
-          </View>
-        )}
+            );
+          }
+        })()}
 
-        {renderActions()}
+        {(() => {
+          try {
+            return renderActions();
+          } catch (e) {
+            console.error('Ошибка renderActions:', e);
+            return null;
+          }
+        })()}
       </View>
     );
   } catch (e: any) {
-    console.error('Критическая ошибка рендера LogViewer:', e);
+    console.error('❌ КРИТИЧЕСКАЯ ошибка рендера LogViewer:', e);
+    // Возвращаем минимальный UI чтобы не крашилось
     return (
       <View style={styles.container}>
         <View style={styles.errorContainer}>
@@ -586,7 +693,13 @@ const LogViewerScreen = () => {
           <Text style={styles.errorHint}>{e?.message || 'Неизвестная ошибка'}</Text>
           <TouchableOpacity
             style={styles.retryButton}
-            onPress={loadLogsAndStats}
+            onPress={() => {
+              try {
+                loadLogsAndStats();
+              } catch (err) {
+                console.error('Ошибка при retry:', err);
+              }
+            }}
           >
             <Text style={styles.retryButtonText}>Попробовать снова</Text>
           </TouchableOpacity>

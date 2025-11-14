@@ -49,16 +49,16 @@ Restaurant.init(
       primaryKey: true,
     },
     googlePlaceId: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       unique: true,
       allowNull: true,
     },
     name: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: false,
     },
     address: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: false,
     },
     latitude: {
@@ -70,15 +70,15 @@ Restaurant.init(
       allowNull: false,
     },
     cuisineType: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: false,
     },
     phone: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: true,
     },
     website: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: true,
     },
     openingHours: {
@@ -86,7 +86,7 @@ Restaurant.init(
       allowNull: true,
     },
     photos: {
-      type: DataTypes.ARRAY(DataTypes.STRING),
+      type: DataTypes.ARRAY(DataTypes.TEXT),
       defaultValue: [],
     },
     averageRating: {

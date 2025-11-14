@@ -6,7 +6,32 @@ import { Op } from 'sequelize';
 // Получить или создать ресторан
 export const getOrCreateRestaurant = async (req: AuthRequest, res: Response) => {
   try {
-    const { googlePlaceId, name, address, phone, latitude, longitude, cuisineType, photos } = req.body;
+    let { googlePlaceId, name, address, phone, latitude, longitude, cuisineType, photos } = req.body;
+
+    // Защита от слишком длинных строк (хотя теперь используем TEXT, но на всякий случай)
+    // Обрезаем до разумной длины, если нужно
+    const MAX_FIELD_LENGTH = 10000; // TEXT может хранить до 1GB, но ограничим для безопасности
+    
+    if (name && name.length > MAX_FIELD_LENGTH) {
+      console.warn('⚠️ Name слишком длинный, обрезаем:', name.length);
+      name = name.substring(0, MAX_FIELD_LENGTH);
+    }
+    
+    if (address && address.length > MAX_FIELD_LENGTH) {
+      console.warn('⚠️ Address слишком длинный, обрезаем:', address.length);
+      address = address.substring(0, MAX_FIELD_LENGTH);
+    }
+    
+    // Обрабатываем массив photos - обрезаем длинные URL
+    if (photos && Array.isArray(photos)) {
+      photos = photos.map((photo: string) => {
+        if (typeof photo === 'string' && photo.length > MAX_FIELD_LENGTH) {
+          console.warn('⚠️ Photo URL слишком длинный, обрезаем:', photo.length);
+          return photo.substring(0, MAX_FIELD_LENGTH);
+        }
+        return photo;
+      }).filter((photo: string) => photo && photo.length > 0); // Убираем пустые
+    }
 
     let restaurant = await Restaurant.findOne({
       where: { googlePlaceId },
