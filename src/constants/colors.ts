@@ -72,9 +72,24 @@ export const Colors = {
 export type ColorsType = typeof Colors;
 
 // Утилита для определения цвета рейтинга
-export const getRatingColor = (rating: number): string => {
-  if (rating >= 9) return Colors.rating.excellent; // 9-10
-  if (rating >= 7) return Colors.rating.good;      // 7-8.9
-  if (rating >= 5) return Colors.rating.average;   // 5-6.9
-  return Colors.rating.poor;                        // 0-4.9
+// Безопасная обработка null/undefined
+export const getRatingColor = (rating: number | null | undefined): string => {
+  // Защита от null/undefined
+  if (rating === null || rating === undefined || isNaN(rating)) {
+    return Colors.rating.poor; // По умолчанию poor
+  }
+  
+  // Проверяем что это число
+  const numRating = Number(rating);
+  if (isNaN(numRating)) {
+    return Colors.rating.poor;
+  }
+  
+  // Ограничиваем диапазон от 0 до 10
+  const safeRating = Math.max(0, Math.min(10, numRating));
+  
+  if (safeRating >= 9) return Colors.rating.excellent; // 9-10
+  if (safeRating >= 7) return Colors.rating.good;      // 7-8.9
+  if (safeRating >= 5) return Colors.rating.average;   // 5-6.9
+  return Colors.rating.poor;                           // 0-4.9
 };

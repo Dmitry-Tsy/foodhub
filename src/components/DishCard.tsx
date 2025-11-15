@@ -13,7 +13,15 @@ interface DishCardProps {
 }
 
 export const DishCard: React.FC<DishCardProps> = ({ dish, onPress }) => {
-  const ratingColor = getRatingColor(dish.averageRating);
+  // Безопасная обработка рейтинга
+  const safeRating = dish?.averageRating ?? 0;
+  const ratingColor = getRatingColor(safeRating);
+
+  // Защита от null/undefined dish
+  if (!dish) {
+    console.warn('⚠️ DishCard: dish is null or undefined');
+    return null;
+  }
 
   return (
     <TouchableOpacity style={styles.container} onPress={onPress} activeOpacity={0.7}>

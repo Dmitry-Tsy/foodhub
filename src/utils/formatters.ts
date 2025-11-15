@@ -13,9 +13,29 @@ export const formatDistance = (meters: number): string => {
 
 /**
  * Форматирует рейтинг с одним десятичным знаком
+ * Безопасная обработка null/undefined
  */
-export const formatRating = (rating: number): string => {
-  return rating.toFixed(1);
+export const formatRating = (rating: number | null | undefined): string => {
+  // Защита от null/undefined
+  if (rating === null || rating === undefined || isNaN(rating)) {
+    return '0.0';
+  }
+  
+  // Проверяем что это число
+  const numRating = Number(rating);
+  if (isNaN(numRating)) {
+    return '0.0';
+  }
+  
+  // Ограничиваем диапазон от 0 до 10
+  const safeRating = Math.max(0, Math.min(10, numRating));
+  
+  try {
+    return safeRating.toFixed(1);
+  } catch (error) {
+    console.error('❌ Ошибка в formatRating:', error, rating);
+    return '0.0';
+  }
 };
 
 /**

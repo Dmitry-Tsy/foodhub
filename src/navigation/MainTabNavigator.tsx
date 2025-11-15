@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { MainTabParamList } from '../types';
 import { Theme } from '../constants/theme';
+import { ErrorBoundary } from '../components';
 
 // Tab Screens
 import SearchScreen from '../screens/tabs/SearchScreen';
@@ -12,6 +13,15 @@ import ProfileScreen from '../screens/tabs/ProfileScreen';
 import LogViewerScreen from '../screens/LogViewerScreen';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
+
+// Обертка экрана в ErrorBoundary для предотвращения крашей
+const withErrorBoundary = <P extends object>(Component: React.ComponentType<P>) => {
+  return (props: P) => (
+    <ErrorBoundary>
+      <Component {...props} />
+    </ErrorBoundary>
+  );
+};
 
 const MainTabNavigator: React.FC = () => {
   return (
@@ -55,22 +65,22 @@ const MainTabNavigator: React.FC = () => {
     >
       <Tab.Screen
         name="Search"
-        component={SearchScreen}
+        component={withErrorBoundary(SearchScreen)}
         options={{ title: 'Поиск' }}
       />
       <Tab.Screen
         name="Add"
-        component={AddScreen}
+        component={withErrorBoundary(AddScreen)}
         options={{ title: 'Добавить' }}
       />
       <Tab.Screen
         name="Feed"
-        component={FeedScreen}
+        component={withErrorBoundary(FeedScreen)}
         options={{ title: 'Лента' }}
       />
       <Tab.Screen
         name="Logs"
-        component={LogViewerScreen}
+        component={withErrorBoundary(LogViewerScreen)}
         options={{ 
           title: 'Логи',
           headerShown: false, // LogViewerScreen имеет свой header
@@ -78,7 +88,7 @@ const MainTabNavigator: React.FC = () => {
       />
       <Tab.Screen
         name="Profile"
-        component={ProfileScreen}
+        component={withErrorBoundary(ProfileScreen)}
         options={{ title: 'Профиль' }}
       />
     </Tab.Navigator>

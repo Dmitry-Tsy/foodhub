@@ -10,4 +10,5 @@ export { GuestPrompt } from './GuestPrompt';
 export { RestaurantMap } from './RestaurantMap';
 export { AchievementBadge } from './AchievementBadge';
 export { PairingCard } from './PairingCard';
+export { default as ErrorBoundary } from './ErrorBoundary';
 

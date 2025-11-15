@@ -22,31 +22,130 @@ import { fetchRestaurantMenu } from '../store/slices/dishSlice';
 import { formatDistance, formatRating } from '../utils/formatters';
 import { exitGuestMode } from '../store/slices/authSlice';
 import { toggleRestaurantFavorite } from '../store/slices/favoritesSlice';
+import { getOrCreateRestaurantInDB } from '../services/restaurantService';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'RestaurantDetail'>;
 
 const RestaurantDetailScreen: React.FC<Props> = ({ route, navigation }) => {
+  console.log('📍 RestaurantDetailScreen: 1. Компонент начал рендериться');
+  
   const { restaurantId } = route.params;
+  console.log('📍 RestaurantDetailScreen: 2. restaurantId:', restaurantId);
+  
   const dispatch = useAppDispatch();
+  console.log('📍 RestaurantDetailScreen: 3. dispatch получен');
   
   const { currentRestaurant, isLoading: restaurantLoading } = useAppSelector(
     (state) => state.restaurants
   );
+  console.log('📍 RestaurantDetailScreen: 4. restaurants state получен', {
+    hasRestaurant: !!currentRestaurant,
+    isLoading: restaurantLoading,
+    restaurantName: currentRestaurant?.name,
+  });
+  
   const { dishes, isLoading: dishesLoading } = useAppSelector(
     (state) => state.dishes
   );
+  console.log('📍 RestaurantDetailScreen: 5. dishes state получен', {
+    dishesCount: Array.isArray(dishes) ? dishes.length : 0,
+    isLoading: dishesLoading,
+  });
+  
   const { isGuest, user } = useAppSelector((state) => state.auth);
   const { restaurantIds } = useAppSelector((state) => state.favorites);
+
+  console.log('📍 RestaurantDetailScreen: 6. auth и favorites получены', {
+    isGuest,
+    hasUser: !!user,
+  });
 
   const [showGuestPrompt, setShowGuestPrompt] = useState(false);
   const scrollY = useState(new Animated.Value(0))[0];
   
   const isFavorite = restaurantIds.includes(restaurantId);
+  
+  console.log('📍 RestaurantDetailScreen: 7. State инициализирован');
 
   useEffect(() => {
-    console.log('📍 Загрузка ресторана и меню:', restaurantId);
-    dispatch(fetchRestaurantById(restaurantId));
-    dispatch(fetchRestaurantMenu(restaurantId));
+    console.log('📍 RestaurantDetailScreen: 8. useEffect - монтирование компонента');
+    
+    // Загружаем ресторан по Google Places ID (для отображения)
+    try {
+      console.log('📍 RestaurantDetailScreen: 9. Вызываю fetchRestaurantById...');
+      dispatch(fetchRestaurantById(restaurantId));
+      console.log('📍 RestaurantDetailScreen: 10. fetchRestaurantById вызван');
+    } catch (error: any) {
+      console.error('❌ RestaurantDetailScreen: Ошибка при вызове fetchRestaurantById:', error);
+    }
+    
+    // Загружаем меню - нужно конвертировать Google Places ID в UUID для запроса к БД
+    const loadMenu = async () => {
+      console.log('📍 RestaurantDetailScreen: 11. Начинаю загрузку меню...');
+      
+      try {
+        let dbRestaurantId = restaurantId;
+        
+        // Если restaurantId похож на Google Places ID (начинается с ChIJ)
+        if (restaurantId.startsWith('ChIJ')) {
+          console.log('📍 RestaurantDetailScreen: 12. Конвертация Google Places ID в UUID...');
+          
+          // Сначала загружаем ресторан если его нет
+          let restaurant = currentRestaurant;
+          if (!restaurant) {
+            console.log('📍 RestaurantDetailScreen: 13. Ресторана нет в state, загружаем...');
+            try {
+              restaurant = await dispatch(fetchRestaurantById(restaurantId)).unwrap();
+              console.log('📍 RestaurantDetailScreen: 14. Ресторан загружен для конвертации:', restaurant?.name);
+            } catch (err: any) {
+              console.error('❌ RestaurantDetailScreen: Ошибка загрузки ресторана для конвертации:', err);
+              // Пропускаем конвертацию, попробуем загрузить меню с исходным ID
+              console.log('📍 RestaurantDetailScreen: 15. Загружаю меню с исходным ID (ошибка конвертации)');
+              dispatch(fetchRestaurantMenu(restaurantId));
+              return;
+            }
+          } else {
+            console.log('📍 RestaurantDetailScreen: 14. Ресторан уже в state:', restaurant.name);
+          }
+          
+          if (restaurant) {
+            try {
+              console.log('📍 RestaurantDetailScreen: 15. Вызываю getOrCreateRestaurantInDB...');
+              dbRestaurantId = await getOrCreateRestaurantInDB(restaurant);
+              console.log('📍 RestaurantDetailScreen: 16. Получен UUID из БД для меню:', dbRestaurantId);
+            } catch (err: any) {
+              console.error('❌ RestaurantDetailScreen: Ошибка конвертации в UUID:', err);
+              // Пропускаем конвертацию, попробуем загрузить меню с исходным ID
+              console.log('📍 RestaurantDetailScreen: 17. Загружаю меню с исходным ID (ошибка UUID)');
+              dispatch(fetchRestaurantMenu(restaurantId));
+              return;
+            }
+          }
+        } else {
+          console.log('📍 RestaurantDetailScreen: 12. restaurantId не похож на Google Places ID, используем как есть');
+        }
+        
+        console.log('📍 RestaurantDetailScreen: 17. Загружаю меню с ID:', dbRestaurantId);
+        dispatch(fetchRestaurantMenu(dbRestaurantId));
+        console.log('📍 RestaurantDetailScreen: 18. fetchRestaurantMenu вызван');
+      } catch (error: any) {
+        console.error('❌ RestaurantDetailScreen: Критическая ошибка в loadMenu:', error);
+        // Попробуем загрузить с исходным ID (может быть уже UUID)
+        try {
+          console.log('📍 RestaurantDetailScreen: 19. Fallback - загружаю меню с исходным ID');
+          dispatch(fetchRestaurantMenu(restaurantId));
+        } catch (err: any) {
+          console.error('❌ RestaurantDetailScreen: Не удалось загрузить меню:', err);
+        }
+      }
+    };
+    
+    loadMenu();
+    
+    return () => {
+      console.log('📍 RestaurantDetailScreen: useEffect cleanup - размонтирование');
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [restaurantId]);
 
   const headerOpacity = scrollY.interpolate({
@@ -112,33 +211,53 @@ const RestaurantDetailScreen: React.FC<Props> = ({ route, navigation }) => {
     dispatch(toggleRestaurantFavorite(restaurantId));
   };
 
+  // Дополнительный useEffect для повторной загрузки если ресторан не найден
+  useEffect(() => {
+    if (!restaurantLoading && !currentRestaurant) {
+      console.warn('⚠️ RestaurantDetailScreen: currentRestaurant is null, загружаем повторно...');
+      dispatch(fetchRestaurantById(restaurantId));
+    }
+  }, [restaurantId, currentRestaurant, restaurantLoading, dispatch]);
+
+  console.log('📍 RestaurantDetailScreen: 19. Проверка условий рендера', {
+    restaurantLoading,
+    hasCurrentRestaurant: !!currentRestaurant,
+  });
+
+  // Защита от крашей: показываем loading если загружается или нет данных
   if (restaurantLoading || !currentRestaurant) {
+    console.log('📍 RestaurantDetailScreen: 20. Показываю loading экран');
     return <Loading fullScreen text="Загрузка ресторана..." />;
   }
+  
+  console.log('📍 RestaurantDetailScreen: 21. Начинаю рендер основного контента');
+  
+  // Вспомогательные функции для рендера (разбиение для безопасности)
+  const renderHeader = () => {
+    try {
+      console.log('📍 RestaurantDetailScreen: 22. Рендер header');
+      return (
+        <Animated.View style={[styles.animatedHeader, { opacity: headerOpacity }]}>
+          <View style={styles.headerGradient}>
+            <Text style={styles.headerTitle} numberOfLines={1}>
+              {currentRestaurant?.name || 'Ресторан'}
+            </Text>
+          </View>
+        </Animated.View>
+      );
+    } catch (e: any) {
+      console.error('❌ RestaurantDetailScreen: Ошибка renderHeader:', e);
+      return null;
+    }
+  };
 
-  return (
-    <View style={styles.container}>
-      {/* Animated Header */}
-      <Animated.View style={[styles.animatedHeader, { opacity: headerOpacity }]}>
-        <View style={styles.headerGradient}>
-          <Text style={styles.headerTitle} numberOfLines={1}>
-            {currentRestaurant.name}
-          </Text>
-        </View>
-      </Animated.View>
-
-      <ScrollView
-        style={styles.scrollView}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-          { useNativeDriver: false }
-        )}
-        scrollEventThrottle={16}
-      >
-        {/* Hero Image with Gradient Overlay */}
+  const renderHero = () => {
+    try {
+      console.log('📍 RestaurantDetailScreen: 23. Рендер hero секции');
+      return (
         <View style={styles.heroContainer}>
           <Animated.View style={{ transform: [{ scale: imageScale }] }}>
-            {currentRestaurant.photos && currentRestaurant.photos.length > 0 ? (
+            {currentRestaurant?.photos && currentRestaurant.photos.length > 0 ? (
               <Image
                 source={{ uri: currentRestaurant.photos[0] }}
                 style={styles.heroImage}
@@ -152,7 +271,6 @@ const RestaurantDetailScreen: React.FC<Props> = ({ route, navigation }) => {
           
           <View style={styles.heroGradient} />
 
-          {/* Hero Info Overlay */}
           <View style={styles.heroInfo}>
             <View style={styles.heroTopRow}>
               <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
@@ -173,8 +291,8 @@ const RestaurantDetailScreen: React.FC<Props> = ({ route, navigation }) => {
             </View>
 
             <View style={styles.heroBottom}>
-              <Text style={styles.heroTitle}>{currentRestaurant.name}</Text>
-              {currentRestaurant.averageRating && (
+              <Text style={styles.heroTitle}>{currentRestaurant?.name || 'Ресторан'}</Text>
+              {currentRestaurant?.averageRating && (
                 <View style={styles.ratingBadge}>
                   <Ionicons name="star" size={18} color={Colors.gold} />
                   <Text style={styles.ratingText}>
@@ -190,70 +308,110 @@ const RestaurantDetailScreen: React.FC<Props> = ({ route, navigation }) => {
             </View>
           </View>
         </View>
-
-        {/* Info Cards */}
-        <View style={styles.content}>
-          {/* Quick Actions */}
-          <View style={styles.quickActions}>
-            <TouchableOpacity style={styles.quickActionCard} onPress={handleCall}>
-              <View style={[styles.quickActionGradient, { backgroundColor: Colors.success }]}>
-                <Ionicons name="call" size={24} color={Colors.textInverse} />
-                <Text style={styles.quickActionText}>Позвонить</Text>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.quickActionCard} onPress={handleNavigate}>
-              <View style={[styles.quickActionGradient, { backgroundColor: Colors.info }]}>
-                <Ionicons name="navigate" size={24} color={Colors.textInverse} />
-                <Text style={styles.quickActionText}>Маршрут</Text>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.quickActionCard} onPress={handleShare}>
-              <View style={[styles.quickActionGradient, { backgroundColor: Colors.accent }]}>
-                <Ionicons name="share-social" size={24} color={Colors.textInverse} />
-                <Text style={styles.quickActionText}>Поделиться</Text>
-              </View>
-            </TouchableOpacity>
+      );
+    } catch (e: any) {
+      console.error('❌ RestaurantDetailScreen: Ошибка renderHero:', e);
+      return (
+        <View style={styles.heroContainer}>
+          <View style={[styles.heroImage, styles.heroPlaceholder]}>
+            <Ionicons name="restaurant" size={80} color={Colors.textLight} />
           </View>
+        </View>
+      );
+    }
+  };
 
-          {/* Info Card */}
-          <View style={styles.infoCard}>
-            <View style={styles.infoRow}>
-              <Ionicons name="location" size={20} color={Colors.primary} />
-              <Text style={styles.infoText}>{currentRestaurant.address}</Text>
+  const renderQuickActions = () => {
+    try {
+      console.log('📍 RestaurantDetailScreen: 24. Рендер quick actions');
+      return (
+        <View style={styles.quickActions}>
+          <TouchableOpacity style={styles.quickActionCard} onPress={handleCall}>
+            <View style={[styles.quickActionGradient, { backgroundColor: Colors.success }]}>
+              <Ionicons name="call" size={24} color={Colors.textInverse} />
+              <Text style={styles.quickActionText}>Позвонить</Text>
             </View>
-            
-            {currentRestaurant.distance && (
-              <View style={styles.infoRow}>
-                <Ionicons name="walk" size={20} color={Colors.secondary} />
-                <Text style={styles.infoText}>
-                  {formatDistance(currentRestaurant.distance)}
-                </Text>
-              </View>
-            )}
-            
-            <View style={styles.infoRow}>
-              <Ionicons name="restaurant" size={20} color={Colors.accent} />
-              <Text style={styles.infoText}>{currentRestaurant.cuisineType}</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.quickActionCard} onPress={handleNavigate}>
+            <View style={[styles.quickActionGradient, { backgroundColor: Colors.info }]}>
+              <Ionicons name="navigate" size={24} color={Colors.textInverse} />
+              <Text style={styles.quickActionText}>Маршрут</Text>
             </View>
-            
-            {currentRestaurant.phone && (
-              <TouchableOpacity style={styles.infoRow} onPress={handleCall}>
-                <Ionicons name="call" size={20} color={Colors.success} />
-                <Text style={[styles.infoText, { color: Colors.success }]}>
-                  {currentRestaurant.phone}
-                </Text>
-              </TouchableOpacity>
-            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.quickActionCard} onPress={handleShare}>
+            <View style={[styles.quickActionGradient, { backgroundColor: Colors.accent }]}>
+              <Ionicons name="share-social" size={24} color={Colors.textInverse} />
+              <Text style={styles.quickActionText}>Поделиться</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+      );
+    } catch (e: any) {
+      console.error('❌ RestaurantDetailScreen: Ошибка renderQuickActions:', e);
+      return null;
+    }
+  };
+
+  const renderInfoCard = () => {
+    try {
+      console.log('📍 RestaurantDetailScreen: 25. Рендер info card');
+      if (!currentRestaurant) return null;
+      
+      return (
+        <View style={styles.infoCard}>
+          <View style={styles.infoRow}>
+            <Ionicons name="location" size={20} color={Colors.primary} />
+            <Text style={styles.infoText}>{currentRestaurant.address || 'Адрес не указан'}</Text>
           </View>
+          
+          {currentRestaurant.distance && (
+            <View style={styles.infoRow}>
+              <Ionicons name="walk" size={20} color={Colors.secondary} />
+              <Text style={styles.infoText}>
+                {formatDistance(currentRestaurant.distance)}
+              </Text>
+            </View>
+          )}
+          
+          <View style={styles.infoRow}>
+            <Ionicons name="restaurant" size={20} color={Colors.accent} />
+            <Text style={styles.infoText}>{currentRestaurant.cuisineType || 'Не указано'}</Text>
+          </View>
+          
+          {currentRestaurant.phone && (
+            <TouchableOpacity style={styles.infoRow} onPress={handleCall}>
+              <Ionicons name="call" size={20} color={Colors.success} />
+              <Text style={[styles.infoText, { color: Colors.success }]}>
+                {currentRestaurant.phone}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      );
+    } catch (e: any) {
+      console.error('❌ RestaurantDetailScreen: Ошибка renderInfoCard:', e);
+      return null;
+    }
+  };
 
-          {/* Menu Section */}
+  const renderMenu = () => {
+    try {
+      console.log('📍 RestaurantDetailScreen: 26. Рендер меню', {
+        dishesCount: Array.isArray(dishes) ? dishes.length : 0,
+        dishesLoading,
+      });
+      
+      const safeDishes = Array.isArray(dishes) ? dishes.filter(d => d != null) : [];
+      
+      return (
+        <>
           <View style={styles.menuHeader}>
             <View>
               <Text style={styles.sectionTitle}>Меню</Text>
               <Text style={styles.sectionSubtitle}>
-                {dishes.length > 0 ? `${dishes.length} блюд` : 'Пока нет блюд'}
+                {safeDishes.length > 0 ? `${safeDishes.length} блюд` : 'Пока нет блюд'}
               </Text>
             </View>
             
@@ -275,9 +433,9 @@ const RestaurantDetailScreen: React.FC<Props> = ({ route, navigation }) => {
 
           {dishesLoading ? (
             <Loading text="Загрузка меню..." />
-          ) : dishes.length > 0 ? (
+          ) : safeDishes.length > 0 ? (
             <View style={styles.dishesGrid}>
-              {dishes.map((dish) => (
+              {safeDishes.map((dish) => (
                 <DishCard
                   key={dish.id}
                   dish={dish}
@@ -308,10 +466,116 @@ const RestaurantDetailScreen: React.FC<Props> = ({ route, navigation }) => {
               </View>
             </View>
           )}
+        </>
+      );
+    } catch (e: any) {
+      console.error('❌ RestaurantDetailScreen: Ошибка renderMenu:', e);
+      return (
+        <View style={styles.emptyMenu}>
+          <Text style={styles.emptyTitle}>Ошибка загрузки меню</Text>
         </View>
-      </ScrollView>
-    </View>
-  );
+      );
+    }
+  };
+  
+  // Безопасный рендер с глобальной защитой
+  try {
+    console.log('📍 RestaurantDetailScreen: 27. Начинаю основной рендер JSX');
+    
+    return (
+      <View style={styles.container}>
+        {(() => {
+          try {
+            return renderHeader();
+          } catch (e: any) {
+            console.error('❌ RestaurantDetailScreen: Ошибка renderHeader в JSX:', e);
+            return null;
+          }
+        })()}
+
+        <ScrollView
+          style={styles.scrollView}
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+            { useNativeDriver: false }
+          )}
+          scrollEventThrottle={16}
+        >
+          {(() => {
+            try {
+              return renderHero();
+            } catch (e: any) {
+              console.error('❌ RestaurantDetailScreen: Ошибка renderHero в JSX:', e);
+              return (
+                <View style={styles.heroContainer}>
+                  <View style={[styles.heroImage, styles.heroPlaceholder]}>
+                    <Ionicons name="restaurant" size={80} color={Colors.textLight} />
+                  </View>
+                </View>
+              );
+            }
+          })()}
+
+          <View style={styles.content}>
+            {(() => {
+              try {
+                return renderQuickActions();
+              } catch (e: any) {
+                console.error('❌ RestaurantDetailScreen: Ошибка renderQuickActions в JSX:', e);
+                return null;
+              }
+            })()}
+
+            {(() => {
+              try {
+                return renderInfoCard();
+              } catch (e: any) {
+                console.error('❌ RestaurantDetailScreen: Ошибка renderInfoCard в JSX:', e);
+                return null;
+              }
+            })()}
+
+            {(() => {
+              try {
+                return renderMenu();
+              } catch (e: any) {
+                console.error('❌ RestaurantDetailScreen: Ошибка renderMenu в JSX:', e);
+                return (
+                  <View style={styles.emptyMenu}>
+                    <Text style={styles.emptyTitle}>Ошибка загрузки меню</Text>
+                  </View>
+                );
+              }
+            })()}
+          </View>
+        </ScrollView>
+      </View>
+    );
+  } catch (error: any) {
+    console.error('❌ КРИТИЧЕСКАЯ ошибка рендера RestaurantDetailScreen:', error);
+    // Возвращаем минимальный UI чтобы не крашилось
+    return (
+      <View style={styles.container}>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 }}>
+          <Ionicons name="alert-circle" size={64} color={Colors.error} />
+          <Text style={{ fontSize: 18, fontWeight: 'bold', marginTop: 16, color: Colors.text }}>
+            Ошибка загрузки ресторана
+          </Text>
+          <Text style={{ fontSize: 14, marginTop: 8, color: Colors.textSecondary, textAlign: 'center' }}>
+            {error?.message || 'Неизвестная ошибка'}
+          </Text>
+          <TouchableOpacity
+            style={{ marginTop: 20, padding: 12, backgroundColor: Colors.primary, borderRadius: 8 }}
+            onPress={() => {
+              dispatch(fetchRestaurantById(restaurantId));
+            }}
+          >
+            <Text style={{ color: Colors.textInverse, fontWeight: 'bold' }}>Попробовать снова</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
 };
 
 const styles = StyleSheet.create({

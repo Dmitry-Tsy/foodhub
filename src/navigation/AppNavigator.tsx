@@ -29,9 +29,18 @@ import RecommendationsScreen from '../screens/RecommendationsScreen';
 import ConnectivityTestScreen from '../screens/ConnectivityTestScreen';
 import LogViewerScreen from '../screens/LogViewerScreen';
 
-import { Loading } from '../components';
+import { Loading, ErrorBoundary } from '../components';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
+
+// Обертка экрана в ErrorBoundary для предотвращения крашей
+const withErrorBoundary = <P extends object>(Component: React.ComponentType<P>) => {
+  return (props: P) => (
+    <ErrorBoundary>
+      <Component {...props} />
+    </ErrorBoundary>
+  );
+};
 
 const AppNavigator: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -56,9 +65,9 @@ const AppNavigator: React.FC = () => {
         {!isAuthenticated && !isGuest ? (
           // Auth Stack
           <>
-            <Stack.Screen name="Welcome" component={WelcomeScreen} />
-            <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen name="Register" component={RegisterScreen} />
+            <Stack.Screen name="Welcome" component={withErrorBoundary(WelcomeScreen)} />
+            <Stack.Screen name="Login" component={withErrorBoundary(LoginScreen)} />
+            <Stack.Screen name="Register" component={withErrorBoundary(RegisterScreen)} />
           </>
         ) : (
           // App Stack
@@ -66,37 +75,37 @@ const AppNavigator: React.FC = () => {
             <Stack.Screen name="Main" component={MainTabNavigator} />
             <Stack.Screen
               name="RestaurantDetail"
-              component={RestaurantDetailScreen}
+              component={withErrorBoundary(RestaurantDetailScreen)}
               options={{ headerShown: true, title: 'Ресторан' }}
             />
             <Stack.Screen
               name="DishDetail"
-              component={DishDetailScreen}
+              component={withErrorBoundary(DishDetailScreen)}
               options={{ headerShown: true, title: 'Блюдо' }}
             />
             <Stack.Screen
               name="AddReview"
-              component={AddReviewScreen}
+              component={withErrorBoundary(AddReviewScreen)}
               options={{ headerShown: true, title: 'Добавить отзыв' }}
             />
             <Stack.Screen
               name="AddDish"
-              component={AddDishScreen}
+              component={withErrorBoundary(AddDishScreen)}
               options={{ headerShown: true, title: 'Добавить блюдо' }}
             />
             <Stack.Screen
               name="UserProfile"
-              component={UserProfileScreen}
+              component={withErrorBoundary(UserProfileScreen)}
               options={{ headerShown: true, title: 'Профиль' }}
             />
             <Stack.Screen
               name="EditProfile"
-              component={EditProfileScreen}
+              component={withErrorBoundary(EditProfileScreen)}
               options={{ headerShown: true, title: 'Редактировать профиль' }}
             />
             <Stack.Screen
               name="TasteProfile"
-              component={TasteProfileScreen}
+              component={withErrorBoundary(TasteProfileScreen)}
               options={{ 
                 headerShown: true, 
                 title: 'Вкусовой профиль',
@@ -106,7 +115,7 @@ const AppNavigator: React.FC = () => {
             />
             <Stack.Screen
               name="Achievements"
-              component={AchievementsScreen}
+              component={withErrorBoundary(AchievementsScreen)}
               options={{ 
                 headerShown: true, 
                 title: 'Достижения',
@@ -116,7 +125,7 @@ const AppNavigator: React.FC = () => {
             />
             <Stack.Screen
               name="Recommendations"
-              component={RecommendationsScreen}
+              component={withErrorBoundary(RecommendationsScreen)}
               options={{ 
                 headerShown: true, 
                 title: 'Рекомендации для вас',
@@ -126,7 +135,7 @@ const AppNavigator: React.FC = () => {
             />
             <Stack.Screen
               name="ConnectivityTest"
-              component={ConnectivityTestScreen}
+              component={withErrorBoundary(ConnectivityTestScreen)}
               options={{ 
                 headerShown: true, 
                 title: '🔧 Тест подключения',
@@ -136,7 +145,7 @@ const AppNavigator: React.FC = () => {
             />
             <Stack.Screen
               name="LogViewer"
-              component={LogViewerScreen}
+              component={withErrorBoundary(LogViewerScreen)}
               options={{ 
                 headerShown: true, 
                 title: '📝 Логи приложения',
