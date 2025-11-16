@@ -5,6 +5,7 @@ import * as dishService from '../../services/dishService';
 interface DishState {
   dishes: Dish[];
   currentDish: Dish | null;
+  currentRestaurantId: string | null; // ID текущего ресторана, меню которого загружено
   isLoading: boolean;
   error: string | null;
 }
@@ -12,6 +13,7 @@ interface DishState {
 const initialState: DishState = {
   dishes: [],
   currentDish: null,
+  currentRestaurantId: null,
   isLoading: false,
   error: null,
 };
@@ -59,6 +61,10 @@ const dishSlice = createSlice({
     clearCurrentDish: (state) => {
       state.currentDish = null;
     },
+    clearMenu: (state) => {
+      state.dishes = [];
+      state.currentRestaurantId = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -68,7 +74,15 @@ const dishSlice = createSlice({
       })
       .addCase(fetchRestaurantMenu.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.dishes = action.payload;
+        // Сохраняем меню только для текущего ресторана
+        // В action.meta.arg хранится restaurantId который был передан
+        if (action.meta.arg) {
+          state.currentRestaurantId = action.meta.arg;
+          // Фильтруем блюда только для этого ресторана (на всякий случай)
+          state.dishes = action.payload.filter((dish: Dish) => dish.restaurantId === action.meta.arg);
+        } else {
+          state.dishes = action.payload;
+        }
       })
       .addCase(fetchRestaurantMenu.rejected, (state, action) => {
         state.isLoading = false;
@@ -96,7 +110,16 @@ const dishSlice = createSlice({
       })
       .addCase(addDish.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.dishes.push(action.payload);
+        // Добавляем блюдо только если оно принадлежит текущему ресторану
+        const newDish = action.payload;
+        if (state.currentRestaurantId && newDish.restaurantId === state.currentRestaurantId) {
+          // Проверяем что блюдо еще не в списке (по ID)
+          const exists = state.dishes.some((dish) => dish.id === newDish.id);
+          if (!exists) {
+            state.dishes.push(newDish);
+          }
+        }
+        // Если currentRestaurantId не установлен, не добавляем (меню еще не загружено)
       })
       .addCase(addDish.rejected, (state, action) => {
         state.isLoading = false;
@@ -105,6 +128,6 @@ const dishSlice = createSlice({
   },
 });
 
-export const { clearError, clearCurrentDish } = dishSlice.actions;
+export const { clearError, clearCurrentDish, clearMenu } = dishSlice.actions;
 export default dishSlice.reducer;
 

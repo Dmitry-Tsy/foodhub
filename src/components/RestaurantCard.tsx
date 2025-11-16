@@ -31,7 +31,7 @@ export const RestaurantCard: React.FC<RestaurantCardProps> = ({ restaurant, onPr
             <View style={styles.ratingBadge}>
               <Ionicons name="star" size={14} color={Colors.warning} />
               <Text style={styles.ratingText}>
-                {formatRating(restaurant.averageRating)}
+                {formatRating(restaurant.averageRating ?? 0)}
               </Text>
             </View>
           )}

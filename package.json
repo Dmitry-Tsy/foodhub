@@ -21,6 +21,7 @@
     "axios": "^1.6.5",
     "date-fns": "^3.0.6",
     "expo": "~50.0.6",
+    "expo-clipboard": "~5.0.1",
     "expo-font": "~11.10.2",
     "expo-image-picker": "~14.7.1",
     "expo-location": "~16.5.5",

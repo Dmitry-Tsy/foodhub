@@ -9,7 +9,9 @@ import {
   TextInput,
   RefreshControl,
   ScrollView,
+  Platform,
 } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../constants/colors';
 import { Theme } from '../constants/theme';
@@ -240,6 +242,28 @@ const LogViewerScreen = () => {
     }
   };
 
+  const handleCopyToClipboard = async (text: string) => {
+    try {
+      if (!text || text.trim() === '') {
+        Alert.alert('Ошибка', 'Нет текста для копирования');
+        return;
+      }
+      
+      // Проверяем доступен ли метод setStringAsync или используем setString
+      if (Clipboard.setStringAsync) {
+        await Clipboard.setStringAsync(text);
+      } else if (Clipboard.setString) {
+        Clipboard.setString(text);
+      } else {
+        throw new Error('Clipboard API не доступен');
+      }
+      Alert.alert('Скопировано', 'Текст скопирован в буфер обмена');
+    } catch (error: any) {
+      console.error('❌ Ошибка при копировании в буфер обмена:', error);
+      Alert.alert('Ошибка', 'Не удалось скопировать текст');
+    }
+  };
+
   const getColorForLevel = (level: LogLevel): string => {
     switch (level) {
       case LogLevel.DEBUG: return Colors.textSecondary;
@@ -294,10 +318,19 @@ const LogViewerScreen = () => {
         if (!item || !item.data) return null;
         
         try {
-          let dataString: string;
+          // Полная версия для копирования (без обрезания)
+          let fullDataString: string;
+          try {
+            fullDataString = JSON.stringify(item.data, null, 2);
+          } catch (e) {
+            fullDataString = '[Не удалось сериализовать данные]';
+          }
+
+          // Версия для отображения (с обрезанием для производительности)
+          let displayDataString: string;
           try {
             // Пытаемся сериализовать с защитой от циклических ссылок
-            dataString = JSON.stringify(item.data, (key, value) => {
+            displayDataString = JSON.stringify(item.data, (key, value) => {
               // Ограничиваем глубину и размер
               if (typeof value === 'object' && value !== null) {
                 if (key && key.length > 50) return '[Object]';
@@ -308,18 +341,32 @@ const LogViewerScreen = () => {
               return value;
             }, 2);
             
-            // Ограничиваем общий размер строки
-            if (dataString.length > 2000) {
-              dataString = dataString.substring(0, 2000) + '\n... (обрезано)';
+            // Ограничиваем общий размер строки для отображения
+            if (displayDataString.length > 2000) {
+              displayDataString = displayDataString.substring(0, 2000) + '\n... (обрезано для отображения)';
             }
           } catch (e) {
-            dataString = '[Не удалось сериализовать данные]';
+            displayDataString = '[Не удалось сериализовать данные]';
           }
 
           return (
             <View style={styles.logData}>
-              <Text style={styles.logDataLabel}>Данные:</Text>
-              <Text style={styles.logDataText}>{dataString}</Text>
+              <View style={styles.logDataHeader}>
+                <Text style={styles.logDataLabel}>Данные:</Text>
+                <TouchableOpacity
+                  onPress={() => handleCopyToClipboard(fullDataString)}
+                  style={styles.copyButton}
+                >
+                  <Ionicons name="copy-outline" size={16} color={Colors.primary} />
+                  <Text style={styles.copyButtonText}>Копировать</Text>
+                </TouchableOpacity>
+              </View>
+              <Text selectable={true} style={styles.logDataText}>{displayDataString}</Text>
+              {fullDataString.length > 2000 && (
+                <Text style={styles.truncatedNotice}>
+                  Полная версия доступна для копирования по кнопке выше
+                </Text>
+              )}
             </View>
           );
         } catch (e) {
@@ -344,15 +391,31 @@ const LogViewerScreen = () => {
         >
           <View style={styles.logHeader}>
             <Ionicons name={icon as any} size={16} color={color} />
-            <Text style={[styles.logLevel, { color }]}>{item.level || 'N/A'}</Text>
-            <Text style={styles.logTime}>{formatTimestamp(item.timestamp || new Date().toISOString())}</Text>
+            <Text selectable={true} style={[styles.logLevel, { color }]}>{item.level || 'N/A'}</Text>
+            <Text selectable={true} style={styles.logTime}>{formatTimestamp(item.timestamp || new Date().toISOString())}</Text>
           </View>
 
           <View style={styles.logContent}>
-            <Text style={styles.logCategory}>[{item.category || 'N/A'}]</Text>
-            <Text style={styles.logMessage} numberOfLines={3}>
-              {item.message || 'Нет сообщения'}
-            </Text>
+            <Text selectable={true} style={styles.logCategory}>[{item.category || 'N/A'}]</Text>
+            <View style={styles.logMessageContainer}>
+              <Text 
+                selectable={true} 
+                style={styles.logMessage} 
+                numberOfLines={isExpanded ? undefined : 3}
+              >
+                {item.message || 'Нет сообщения'}
+              </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  // Копируем полный текст сообщения (включая невидимую часть)
+                  const fullMessage = item.message || 'Нет сообщения';
+                  handleCopyToClipboard(fullMessage);
+                }}
+                style={styles.copyIconButton}
+              >
+                <Ionicons name="copy-outline" size={14} color={Colors.textSecondary} />
+              </TouchableOpacity>
+            </View>
           </View>
 
           {isExpanded && renderLogData()}
@@ -824,10 +887,19 @@ const styles = StyleSheet.create({
     color: Colors.primary,
     fontWeight: Theme.fontWeight.medium,
   },
+  logMessageContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: Theme.spacing.xs,
+  },
   logMessage: {
     fontSize: Theme.fontSize.sm,
     color: Colors.text,
     flex: 1,
+  },
+  copyIconButton: {
+    padding: Theme.spacing.xs,
+    marginTop: 2,
   },
   logData: {
     marginTop: Theme.spacing.sm,
@@ -835,15 +907,41 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.surface,
     borderRadius: Theme.borderRadius.sm,
   },
+  logDataHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: Theme.spacing.xs,
+  },
   logDataLabel: {
     fontSize: Theme.fontSize.xs,
     color: Colors.textSecondary,
-    marginBottom: 4,
+  },
+  copyButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Theme.spacing.xs,
+    paddingHorizontal: Theme.spacing.sm,
+    paddingVertical: Theme.spacing.xs,
+    borderRadius: Theme.borderRadius.sm,
+    backgroundColor: Colors.surfaceAlt,
+  },
+  copyButtonText: {
+    fontSize: Theme.fontSize.xs,
+    color: Colors.primary,
+    fontWeight: Theme.fontWeight.medium,
   },
   logDataText: {
     fontSize: Theme.fontSize.xs,
     color: Colors.text,
     fontFamily: 'monospace',
+  },
+  truncatedNotice: {
+    fontSize: Theme.fontSize.xs,
+    color: Colors.textSecondary,
+    fontStyle: 'italic',
+    marginTop: Theme.spacing.xs,
+    textAlign: 'center',
   },
   expandIcon: {
     position: 'absolute',

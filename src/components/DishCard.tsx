@@ -35,7 +35,7 @@ export const DishCard: React.FC<DishCardProps> = ({ dish, onPress }) => {
       
       <View style={styles.overlay}>
         <View style={[styles.ratingBadge, { backgroundColor: ratingColor }]}>
-          <Text style={styles.ratingText}>{formatRating(dish.averageRating)}</Text>
+          <Text style={styles.ratingText}>{formatRating(safeRating)}</Text>
         </View>
       </View>
       

@@ -106,7 +106,9 @@ const DishDetailScreen: React.FC<Props> = ({ route, navigation }) => {
     return <Loading fullScreen text="Загрузка блюда..." />;
   }
 
-  const ratingColor = getRatingColor(currentDish.averageRating);
+  // Безопасная обработка рейтинга
+  const safeRating = currentDish?.averageRating ?? 0;
+  const ratingColor = getRatingColor(safeRating);
 
   return (
     <ScrollView
@@ -129,7 +131,7 @@ const DishDetailScreen: React.FC<Props> = ({ route, navigation }) => {
 
       <View style={styles.ratingBadge}>
         <Text style={[styles.ratingText, { color: ratingColor }]}>
-          {formatRating(currentDish.averageRating)}
+          {formatRating(safeRating)}
         </Text>
       </View>
 
@@ -150,7 +152,7 @@ const DishDetailScreen: React.FC<Props> = ({ route, navigation }) => {
           <View style={styles.statItem}>
             <Ionicons name="star" size={24} color={Colors.warning} />
             <Text style={styles.statValue}>
-              {formatRating(currentDish.averageRating)}
+              {formatRating(safeRating)}
             </Text>
             <Text style={styles.statLabel}>Рейтинг</Text>
           </View>

@@ -105,7 +105,7 @@ const UserProfileScreen: React.FC<Props> = ({ route }) => {
 
           <View style={styles.statItem}>
             <Text style={[styles.statValue, { color: Colors.trust }]}>
-              {currentProfile.trustScore.toFixed(1)}
+              {(currentProfile?.trustScore ?? 0).toFixed(1)}
             </Text>
             <Text style={styles.statLabel}>Доверие</Text>
           </View>

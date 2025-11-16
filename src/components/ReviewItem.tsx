@@ -20,7 +20,25 @@ export const ReviewItem: React.FC<ReviewItemProps> = ({
   onAuthorPress,
   onHelpfulPress,
 }) => {
-  const ratingColor = getRatingColor(review.rating);
+  // Безопасная обработка данных
+  if (!review) {
+    console.warn('⚠️ ReviewItem: review is null or undefined');
+    return null;
+  }
+
+  // Безопасная обработка рейтинга
+  const safeRating = review?.rating ?? 0;
+  const numRating = Number(safeRating);
+  const finalRating = isNaN(numRating) ? 0 : Math.max(0, Math.min(10, numRating));
+  const ratingColor = getRatingColor(finalRating);
+  
+  // Безопасная обработка trustScore
+  const safeTrustScore = author?.trustScore ?? 0;
+  const numTrustScore = Number(safeTrustScore);
+  const finalTrustScore = isNaN(numTrustScore) ? 0 : numTrustScore;
+  
+  // Безопасная обработка даты
+  const safeCreatedAt = review?.createdAt || new Date().toISOString();
 
   return (
     <View style={styles.container}>
@@ -44,16 +62,32 @@ export const ReviewItem: React.FC<ReviewItemProps> = ({
             <View style={styles.trustBadge}>
               <Ionicons name="shield-checkmark" size={12} color={Colors.trust} />
               <Text style={styles.trustScore}>
-                {author?.trustScore.toFixed(1) || '0.0'}
+                {(() => {
+                  try {
+                    return finalTrustScore.toFixed(1);
+                  } catch (e) {
+                    console.error('❌ Ошибка в toFixed для trustScore:', e);
+                    return '0.0';
+                  }
+                })()}
               </Text>
             </View>
-            <Text style={styles.date}>{formatRelativeTime(review.createdAt)}</Text>
+            <Text style={styles.date}>
+              {(() => {
+                try {
+                  return formatRelativeTime(safeCreatedAt);
+                } catch (e) {
+                  console.error('❌ Ошибка форматирования даты:', e);
+                  return 'Недавно';
+                }
+              })()}
+            </Text>
           </View>
         </View>
         
         <View style={[styles.ratingBadge, { borderColor: ratingColor }]}>
           <Text style={[styles.ratingText, { color: ratingColor }]}>
-            {formatRating(review.rating)}
+            {formatRating(finalRating)}
           </Text>
         </View>
       </TouchableOpacity>

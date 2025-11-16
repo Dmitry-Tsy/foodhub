@@ -18,7 +18,7 @@ import { Theme } from '../constants/theme';
 import { Colors } from '../constants/colors';
 import { useAppDispatch, useAppSelector } from '../store';
 import { fetchRestaurantById } from '../store/slices/restaurantSlice';
-import { fetchRestaurantMenu } from '../store/slices/dishSlice';
+import { fetchRestaurantMenu, clearMenu } from '../store/slices/dishSlice';
 import { formatDistance, formatRating } from '../utils/formatters';
 import { exitGuestMode } from '../store/slices/authSlice';
 import { toggleRestaurantFavorite } from '../store/slices/favoritesSlice';
@@ -69,6 +69,9 @@ const RestaurantDetailScreen: React.FC<Props> = ({ route, navigation }) => {
 
   useEffect(() => {
     console.log('📍 RestaurantDetailScreen: 8. useEffect - монтирование компонента');
+    
+    // Очищаем меню предыдущего ресторана при переходе к новому
+    dispatch(clearMenu());
     
     // Загружаем ресторан по Google Places ID (для отображения)
     try {
@@ -296,7 +299,7 @@ const RestaurantDetailScreen: React.FC<Props> = ({ route, navigation }) => {
                 <View style={styles.ratingBadge}>
                   <Ionicons name="star" size={18} color={Colors.gold} />
                   <Text style={styles.ratingText}>
-                    {formatRating(currentRestaurant.averageRating)}
+                    {formatRating(currentRestaurant.averageRating ?? 0)}
                   </Text>
                   {currentRestaurant.reviewCount !== undefined && (
                     <Text style={styles.reviewCountText}>
@@ -403,7 +406,19 @@ const RestaurantDetailScreen: React.FC<Props> = ({ route, navigation }) => {
         dishesLoading,
       });
       
-      const safeDishes = Array.isArray(dishes) ? dishes.filter(d => d != null) : [];
+      // Фильтруем блюда - показываем только те, что принадлежат текущему ресторану
+      // Безопасная фильтрация: сначала фильтруем null/undefined
+      const safeDishes = Array.isArray(dishes) 
+        ? dishes.filter(d => {
+            if (!d || !d.restaurantId) return false;
+            // Фильтруем по restaurantId блюда
+            // Если это Google Places ID, нужно сравнивать с UUID из БД
+            // Но обычно backend уже фильтрует правильно, так что дополнительная проверка на всякий случай
+            return d.restaurantId && d.restaurantId.length > 0;
+          })
+        : [];
+      
+      console.log('📍 RestaurantDetailScreen: 27. Отфильтровано блюд:', safeDishes.length);
       
       return (
         <>

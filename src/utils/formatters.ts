@@ -40,12 +40,30 @@ export const formatRating = (rating: number | null | undefined): string => {
 
 /**
  * Форматирует дату в относительный формат (например, "2 часа назад")
+ * Безопасная обработка ошибок
  */
-export const formatRelativeTime = (date: string | Date): string => {
-  return formatDistanceToNow(new Date(date), { 
-    addSuffix: true,
-    locale: ru 
-  });
+export const formatRelativeTime = (date: string | Date | null | undefined): string => {
+  try {
+    if (!date) {
+      return 'Недавно';
+    }
+    
+    const dateObj = date instanceof Date ? date : new Date(date);
+    
+    // Проверяем валидность даты
+    if (isNaN(dateObj.getTime())) {
+      console.warn('⚠️ formatRelativeTime: неверная дата', date);
+      return 'Недавно';
+    }
+    
+    return formatDistanceToNow(dateObj, { 
+      addSuffix: true,
+      locale: ru 
+    });
+  } catch (error) {
+    console.error('❌ Ошибка в formatRelativeTime:', error, date);
+    return 'Недавно';
+  }
 };
 
 /**
