@@ -77,12 +77,12 @@ export const addDish = async (req: AuthRequest, res: Response) => {
 
     const dish = await Dish.create({
       name: name.trim(),
-      description: description?.trim() || null,
+      description: description?.trim() || undefined,
       restaurantId, // Гарантированно UUID ресторана из БД
       addedBy: userId,
-      photo: photo || null,
-      price: price ? Number(price) : null,
-      category: category?.trim() || null,
+      photo: photo || undefined,
+      price: price ? Number(price) : undefined,
+      category: category?.trim() || undefined,
       averageRating: 0,
       reviewCount: 0,
     });
