@@ -35,32 +35,63 @@ export const addDish = async (req: AuthRequest, res: Response) => {
     const { name, description, restaurantId, photo, price, category } = req.body;
     const userId = req.userId!;
 
-    // Проверка дубликатов
+    // Валидация входных данных
+    if (!name || !name.trim()) {
+      return res.status(400).json({
+        success: false,
+        error: 'Название блюда обязательно',
+      });
+    }
+
+    if (!restaurantId) {
+      return res.status(400).json({
+        success: false,
+        error: 'ID ресторана обязателен',
+      });
+    }
+
+    // Проверяем что ресторан существует
+    const restaurant = await Restaurant.findByPk(restaurantId);
+    if (!restaurant) {
+      return res.status(404).json({
+        success: false,
+        error: 'Ресторан не найден',
+      });
+    }
+
+    // Проверка дубликатов - ищем точное совпадение названия в этом ресторане
     const existingDish = await Dish.findOne({
       where: {
         restaurantId,
-        name: { [Op.iLike]: name },
+        name: { [Op.iLike]: name.trim() },
       },
     });
 
     if (existingDish) {
       return res.status(400).json({
         success: false,
-        error: `Блюдо "${existingDish.name}" уже есть в меню`,
+        error: `Блюдо "${existingDish.name}" уже есть в меню этого ресторана`,
         similarDish: existingDish,
       });
     }
 
     const dish = await Dish.create({
-      name,
-      description,
-      restaurantId,
+      name: name.trim(),
+      description: description?.trim() || null,
+      restaurantId, // Гарантированно UUID ресторана из БД
       addedBy: userId,
-      photo,
-      price,
-      category,
+      photo: photo || null,
+      price: price ? Number(price) : null,
+      category: category?.trim() || null,
       averageRating: 0,
       reviewCount: 0,
+    });
+
+    console.log('✅ Блюдо создано в БД:', {
+      dishId: dish.id,
+      dishName: dish.name,
+      restaurantId: dish.restaurantId,
+      addedBy: dish.addedBy,
     });
 
     // Обновляем счетчик пользователя

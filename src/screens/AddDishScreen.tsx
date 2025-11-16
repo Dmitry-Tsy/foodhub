@@ -69,7 +69,28 @@ const AddDishScreen: React.FC<Props> = ({ route, navigation }) => {
         return;
       }
 
-      const result = await checkDuplicateDish(dishName, dishes);
+      // Получаем UUID ресторана для проверки уникальности
+      let dbRestaurantId = restaurantId;
+      try {
+        if (restaurantId.startsWith('ChIJ') && currentRestaurant) {
+          dbRestaurantId = await getOrCreateRestaurantInDB(currentRestaurant);
+        }
+      } catch (error) {
+        console.error('❌ Ошибка получения UUID для проверки дубликатов:', error);
+      }
+
+      // Фильтруем блюда только текущего ресторана для проверки уникальности
+      const restaurantDishes = Array.isArray(dishes)
+        ? dishes.filter((dish) => dish && dish.restaurantId === dbRestaurantId)
+        : [];
+
+      console.log('🔍 Проверка дубликатов:', {
+        dishName,
+        restaurantId: dbRestaurantId,
+        dishesCount: restaurantDishes.length,
+      });
+
+      const result = await checkDuplicateDish(dishName, restaurantDishes);
       if (result.isDuplicate) {
         setDuplicateWarning(
           `Похожее блюдо уже есть: "${result.similarDish}" (${result.similarity}% схожести)`
@@ -78,7 +99,7 @@ const AddDishScreen: React.FC<Props> = ({ route, navigation }) => {
         setDuplicateWarning('');
       }
     },
-    [dishes]
+    [dishes, restaurantId, currentRestaurant]
   );
 
   const handleNameChange = (text: string) => {
@@ -136,7 +157,18 @@ const AddDishScreen: React.FC<Props> = ({ route, navigation }) => {
         console.log('✅ Получен UUID из БД:', dbRestaurantId);
       }
 
-      await dispatch(
+      // Проверяем что dbRestaurantId валидный UUID
+      if (!dbRestaurantId || dbRestaurantId.length < 30) {
+        throw new Error('Неверный ID ресторана. Попробуйте снова.');
+      }
+
+      console.log('➕ Добавление блюда:', {
+        name: name.trim(),
+        restaurantId: dbRestaurantId,
+        price,
+      });
+
+      const newDish = await dispatch(
         addDish({
           name: name.trim(),
           description: description.trim() || undefined,
@@ -147,6 +179,12 @@ const AddDishScreen: React.FC<Props> = ({ route, navigation }) => {
           photo: photo[0],
         })
       ).unwrap();
+
+      console.log('✅ Блюдо добавлено:', {
+        dishId: newDish.id,
+        dishName: newDish.name,
+        restaurantId: newDish.restaurantId,
+      });
 
       // Перезагружаем меню ресторана чтобы убедиться что показываются только правильные блюда
       console.log('🔄 Перезагрузка меню ресторана после добавления блюда...');
@@ -160,7 +198,8 @@ const AddDishScreen: React.FC<Props> = ({ route, navigation }) => {
       ]);
     } catch (error: any) {
       console.error('❌ Ошибка добавления блюда:', error);
-      Alert.alert('Ошибка', error || 'Не удалось добавить блюдо');
+      const errorMessage = error?.response?.data?.error || error?.message || error || 'Не удалось добавить блюдо';
+      Alert.alert('Ошибка', errorMessage);
     }
   };
 

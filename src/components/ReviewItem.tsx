@@ -26,16 +26,31 @@ export const ReviewItem: React.FC<ReviewItemProps> = ({
     return null;
   }
 
-  // Безопасная обработка рейтинга
-  const safeRating = review?.rating ?? 0;
-  const numRating = Number(safeRating);
-  const finalRating = isNaN(numRating) ? 0 : Math.max(0, Math.min(10, numRating));
-  const ratingColor = getRatingColor(finalRating);
+  // Безопасная обработка рейтинга с полной защитой
+  let finalRating = 0;
+  let ratingColor = Colors.rating.poor;
   
-  // Безопасная обработка trustScore
-  const safeTrustScore = author?.trustScore ?? 0;
-  const numTrustScore = Number(safeTrustScore);
-  const finalTrustScore = isNaN(numTrustScore) ? 0 : numTrustScore;
+  try {
+    const safeRating = review?.rating ?? 0;
+    const numRating = Number(safeRating);
+    finalRating = isNaN(numRating) ? 0 : Math.max(0, Math.min(10, numRating));
+    ratingColor = getRatingColor(finalRating);
+  } catch (e) {
+    console.error('❌ Ошибка обработки рейтинга в ReviewItem:', e);
+    finalRating = 0;
+    ratingColor = Colors.rating.poor;
+  }
+  
+  // Безопасная обработка trustScore с полной защитой
+  let finalTrustScore = 0;
+  try {
+    const safeTrustScore = author?.trustScore ?? 0;
+    const numTrustScore = Number(safeTrustScore);
+    finalTrustScore = isNaN(numTrustScore) ? 0 : numTrustScore;
+  } catch (e) {
+    console.error('❌ Ошибка обработки trustScore в ReviewItem:', e);
+    finalTrustScore = 0;
+  }
   
   // Безопасная обработка даты
   const safeCreatedAt = review?.createdAt || new Date().toISOString();
