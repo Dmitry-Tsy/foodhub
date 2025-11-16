@@ -34,7 +34,13 @@ export const ReviewItem: React.FC<ReviewItemProps> = ({
     const safeRating = review?.rating ?? 0;
     const numRating = Number(safeRating);
     finalRating = isNaN(numRating) ? 0 : Math.max(0, Math.min(10, numRating));
-    ratingColor = getRatingColor(finalRating);
+    // Дополнительная проверка что getRatingColor это функция
+    if (typeof getRatingColor === 'function') {
+      ratingColor = getRatingColor(finalRating);
+    } else {
+      console.error('❌ getRatingColor не является функцией:', typeof getRatingColor);
+      ratingColor = Colors.rating.poor;
+    }
   } catch (e) {
     console.error('❌ Ошибка обработки рейтинга в ReviewItem:', e);
     finalRating = 0;
@@ -102,7 +108,24 @@ export const ReviewItem: React.FC<ReviewItemProps> = ({
         
         <View style={[styles.ratingBadge, { borderColor: ratingColor }]}>
           <Text style={[styles.ratingText, { color: ratingColor }]}>
-            {formatRating(finalRating)}
+            {(() => {
+              try {
+                // Дополнительная проверка что formatRating это функция
+                if (typeof formatRating !== 'function') {
+                  console.error('❌ formatRating не является функцией:', typeof formatRating);
+                  return String(finalRating.toFixed(1));
+                }
+                return formatRating(finalRating);
+              } catch (e) {
+                console.error('❌ Ошибка в formatRating для ReviewItem:', e);
+                // Fallback - используем прямое форматирование
+                try {
+                  return String(finalRating.toFixed(1));
+                } catch (e2) {
+                  return '0.0';
+                }
+              }
+            })()}
           </Text>
         </View>
       </TouchableOpacity>

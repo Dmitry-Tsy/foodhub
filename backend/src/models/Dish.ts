@@ -12,12 +12,13 @@ export interface DishAttributes {
   reviewCount: number;
   price?: number;
   category?: string;
+  ingredients?: string[];
   createdAt?: Date;
   updatedAt?: Date;
 }
 
 // Тип для создания - id опционален, т.к. генерируется автоматически
-export interface DishCreationAttributes extends Optional<DishAttributes, 'id' | 'description' | 'photo' | 'averageRating' | 'reviewCount' | 'price' | 'category' | 'createdAt' | 'updatedAt'> {}
+export interface DishCreationAttributes extends Optional<DishAttributes, 'id' | 'description' | 'photo' | 'averageRating' | 'reviewCount' | 'price' | 'category' | 'ingredients' | 'createdAt' | 'updatedAt'> {}
 
 class Dish extends Model<DishAttributes, DishCreationAttributes> implements DishAttributes {
   public id!: string;
@@ -30,6 +31,7 @@ class Dish extends Model<DishAttributes, DishCreationAttributes> implements Dish
   public reviewCount!: number;
   public price?: number;
   public category?: string;
+  public ingredients?: string[];
   
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -86,6 +88,11 @@ Dish.init(
     category: {
       type: DataTypes.STRING,
       allowNull: true,
+    },
+    ingredients: {
+      type: DataTypes.ARRAY(DataTypes.STRING),
+      allowNull: true,
+      defaultValue: [],
     },
   },
   {

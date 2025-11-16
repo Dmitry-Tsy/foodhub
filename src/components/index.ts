@@ -11,4 +11,6 @@ export { RestaurantMap } from './RestaurantMap';
 export { AchievementBadge } from './AchievementBadge';
 export { PairingCard } from './PairingCard';
 export { default as ErrorBoundary } from './ErrorBoundary';
+export { CategoryPicker } from './CategoryPicker';
+export { IngredientInput } from './IngredientInput';
 

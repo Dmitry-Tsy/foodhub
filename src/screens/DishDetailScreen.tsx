@@ -189,14 +189,22 @@ const DishDetailScreen: React.FC<Props> = ({ route, navigation }) => {
         {reviewsLoading ? (
           <Loading text="Загрузка отзывов..." />
         ) : reviews.length > 0 ? (
-          reviews.map((review) => (
-            <ReviewItem
-              key={review.id}
-              review={review}
-              author={review.author}
-              onAuthorPress={() => review.authorId && handleAuthorPress(review.authorId)}
-            />
-          ))
+          reviews.map((review) => {
+            // Безопасная проверка review
+            if (!review || !review.id) {
+              console.warn('⚠️ DishDetailScreen: пропущен невалидный review');
+              return null;
+            }
+            
+            return (
+              <ReviewItem
+                key={review.id}
+                review={review}
+                author={review.author || undefined}
+                onAuthorPress={() => review.authorId && handleAuthorPress(review.authorId)}
+              />
+            );
+          }).filter(Boolean)
         ) : (
           <View style={styles.emptyReviews}>
             <Ionicons name="chatbubbles-outline" size={48} color={Colors.textLight} />

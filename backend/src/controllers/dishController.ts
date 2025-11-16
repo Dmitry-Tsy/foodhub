@@ -32,7 +32,7 @@ export const getRestaurantMenu = async (req: AuthRequest, res: Response) => {
 // Добавить блюдо
 export const addDish = async (req: AuthRequest, res: Response) => {
   try {
-    const { name, description, restaurantId, photo, price, category } = req.body;
+    const { name, description, restaurantId, photo, price, category, ingredients } = req.body;
     const userId = req.userId!;
 
     // Валидация входных данных
@@ -83,6 +83,9 @@ export const addDish = async (req: AuthRequest, res: Response) => {
       photo: photo || undefined,
       price: price ? Number(price) : undefined,
       category: category?.trim() || undefined,
+      ingredients: Array.isArray(ingredients) && ingredients.length > 0 
+        ? ingredients.filter((ing: string) => ing && ing.trim()).map((ing: string) => ing.trim())
+        : undefined,
       averageRating: 0,
       reviewCount: 0,
     });

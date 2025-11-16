@@ -11,11 +11,11 @@ import {
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { RootStackParamList } from '../types';
-import { Button, Input, ImageUploader } from '../components';
+import { Button, Input, ImageUploader, CategoryPicker, IngredientInput } from '../components';
 import { Theme } from '../constants/theme';
 import { Colors } from '../constants/colors';
 import { useAppDispatch, useAppSelector } from '../store';
-import { addDish, fetchRestaurantMenu } from '../store/slices/dishSlice';
+import { addDish, fetchRestaurantMenu, clearMenu } from '../store/slices/dishSlice';
 import { checkDuplicateDish } from '../utils/duplicateChecker';
 import { getOrCreateRestaurantInDB } from '../services/restaurantService';
 
@@ -25,22 +25,27 @@ const AddDishScreen: React.FC<Props> = ({ route, navigation }) => {
   const { restaurantId } = route.params;
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
-  const { dishes, isLoading } = useAppSelector((state) => state.dishes);
+  const { dishes, isLoading, currentRestaurantId } = useAppSelector((state) => state.dishes);
   const { currentRestaurant } = useAppSelector((state) => state.restaurants);
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
   const [category, setCategory] = useState('');
+  const [ingredients, setIngredients] = useState<string[]>([]);
   const [photo, setPhoto] = useState<string[]>([]);
   const [duplicateWarning, setDuplicateWarning] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const debounceTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     // Load existing dishes for duplicate checking
     // Сначала конвертируем Google Places ID в UUID если нужно
     const loadMenu = async () => {
       try {
+        // Очищаем меню перед загрузкой нового
+        dispatch(clearMenu());
+        
         let dbRestaurantId = restaurantId;
         
         // Если restaurantId похож на Google Places ID (начинается с ChIJ)
@@ -50,7 +55,8 @@ const AddDishScreen: React.FC<Props> = ({ route, navigation }) => {
           console.log('✅ Получен UUID из БД для меню:', dbRestaurantId);
         }
         
-        dispatch(fetchRestaurantMenu(dbRestaurantId));
+        console.log('📥 Загружаю меню для проверки дубликатов:', dbRestaurantId);
+        await dispatch(fetchRestaurantMenu(dbRestaurantId));
       } catch (error: any) {
         console.error('❌ Ошибка конвертации restaurantId для меню:', error);
         // Попробуем загрузить с исходным ID (может быть уже UUID)
@@ -69,46 +75,119 @@ const AddDishScreen: React.FC<Props> = ({ route, navigation }) => {
         return;
       }
 
-      // Получаем UUID ресторана для проверки уникальности
-      let dbRestaurantId = restaurantId;
-      try {
-        if (restaurantId.startsWith('ChIJ') && currentRestaurant) {
-          dbRestaurantId = await getOrCreateRestaurantInDB(currentRestaurant);
+      // КРИТИЧНО: Используем currentRestaurantId из Redux - это UUID который использовался при загрузке меню
+      if (!currentRestaurantId) {
+        console.warn('⚠️ checkForDuplicates: currentRestaurantId не установлен, пропускаем проверку');
+        // Попробуем получить UUID
+        let dbRestaurantId = restaurantId;
+        try {
+          if (restaurantId.startsWith('ChIJ') && currentRestaurant) {
+            dbRestaurantId = await getOrCreateRestaurantInDB(currentRestaurant);
+            console.log('✅ Получен UUID для проверки дубликатов:', dbRestaurantId);
+          }
+        } catch (error) {
+          console.error('❌ Ошибка получения UUID для проверки дубликатов:', error);
+          return;
         }
-      } catch (error) {
-        console.error('❌ Ошибка получения UUID для проверки дубликатов:', error);
+        
+        // Если меню еще не загружено, загружаем его
+        if (!Array.isArray(dishes) || dishes.length === 0) {
+          console.log('📥 Загружаю меню для проверки дубликатов...');
+          await dispatch(fetchRestaurantMenu(dbRestaurantId));
+          // Ждем немного чтобы Redux обновился
+          await new Promise(resolve => setTimeout(resolve, 100));
+          // Повторно получаем dishes из Redux после обновления
+          // Нужно использовать свежие данные - но это сложно в useCallback
+          // Поэтому просто пропускаем проверку если меню не загружено
+        }
       }
 
-      // Фильтруем блюда только текущего ресторана для проверки уникальности
+      // Используем currentRestaurantId - это UUID текущего ресторана
+      const targetRestaurantId = currentRestaurantId;
+      
+      if (!targetRestaurantId) {
+        console.warn('⚠️ checkForDuplicates: нет targetRestaurantId, пропускаем проверку');
+        return;
+      }
+
+      // Фильтруем блюда ТОЛЬКО по UUID текущего ресторана
       const restaurantDishes = Array.isArray(dishes)
-        ? dishes.filter((dish) => dish && dish.restaurantId === dbRestaurantId)
+        ? dishes.filter((dish) => {
+            if (!dish || !dish.restaurantId) {
+              console.warn('⚠️ Блюдо без restaurantId:', dish);
+              return false;
+            }
+            // Строгое сравнение - только UUID из currentRestaurantId
+            const matches = dish.restaurantId === targetRestaurantId;
+            
+            if (!matches && dish.restaurantId) {
+              console.warn('⚠️ Блюдо не принадлежит текущему ресторану:', {
+                dishName: dish.name,
+                dishRestaurantId: dish.restaurantId,
+                targetRestaurantId,
+                isGooglePlacesId: dish.restaurantId.startsWith('ChIJ'),
+              });
+            }
+            
+            return matches;
+          })
         : [];
 
       console.log('🔍 Проверка дубликатов:', {
         dishName,
-        restaurantId: dbRestaurantId,
-        dishesCount: restaurantDishes.length,
+        targetRestaurantId,
+        currentRestaurantId,
+        allDishesCount: Array.isArray(dishes) ? dishes.length : 0,
+        restaurantDishesCount: restaurantDishes.length,
+        restaurantDishes: restaurantDishes.map(d => ({ name: d.name, restaurantId: d.restaurantId })),
+        allDishes: Array.isArray(dishes) ? dishes.map(d => ({ name: d.name, restaurantId: d.restaurantId })) : [],
       });
+
+      if (restaurantDishes.length === 0) {
+        console.log('⚠️ Меню пустое или не загружено, пропускаем проверку дубликатов');
+        setDuplicateWarning('');
+        return;
+      }
 
       const result = await checkDuplicateDish(dishName, restaurantDishes);
       if (result.isDuplicate) {
         setDuplicateWarning(
-          `Похожее блюдо уже есть: "${result.similarDish}" (${result.similarity}% схожести)`
+          `Блюдо "${result.similarDish}" уже есть в меню этого ресторана`
         );
       } else {
         setDuplicateWarning('');
       }
     },
-    [dishes, restaurantId, currentRestaurant]
+    [dishes, restaurantId, currentRestaurant, currentRestaurantId, dispatch]
   );
 
   const handleNameChange = (text: string) => {
     setName(text);
-    // Debounce duplicate check
-    const timeoutId = setTimeout(() => {
-      checkForDuplicates(text);
-    }, 500);
-    return () => clearTimeout(timeoutId);
+    
+    // Очищаем предыдущий таймаут
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+    
+    // Debounce duplicate check - ждем 800ms чтобы дать время загрузиться меню если оно еще не загружено
+    debounceTimeoutRef.current = setTimeout(() => {
+      // Проверяем что меню загружено или загружаем его
+      if (!currentRestaurantId && restaurantId.startsWith('ChIJ') && currentRestaurant) {
+        // Меню еще не загружено, загружаем его асинхронно
+        (async () => {
+          try {
+            const dbRestaurantId = await getOrCreateRestaurantInDB(currentRestaurant);
+            await dispatch(fetchRestaurantMenu(dbRestaurantId));
+            // После загрузки проверяем дубликаты
+            setTimeout(() => checkForDuplicates(text), 200);
+          } catch (error) {
+            console.error('❌ Ошибка загрузки меню для проверки дубликатов:', error);
+          }
+        })();
+      } else {
+        checkForDuplicates(text);
+      }
+    }, 800);
   };
 
   const validateForm = (): boolean => {
@@ -176,6 +255,7 @@ const AddDishScreen: React.FC<Props> = ({ route, navigation }) => {
           // addedBy берется из токена на backend автоматически
           price: price ? Number(price) : undefined,
           category: category.trim() || undefined,
+          ingredients: ingredients.length > 0 ? ingredients : undefined,
           photo: photo[0],
         })
       ).unwrap();
@@ -247,11 +327,19 @@ const AddDishScreen: React.FC<Props> = ({ route, navigation }) => {
           error={errors.price}
         />
 
-        <Input
+        <CategoryPicker
           label="Категория"
-          placeholder="Например: Основные блюда, Десерты"
           value={category}
-          onChangeText={setCategory}
+          onValueChange={setCategory}
+          error={errors.category}
+        />
+
+        <IngredientInput
+          label="Ингредиенты"
+          value={ingredients}
+          onChange={setIngredients}
+          dishName={name}
+          error={errors.ingredients}
         />
 
         <ImageUploader

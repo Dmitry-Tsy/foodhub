@@ -46,6 +46,7 @@ export interface Dish {
   reviewCount: number;
   price?: number;
   category?: string;
+  ingredients?: string[];
   createdAt: string;
 }
 

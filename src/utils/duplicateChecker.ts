@@ -1,21 +1,21 @@
-import stringSimilarity from 'string-similarity';
 import { Dish, DuplicateCheckResult } from '../types';
-
-const SIMILARITY_THRESHOLD = 0.85; // 85% схожести
 
 /**
  * Нормализует название блюда для сравнения
+ * Убирает регистр, пробелы, знаки препинания
  */
 const normalizeDishName = (name: string): string => {
   return name
     .toLowerCase()
     .trim()
-    .replace(/[^\w\s]/gi, '') // Убираем специальные символы
-    .replace(/\s+/g, ' '); // Множественные пробелы в один
+    .replace(/[^\w\sа-яё]/gi, '') // Убираем специальные символы (включая русские)
+    .replace(/\s+/g, ' ') // Множественные пробелы в один
+    .replace(/\s/g, ''); // Убираем все пробелы для точного сравнения
 };
 
 /**
  * Проверяет существующие блюда на дубликаты
+ * Использует ТОЛЬКО точное совпадение (без учета регистра и пробелов)
  */
 export const checkDuplicateDish = async (
   dishName: string,
@@ -27,6 +27,10 @@ export const checkDuplicateDish = async (
 
   const normalizedInput = normalizeDishName(dishName);
   
+  if (normalizedInput.length < 2) {
+    return { isDuplicate: false };
+  }
+  
   // Получаем массив названий существующих блюд
   const existingNames = existingDishes.map(dish => normalizeDishName(dish.name));
   
@@ -34,16 +38,15 @@ export const checkDuplicateDish = async (
     return { isDuplicate: false };
   }
 
-  // Находим наиболее похожее блюдо
-  const matches = stringSimilarity.findBestMatch(normalizedInput, existingNames);
-  const bestMatch = matches.bestMatch;
-
-  if (bestMatch.rating >= SIMILARITY_THRESHOLD) {
-    const similarDish = existingDishes[matches.bestMatchIndex];
+  // Проверяем ТОЛЬКО точное совпадение
+  const exactMatchIndex = existingNames.findIndex(name => name === normalizedInput);
+  
+  if (exactMatchIndex !== -1) {
+    const similarDish = existingDishes[exactMatchIndex];
     return {
       isDuplicate: true,
       similarDish: similarDish.name,
-      similarity: Math.round(bestMatch.rating * 100),
+      similarity: 100, // Точное совпадение
     };
   }
 

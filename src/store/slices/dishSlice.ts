@@ -22,8 +22,28 @@ export const fetchRestaurantMenu = createAsyncThunk(
   'dishes/fetchMenu',
   async (restaurantId: string, { rejectWithValue }) => {
     try {
-      return await dishService.getRestaurantMenu(restaurantId);
+      console.log('🍽️ fetchRestaurantMenu вызван с restaurantId:', restaurantId);
+      const dishes = await dishService.getRestaurantMenu(restaurantId);
+      console.log('✅ fetchRestaurantMenu получил блюд:', dishes.length);
+      
+      // Проверяем что все блюда принадлежат этому ресторану
+      const wrongDishes = dishes.filter(d => d.restaurantId !== restaurantId);
+      if (wrongDishes.length > 0) {
+        console.error('❌ Обнаружены блюда с неправильным restaurantId:', {
+          expectedRestaurantId: restaurantId,
+          wrongDishes: wrongDishes.map(d => ({
+            dishId: d.id,
+            dishName: d.name,
+            dishRestaurantId: d.restaurantId,
+          })),
+        });
+        // Фильтруем неправильные блюда
+        return dishes.filter(d => d.restaurantId === restaurantId);
+      }
+      
+      return dishes;
     } catch (error: any) {
+      console.error('❌ Ошибка fetchRestaurantMenu:', error);
       return rejectWithValue(error.message || 'Ошибка загрузки меню');
     }
   }
@@ -75,13 +95,48 @@ const dishSlice = createSlice({
       .addCase(fetchRestaurantMenu.fulfilled, (state, action) => {
         state.isLoading = false;
         // Сохраняем меню только для текущего ресторана
-        // В action.meta.arg хранится restaurantId который был передан
-        if (action.meta.arg) {
-          state.currentRestaurantId = action.meta.arg;
+        // В action.meta.arg хранится restaurantId который был передан (должен быть UUID)
+        const restaurantId = action.meta.arg;
+        if (restaurantId) {
+          // ОЧИЩАЕМ старые блюда перед установкой новых
+          state.dishes = [];
+          state.currentRestaurantId = restaurantId;
+          
           // Фильтруем блюда только для этого ресторана (на всякий случай)
-          state.dishes = action.payload.filter((dish: Dish) => dish.restaurantId === action.meta.arg);
+          const payload = Array.isArray(action.payload) ? action.payload : [];
+          const filteredDishes = payload.filter((dish: Dish) => {
+            if (!dish || !dish.restaurantId) {
+              console.warn('⚠️ Блюдо без restaurantId пропущено:', dish);
+              return false;
+            }
+            const matches = dish.restaurantId === restaurantId;
+            
+            if (!matches) {
+              console.error('❌ Блюдо с неправильным restaurantId:', {
+                dishId: dish.id,
+                dishName: dish.name,
+                dishRestaurantId: dish.restaurantId,
+                expectedRestaurantId: restaurantId,
+                isGooglePlacesId: dish.restaurantId.startsWith('ChIJ'),
+              });
+            }
+            
+            return matches;
+          });
+          
+          console.log('🍽️ Загружено меню в Redux:', {
+            restaurantId,
+            totalFromAPI: payload.length,
+            filteredDishes: filteredDishes.length,
+            dishesWithWrongRestaurant: payload.filter((d: Dish) => d?.restaurantId && d.restaurantId !== restaurantId).length,
+            dishIds: filteredDishes.map((d: Dish) => ({ id: d.id, name: d.name, restaurantId: d.restaurantId })),
+          });
+          
+          state.dishes = filteredDishes;
         } else {
-          state.dishes = action.payload;
+          console.warn('⚠️ fetchRestaurantMenu: restaurantId не найден в action.meta.arg');
+          state.dishes = [];
+          state.currentRestaurantId = null;
         }
       })
       .addCase(fetchRestaurantMenu.rejected, (state, action) => {
@@ -110,16 +165,18 @@ const dishSlice = createSlice({
       })
       .addCase(addDish.fulfilled, (state, action) => {
         state.isLoading = false;
-        // Добавляем блюдо только если оно принадлежит текущему ресторану
+        // НЕ добавляем блюдо автоматически в список - вместо этого перезагружаем меню
+        // Это гарантирует что блюдо будет загружено с сервера с правильным restaurantId
+        // И не будет добавлено если оно принадлежит другому ресторану
         const newDish = action.payload;
-        if (state.currentRestaurantId && newDish.restaurantId === state.currentRestaurantId) {
-          // Проверяем что блюдо еще не в списке (по ID)
-          const exists = state.dishes.some((dish) => dish.id === newDish.id);
-          if (!exists) {
-            state.dishes.push(newDish);
-          }
-        }
-        // Если currentRestaurantId не установлен, не добавляем (меню еще не загружено)
+        console.log('✅ Блюдо добавлено в Redux:', {
+          dishId: newDish.id,
+          dishName: newDish.name,
+          dishRestaurantId: newDish.restaurantId,
+          currentRestaurantId: state.currentRestaurantId,
+          match: state.currentRestaurantId && newDish.restaurantId === state.currentRestaurantId,
+        });
+        // НЕ добавляем в state.dishes - меню будет перезагружено в AddDishScreen
       })
       .addCase(addDish.rejected, (state, action) => {
         state.isLoading = false;

@@ -44,12 +44,13 @@ const RestaurantDetailScreen: React.FC<Props> = ({ route, navigation }) => {
     restaurantName: currentRestaurant?.name,
   });
   
-  const { dishes, isLoading: dishesLoading } = useAppSelector(
+  const { dishes, isLoading: dishesLoading, currentRestaurantId } = useAppSelector(
     (state) => state.dishes
   );
   console.log('📍 RestaurantDetailScreen: 5. dishes state получен', {
     dishesCount: Array.isArray(dishes) ? dishes.length : 0,
     isLoading: dishesLoading,
+    currentRestaurantId,
   });
   
   const { isGuest, user } = useAppSelector((state) => state.auth);
@@ -93,22 +94,22 @@ const RestaurantDetailScreen: React.FC<Props> = ({ route, navigation }) => {
         if (restaurantId.startsWith('ChIJ')) {
           console.log('📍 RestaurantDetailScreen: 12. Конвертация Google Places ID в UUID...');
           
-          // Сначала загружаем ресторан если его нет
-          let restaurant = currentRestaurant;
-          if (!restaurant) {
-            console.log('📍 RestaurantDetailScreen: 13. Ресторана нет в state, загружаем...');
-            try {
-              restaurant = await dispatch(fetchRestaurantById(restaurantId)).unwrap();
-              console.log('📍 RestaurantDetailScreen: 14. Ресторан загружен для конвертации:', restaurant?.name);
-            } catch (err: any) {
-              console.error('❌ RestaurantDetailScreen: Ошибка загрузки ресторана для конвертации:', err);
-              // Пропускаем конвертацию, попробуем загрузить меню с исходным ID
-              console.log('📍 RestaurantDetailScreen: 15. Загружаю меню с исходным ID (ошибка конвертации)');
-              dispatch(fetchRestaurantMenu(restaurantId));
-              return;
+          // ВСЕГДА загружаем ресторан заново, чтобы получить актуальные данные
+          let restaurant;
+          try {
+            console.log('📍 RestaurantDetailScreen: 13. Загружаю ресторан для конвертации...');
+            restaurant = await dispatch(fetchRestaurantById(restaurantId)).unwrap();
+            console.log('📍 RestaurantDetailScreen: 14. Ресторан загружен для конвертации:', restaurant?.name, restaurant?.id);
+            
+            if (!restaurant) {
+              throw new Error('Ресторан не найден');
             }
-          } else {
-            console.log('📍 RestaurantDetailScreen: 14. Ресторан уже в state:', restaurant.name);
+          } catch (err: any) {
+            console.error('❌ RestaurantDetailScreen: Ошибка загрузки ресторана для конвертации:', err);
+            // Пропускаем конвертацию, попробуем загрузить меню с исходным ID
+            console.log('📍 RestaurantDetailScreen: 15. Загружаю меню с исходным ID (ошибка конвертации)');
+            dispatch(fetchRestaurantMenu(restaurantId));
+            return;
           }
           
           if (restaurant) {
@@ -116,6 +117,11 @@ const RestaurantDetailScreen: React.FC<Props> = ({ route, navigation }) => {
               console.log('📍 RestaurantDetailScreen: 15. Вызываю getOrCreateRestaurantInDB...');
               dbRestaurantId = await getOrCreateRestaurantInDB(restaurant);
               console.log('📍 RestaurantDetailScreen: 16. Получен UUID из БД для меню:', dbRestaurantId);
+              
+              // Проверяем что UUID валидный
+              if (!dbRestaurantId || dbRestaurantId.length < 30 || dbRestaurantId.startsWith('ChIJ')) {
+                throw new Error('Неверный UUID получен: ' + dbRestaurantId);
+              }
             } catch (err: any) {
               console.error('❌ RestaurantDetailScreen: Ошибка конвертации в UUID:', err);
               // Пропускаем конвертацию, попробуем загрузить меню с исходным ID
@@ -128,9 +134,10 @@ const RestaurantDetailScreen: React.FC<Props> = ({ route, navigation }) => {
           console.log('📍 RestaurantDetailScreen: 12. restaurantId не похож на Google Places ID, используем как есть');
         }
         
-        console.log('📍 RestaurantDetailScreen: 17. Загружаю меню с ID:', dbRestaurantId);
-        dispatch(fetchRestaurantMenu(dbRestaurantId));
-        console.log('📍 RestaurantDetailScreen: 18. fetchRestaurantMenu вызван');
+        console.log('📍 RestaurantDetailScreen: 17. Загружаю меню с UUID:', dbRestaurantId);
+        // Важно: используем await чтобы дождаться загрузки меню
+        await dispatch(fetchRestaurantMenu(dbRestaurantId));
+        console.log('📍 RestaurantDetailScreen: 18. fetchRestaurantMenu завершен');
       } catch (error: any) {
         console.error('❌ RestaurantDetailScreen: Критическая ошибка в loadMenu:', error);
         // Попробуем загрузить с исходным ID (может быть уже UUID)
@@ -150,6 +157,34 @@ const RestaurantDetailScreen: React.FC<Props> = ({ route, navigation }) => {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [restaurantId]);
+  
+  // Добавляем отдельный useEffect для перезагрузки меню когда currentRestaurant изменился
+  // Это нужно на случай если ресторан загрузился после первого useEffect
+  useEffect(() => {
+    if (currentRestaurant && currentRestaurant.id === restaurantId && restaurantId.startsWith('ChIJ')) {
+      // Ресторан загружен, но меню могло не загрузиться из-за того что currentRestaurant был null
+      const reloadMenu = async () => {
+        // Проверяем что меню еще не загружено или загружено с неправильным ID
+        const shouldReload = !currentRestaurantId || 
+                            (currentRestaurantId && currentRestaurantId.startsWith('ChIJ')) ||
+                            (currentRestaurantId !== restaurantId && !restaurantId.startsWith('ChIJ'));
+        
+        if (shouldReload) {
+          console.log('📍 RestaurantDetailScreen: Перезагружаю меню после загрузки ресторана...');
+          try {
+            const dbRestaurantId = await getOrCreateRestaurantInDB(currentRestaurant);
+            console.log('📍 RestaurantDetailScreen: Перезагружаю меню с UUID:', dbRestaurantId);
+            await dispatch(fetchRestaurantMenu(dbRestaurantId));
+          } catch (error: any) {
+            console.error('❌ RestaurantDetailScreen: Ошибка перезагрузки меню:', error);
+          }
+        }
+      };
+      
+      reloadMenu();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentRestaurant, restaurantId]);
 
   const headerOpacity = scrollY.interpolate({
     inputRange: [0, 200],
@@ -404,21 +439,57 @@ const RestaurantDetailScreen: React.FC<Props> = ({ route, navigation }) => {
       console.log('📍 RestaurantDetailScreen: 26. Рендер меню', {
         dishesCount: Array.isArray(dishes) ? dishes.length : 0,
         dishesLoading,
+        currentRestaurantId,
+        routeRestaurantId: restaurantId,
       });
       
-      // Фильтруем блюда - показываем только те, что принадлежат текущему ресторану
-      // Безопасная фильтрация: сначала фильтруем null/undefined
+      // КРИТИЧНО: Используем ТОЛЬКО currentRestaurantId для фильтрации
+      // currentRestaurantId - это UUID который использовался при загрузке меню
+      // Если его нет, значит меню еще не загружено или загружено с неправильным ID
+      if (!currentRestaurantId) {
+        console.warn('⚠️ RestaurantDetailScreen: currentRestaurantId не установлен! Меню не загружено или загружено с неправильным ID');
+        return (
+          <View style={styles.menuSection}>
+            <Text style={styles.emptyText}>Загрузка меню...</Text>
+          </View>
+        );
+      }
+      
+      // Фильтруем блюда - показываем ТОЛЬКО те, что принадлежат currentRestaurantId (UUID)
+      // Строгое сравнение - только UUID, не Google Places ID
       const safeDishes = Array.isArray(dishes) 
         ? dishes.filter(d => {
-            if (!d || !d.restaurantId) return false;
-            // Фильтруем по restaurantId блюда
-            // Если это Google Places ID, нужно сравнивать с UUID из БД
-            // Но обычно backend уже фильтрует правильно, так что дополнительная проверка на всякий случай
-            return d.restaurantId && d.restaurantId.length > 0;
+            if (!d || !d.restaurantId) {
+              console.warn('⚠️ Блюдо без restaurantId пропущено:', d);
+              return false;
+            }
+            // Строгое сравнение - только UUID
+            const matches = d.restaurantId === currentRestaurantId;
+            
+            if (!matches) {
+              console.error('❌ Блюдо не принадлежит текущему ресторану:', {
+                dishName: d.name,
+                dishId: d.id,
+                dishRestaurantId: d.restaurantId,
+                currentRestaurantId,
+                routeRestaurantId: restaurantId,
+                isDishGooglePlacesId: d.restaurantId.startsWith('ChIJ'),
+                isCurrentRestaurantIdGooglePlacesId: currentRestaurantId.startsWith('ChIJ'),
+              });
+            }
+            
+            return matches;
           })
         : [];
       
-      console.log('📍 RestaurantDetailScreen: 27. Отфильтровано блюд:', safeDishes.length);
+      console.log('📍 RestaurantDetailScreen: 27. Отфильтровано блюд:', {
+        total: Array.isArray(dishes) ? dishes.length : 0,
+        filtered: safeDishes.length,
+        currentRestaurantId,
+        routeRestaurantId: restaurantId,
+        dishesWithWrongId: Array.isArray(dishes) ? dishes.filter(d => d?.restaurantId && d.restaurantId !== currentRestaurantId).length : 0,
+        dishIds: safeDishes.map(d => ({ name: d.name, restaurantId: d.restaurantId })),
+      });
       
       return (
         <>

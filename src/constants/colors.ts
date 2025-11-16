@@ -40,6 +40,7 @@ export const Colors = {
   // Семантические цвета
   success: '#51CF66',      // Зеленый
   warning: '#FFB020',      // Золотой
+  warningLight: '#FFF4E0', // Светло-золотой фон
   error: '#FF6B6B',        // Красный
   info: '#4C6EF5',         // Синий
   gold: '#FFB020',         // Золотой (для звезд рейтинга)
