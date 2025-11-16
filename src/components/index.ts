@@ -13,4 +13,5 @@ export { PairingCard } from './PairingCard';
 export { default as ErrorBoundary } from './ErrorBoundary';
 export { CategoryPicker } from './CategoryPicker';
 export { IngredientInput } from './IngredientInput';
+export { ReviewPhotosGallery } from './ReviewPhotosGallery';
 

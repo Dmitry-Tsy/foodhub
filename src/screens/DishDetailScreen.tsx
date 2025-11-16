@@ -6,6 +6,7 @@ import {
   ScrollView,
   Image,
   RefreshControl,
+  TouchableOpacity,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
@@ -16,6 +17,7 @@ import { Colors } from '../constants/colors';
 import { useAppDispatch, useAppSelector } from '../store';
 import { fetchDishById } from '../store/slices/dishSlice';
 import { fetchDishReviews } from '../store/slices/reviewSlice';
+import { getDishPhotoRatings } from '../services/photoRatingService';
 import { formatRating, formatPrice } from '../utils/formatters';
 import { getRatingColor } from '../constants/colors';
 import { exitGuestMode } from '../store/slices/authSlice';
@@ -39,6 +41,8 @@ const DishDetailScreen: React.FC<Props> = ({ route, navigation }) => {
   const [showGuestPrompt, setShowGuestPrompt] = useState(false);
   const [pairings, setPairings] = useState<Pairing[]>([]);
   const [loadingPairings, setLoadingPairings] = useState(false);
+  const [reviewPhotos, setReviewPhotos] = useState<ReviewPhoto[]>([]);
+  const [loadingPhotos, setLoadingPhotos] = useState(false);
 
   useEffect(() => {
     loadDishData();
@@ -47,8 +51,51 @@ const DishDetailScreen: React.FC<Props> = ({ route, navigation }) => {
   useEffect(() => {
     if (currentDish) {
       loadPairings();
+      loadReviewPhotos();
     }
   }, [currentDish]);
+  
+  // Загружаем фото из отзывов и выбираем лучшую для главной фотографии
+  const loadReviewPhotos = async () => {
+    if (!currentDish) return;
+    
+    setLoadingPhotos(true);
+    try {
+      const response = await getDishPhotoRatings(currentDish.id);
+      setReviewPhotos(response.photos || []);
+    } catch (error) {
+      console.error('❌ Ошибка загрузки фото из отзывов:', error);
+    } finally {
+      setLoadingPhotos(false);
+    }
+  };
+  
+  // Выбираем лучшую фотографию для блюда
+  // Главная фотография = фото с наибольшим score (rating * voteCount)
+  const getBestPhoto = (): string | null => {
+    if (reviewPhotos.length === 0) {
+      return currentDish?.photo || null;
+    }
+    
+    // Сортируем по score (rating * voteCount)
+    const sortedPhotos = [...reviewPhotos].sort((a, b) => (b.score || 0) - (a.score || 0));
+    const bestPhoto = sortedPhotos[0];
+    
+    // Если есть фото с лайками, используем его
+    if (bestPhoto && bestPhoto.score > 0) {
+      return bestPhoto.url;
+    }
+    
+    // Иначе используем оригинальное фото блюда, если есть
+    return currentDish?.photo || null;
+  };
+  
+  const mainPhoto = getBestPhoto();
+  // Фото для галереи под блюдом (исключаем главное фото)
+  const galleryPhotos = reviewPhotos
+    .filter((photo) => photo.url !== mainPhoto)
+    .map((photo) => photo.url)
+    .slice(0, 6); // Показываем максимум 6 фото
 
   const loadDishData = () => {
     dispatch(fetchDishById(dishId));
@@ -58,6 +105,9 @@ const DishDetailScreen: React.FC<Props> = ({ route, navigation }) => {
   const handleRefresh = async () => {
     setRefreshing(true);
     await loadDishData();
+    if (currentDish) {
+      await loadReviewPhotos();
+    }
     setRefreshing(false);
   };
 
@@ -121,8 +171,8 @@ const DishDetailScreen: React.FC<Props> = ({ route, navigation }) => {
         />
       }
     >
-      {currentDish.photo ? (
-        <Image source={{ uri: currentDish.photo }} style={styles.headerImage} />
+      {mainPhoto ? (
+        <Image source={{ uri: mainPhoto }} style={styles.headerImage} />
       ) : (
         <View style={[styles.headerImage, styles.headerImagePlaceholder]}>
           <Ionicons name="fast-food" size={64} color={Colors.textLight} />
@@ -146,6 +196,41 @@ const DishDetailScreen: React.FC<Props> = ({ route, navigation }) => {
 
         {currentDish.description && (
           <Text style={styles.description}>{currentDish.description}</Text>
+        )}
+
+        {/* Фото из отзывов под описанием блюда */}
+        {galleryPhotos.length > 0 && (
+          <View style={styles.photosSection}>
+            <Text style={styles.photosSectionTitle}>Фото блюда из отзывов</Text>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.photosScrollContainer}
+            >
+              {galleryPhotos.map((photoUrl, index) => (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => {
+                    // Находим отзыв с этим фото и открываем его детальный просмотр
+                    const reviewWithPhoto = reviews.find((r) =>
+                      r.photos?.includes(photoUrl)
+                    );
+                    if (reviewWithPhoto) {
+                      navigation.navigate('ReviewDetail', {
+                        reviewId: reviewWithPhoto.id,
+                        dishId: reviewWithPhoto.dishId,
+                      });
+                    }
+                  }}
+                >
+                  <Image
+                    source={{ uri: photoUrl }}
+                    style={styles.reviewPhoto}
+                  />
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
         )}
 
         <View style={styles.statsContainer}>
@@ -202,6 +287,12 @@ const DishDetailScreen: React.FC<Props> = ({ route, navigation }) => {
                 review={review}
                 author={review.author || undefined}
                 onAuthorPress={() => review.authorId && handleAuthorPress(review.authorId)}
+                onPress={() => {
+                  navigation.navigate('ReviewDetail', {
+                    reviewId: review.id,
+                    dishId: review.dishId,
+                  });
+                }}
               />
             );
           }).filter(Boolean)

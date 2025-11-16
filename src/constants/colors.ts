@@ -46,6 +46,7 @@ export const Colors = {
   gold: '#FFB020',         // Золотой (для звезд рейтинга)
   
   // Специальные эффекты
+  transparent: 'transparent',
   shadow: 'rgba(0, 0, 0, 0.1)',
   overlay: 'rgba(0, 0, 0, 0.5)',
   glassDark: 'rgba(0, 0, 0, 0.3)',

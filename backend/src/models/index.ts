@@ -6,6 +6,7 @@ import TasteProfile from './TasteProfile';
 import Follow from './Follow';
 import Favorite from './Favorite';
 import UserAchievement from './UserAchievement';
+import PhotoRating from './PhotoRating';
 
 // Определение связей между моделями
 
@@ -108,5 +109,6 @@ export {
   Follow,
   Favorite,
   UserAchievement,
+  PhotoRating,
 };
 

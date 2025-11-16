@@ -6,12 +6,14 @@ import { Theme } from '../constants/theme';
 import { Colors } from '../constants/colors';
 import { formatRelativeTime, formatRating } from '../utils/formatters';
 import { getRatingColor } from '../constants/colors';
+import { ReviewPhotosGallery } from './ReviewPhotosGallery';
 
 interface ReviewItemProps {
   review: DishReview;
   author?: User;
   onAuthorPress?: () => void;
   onHelpfulPress?: () => void;
+  onPress?: () => void; // Для открытия детального просмотра отзыва
 }
 
 export const ReviewItem: React.FC<ReviewItemProps> = ({
@@ -19,6 +21,7 @@ export const ReviewItem: React.FC<ReviewItemProps> = ({
   author,
   onAuthorPress,
   onHelpfulPress,
+  onPress,
 }) => {
   // Безопасная обработка данных
   if (!review) {
@@ -62,7 +65,12 @@ export const ReviewItem: React.FC<ReviewItemProps> = ({
   const safeCreatedAt = review?.createdAt || new Date().toISOString();
 
   return (
-    <View style={styles.container}>
+    <TouchableOpacity
+      style={styles.container}
+      onPress={onPress}
+      activeOpacity={onPress ? 0.7 : 1}
+      disabled={!onPress}
+    >
       <TouchableOpacity
         style={styles.header}
         onPress={onAuthorPress}
@@ -142,11 +150,12 @@ export const ReviewItem: React.FC<ReviewItemProps> = ({
       )}
       
       {review.photos && review.photos.length > 0 && (
-        <View style={styles.photoContainer}>
-          {review.photos.slice(0, 3).map((photo, index) => (
-            <Image key={index} source={{ uri: photo }} style={styles.photo} />
-          ))}
-        </View>
+        <ReviewPhotosGallery
+          photos={review.photos}
+          reviewId={review.id}
+          dishId={review.dishId}
+          compact={true}
+        />
       )}
       
       <View style={styles.footer}>
@@ -161,7 +170,7 @@ export const ReviewItem: React.FC<ReviewItemProps> = ({
           </Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 

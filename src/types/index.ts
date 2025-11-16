@@ -51,6 +51,13 @@ export interface Dish {
 }
 
 // Review Types
+export interface ReviewPhoto {
+  url: string;
+  rating?: number; // Рейтинг фото (0.0 - 10.0)
+  voteCount?: number; // Количество голосов за фото
+  score?: number; // rating * voteCount (для сортировки)
+}
+
 export interface DishReview {
   id: string;
   dishId: string;
@@ -61,6 +68,7 @@ export interface DishReview {
   comment?: string;
   foodPairing?: string; // рекомендуемый напиток
   photos: string[];
+  photoRatings?: Record<string, ReviewPhoto>; // Рейтинги фото по URL
   createdAt: string;
   updatedAt: string;
   helpfulCount?: number;
@@ -147,6 +155,7 @@ export type RootStackParamList = {
   RestaurantDetail: { restaurantId: string };
   DishDetail: { dishId: string };
   AddReview: { dishId: string; restaurantId: string };
+  ReviewDetail: { reviewId: string; dishId: string };
   AddDish: { restaurantId: string };
   UserProfile: { userId: string };
   EditProfile: undefined;

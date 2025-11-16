@@ -18,6 +18,7 @@ import MainTabNavigator from './MainTabNavigator';
 import RestaurantDetailScreen from '../screens/RestaurantDetailScreen';
 import DishDetailScreen from '../screens/DishDetailScreen';
 import AddReviewScreen from '../screens/AddReviewScreen';
+import ReviewDetailScreen from '../screens/ReviewDetailScreen';
 import AddDishScreen from '../screens/AddDishScreen';
 import UserProfileScreen from '../screens/UserProfileScreen';
 import EditProfileScreen from '../screens/EditProfileScreen';
@@ -87,6 +88,11 @@ const AppNavigator: React.FC = () => {
               name="AddReview"
               component={withErrorBoundary(AddReviewScreen)}
               options={{ headerShown: true, title: 'Добавить отзыв' }}
+            />
+            <Stack.Screen
+              name="ReviewDetail"
+              component={withErrorBoundary(ReviewDetailScreen)}
+              options={{ headerShown: false }}
             />
             <Stack.Screen
               name="AddDish"
