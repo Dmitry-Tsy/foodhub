@@ -41,24 +41,40 @@ export const Theme = {
     sm: {
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.05,
-      shadowRadius: 2,
+      shadowOpacity: 0.08,
+      shadowRadius: 3,
       elevation: 2,
     },
     md: {
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      elevation: 4,
+      shadowOpacity: 0.12,
+      shadowRadius: 6,
+      elevation: 5,
     },
     lg: {
       shadowColor: '#000',
       shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.15,
-      shadowRadius: 8,
-      elevation: 8,
+      shadowOpacity: 0.18,
+      shadowRadius: 12,
+      elevation: 10,
     },
+    xl: {
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 8 },
+      shadowOpacity: 0.25,
+      shadowRadius: 20,
+      elevation: 15,
+    },
+  },
+  
+  // Градиентные пресеты
+  gradients: {
+    primary: ['#FF6B35', '#FF8F6B', '#FFB020'],
+    secondary: ['#4ECDC4', '#7FDDD6'],
+    sunset: ['#FF6B35', '#FFB020', '#FFC47E'],
+    ocean: ['#4ECDC4', '#4C6EF5'],
+    success: ['#51CF66', '#69DB7C'],
   },
   
   layout: {

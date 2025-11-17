@@ -146,6 +146,28 @@ export interface DuplicateCheckResult {
   similarity?: number;
 }
 
+// Collection Types
+export interface Collection {
+  id: string;
+  name: string;
+  description?: string;
+  userId: string;
+  user?: User;
+  isPublic: boolean;
+  coverPhoto?: string;
+  dishCount: number;
+  dishes?: Dish[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CollectionCreationAttributes {
+  name: string;
+  description?: string;
+  isPublic?: boolean;
+  coverPhoto?: string;
+}
+
 // Navigation Types
 export type RootStackParamList = {
   Welcome: undefined;
@@ -164,6 +186,11 @@ export type RootStackParamList = {
   Recommendations: undefined;
   ConnectivityTest: undefined;
   LogViewer: undefined;
+  History: undefined;
+  Collections: undefined;
+  CollectionDetail: { collectionId: string };
+  CreateCollection: undefined;
+  EditCollection: { collectionId: string };
 };
 
 export type MainTabParamList = {

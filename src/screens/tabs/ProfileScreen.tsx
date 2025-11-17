@@ -13,12 +13,13 @@ import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { MainTabParamList, RootStackParamList } from '../../types';
-import { Button } from '../../components';
+import { Button, ThemeToggle } from '../../components';
 import { Theme } from '../../constants/theme';
 import { Colors } from '../../constants/colors';
 import { useAppDispatch, useAppSelector } from '../../store';
 import { logout, exitGuestMode } from '../../store/slices/authSlice';
 import { formatCount } from '../../utils/formatters';
+import { useTheme } from '../../contexts/ThemeContext';
 import logger from '../../services/logger';
 
 type NavigationProp = CompositeNavigationProp<
@@ -33,6 +34,7 @@ interface Props {
 const ProfileScreen: React.FC<Props> = ({ navigation }) => {
   const dispatch = useAppDispatch();
   const { user, isGuest } = useAppSelector((state) => state.auth);
+  const { colors } = useTheme();
 
   const handleLogout = () => {
     logger.info('PROFILE', 'Попытка выхода');
@@ -58,57 +60,64 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
       icon: 'restaurant' as const,
       title: '⚙️ Вкусовой профиль',
       subtitle: 'Настройте предпочтения',
-      color: Colors.primary,
+      color: colors.primary,
       onPress: () => navigation.navigate('TasteProfile'),
     },
     {
       icon: 'sparkles' as const,
       title: '✨ Рекомендации AI',
       subtitle: 'Подобрано для вас',
-      color: Colors.secondary,
+      color: colors.secondary,
       onPress: () => navigation.navigate('Recommendations'),
     },
     {
       icon: 'trophy' as const,
       title: '🏆 Достижения',
       subtitle: 'Ваши награды и прогресс',
-      color: Colors.warning,
+      color: colors.warning,
       onPress: () => navigation.navigate('Achievements'),
     },
     {
       icon: 'person-outline' as const,
       title: 'Редактировать профиль',
       subtitle: 'Фото, имя, био',
-      color: Colors.text,
+      color: colors.text,
       onPress: () => navigation.navigate('EditProfile'),
     },
     {
       icon: 'heart-outline' as const,
       title: 'Избранное',
       subtitle: 'Любимые рестораны',
-      color: Colors.error,
+      color: colors.error,
       onPress: () => {},
     },
     {
       icon: 'chatbubbles-outline' as const,
       title: 'Мои отзывы',
       subtitle: 'История активности',
-      color: Colors.info,
+      color: colors.info,
       onPress: () => {},
+    },
+    {
+      icon: 'time-outline' as const,
+      title: '📚 История просмотров',
+      subtitle: 'Недавно просмотренные',
+      color: colors.primary,
+      onPress: () => navigation.navigate('History'),
+    },
+    {
+      icon: 'albums-outline' as const,
+      title: '📁 Мои коллекции',
+      subtitle: 'Подборки блюд',
+      color: colors.secondary,
+      onPress: () => navigation.navigate('Collections'),
     },
     {
       icon: 'wifi' as const,
       title: '🔧 Тест подключения',
       subtitle: 'Проверка связи с сервером',
-      color: Colors.info,
+      color: colors.info,
       onPress: () => navigation.navigate('ConnectivityTest'),
-    },
-    {
-      icon: 'settings-outline' as const,
-      title: 'Настройки',
-      subtitle: 'Конфиденциальность',
-      color: Colors.textSecondary,
-      onPress: () => {},
     },
   ];
 
@@ -168,8 +177,8 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
       const avatarElement = user?.avatar ? (
         <Image source={{ uri: user.avatar }} style={styles.avatar} />
       ) : (
-        <View style={[styles.avatar, styles.avatarPlaceholder]}>
-          <Ionicons name="person" size={48} color={Colors.textLight} />
+        <View style={[styles.avatar, styles.avatarPlaceholder, { backgroundColor: colors.surface }]}>
+          <Ionicons name="person" size={48} color={colors.textLight} />
         </View>
       );
 
@@ -197,8 +206,8 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
       return (
         <View style={styles.header}>
           {avatarElement}
-          <Text style={styles.username}>{usernameText}</Text>
-          <Text style={styles.email}>{emailText}</Text>
+          <Text style={[styles.username, { color: colors.text }]}>{usernameText}</Text>
+          <Text style={[styles.email, { color: colors.textSecondary }]}>{emailText}</Text>
           <View style={styles.statsContainer}>
             <View style={styles.statItem}>
               <Text style={styles.statValue}>{followersFormatted}</Text>
@@ -246,25 +255,25 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
         return (
           <TouchableOpacity
             key={index}
-            style={styles.menuItem}
+            style={[styles.menuItem, { backgroundColor: colors.surface, borderBottomColor: colors.borderLight }]}
             onPress={item.onPress}
             activeOpacity={0.7}
           >
             <View style={styles.menuItemLeft}>
-              <Ionicons name={item.icon} size={24} color={Colors.text} />
-              <Text style={styles.menuItemText}>{item.title}</Text>
+              <Ionicons name={item.icon} size={24} color={item.color} />
+              <Text style={[styles.menuItemText, { color: colors.text }]}>{item.title}</Text>
             </View>
             <Ionicons
               name="chevron-forward"
               size={20}
-              color={Colors.textSecondary}
+              color={colors.textSecondary}
             />
           </TouchableOpacity>
         );
       });
 
       return (
-        <View style={styles.menuContainer}>
+        <View style={[styles.menuContainer, { backgroundColor: colors.surface }]}>
           {menuElements}
         </View>
       );
@@ -283,15 +292,18 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
 
   try {
     return (
-      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      <ScrollView style={[styles.container, { backgroundColor: colors.background }]} contentContainerStyle={styles.content}>
         {renderHeader()}
+        {!isGuest && <ThemeToggle />}
         {renderMenu()}
-        <Button
-          title="Выйти"
-          onPress={handleLogout}
-          variant="outline"
-          style={styles.logoutButton}
-        />
+        {!isGuest && (
+          <Button
+            title="Выйти"
+            onPress={handleLogout}
+            variant="outline"
+            style={styles.logoutButton}
+          />
+        )}
       </ScrollView>
     );
   } catch (e: any) {
@@ -312,7 +324,6 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   content: {
     padding: Theme.spacing.md,
@@ -328,24 +339,20 @@ const styles = StyleSheet.create({
     marginBottom: Theme.spacing.md,
   },
   avatarPlaceholder: {
-    backgroundColor: Colors.surface,
     justifyContent: 'center',
     alignItems: 'center',
   },
   username: {
     fontSize: Theme.fontSize.xxl,
     fontWeight: Theme.fontWeight.bold,
-    color: Colors.text,
     marginBottom: Theme.spacing.xs,
   },
   email: {
     fontSize: Theme.fontSize.md,
-    color: Colors.textSecondary,
     marginBottom: Theme.spacing.md,
   },
   statsContainer: {
     flexDirection: 'row',
-    backgroundColor: Colors.surface,
     borderRadius: Theme.borderRadius.lg,
     padding: Theme.spacing.md,
     marginBottom: Theme.spacing.md,
@@ -357,26 +364,21 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: Theme.fontSize.xl,
     fontWeight: Theme.fontWeight.bold,
-    color: Colors.text,
     marginBottom: 4,
   },
   statLabel: {
     fontSize: Theme.fontSize.sm,
-    color: Colors.textSecondary,
   },
   statDivider: {
     width: 1,
-    backgroundColor: Colors.border,
     marginHorizontal: Theme.spacing.md,
   },
   bio: {
     fontSize: Theme.fontSize.md,
-    color: Colors.text,
     textAlign: 'center',
     lineHeight: 20,
   },
   menuContainer: {
-    backgroundColor: Colors.card,
     borderRadius: Theme.borderRadius.lg,
     marginBottom: Theme.spacing.xl,
     overflow: 'hidden',
@@ -388,7 +390,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: Theme.spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.borderLight,
   },
   menuItemLeft: {
     flexDirection: 'row',
@@ -397,7 +398,6 @@ const styles = StyleSheet.create({
   },
   menuItemText: {
     fontSize: Theme.fontSize.md,
-    color: Colors.text,
   },
   logoutButton: {
     marginBottom: Theme.spacing.xl,

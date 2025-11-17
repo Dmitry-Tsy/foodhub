@@ -7,6 +7,8 @@ import reviewReducer from './slices/reviewSlice';
 import userReducer from './slices/userSlice';
 import feedReducer from './slices/feedSlice';
 import favoritesReducer from './slices/favoritesSlice';
+import historyReducer from './slices/historySlice';
+import collectionReducer from './slices/collectionSlice';
 
 export const store = configureStore({
   reducer: {
@@ -17,6 +19,8 @@ export const store = configureStore({
     users: userReducer,
     feed: feedReducer,
     favorites: favoritesReducer,
+    history: historyReducer,
+    collections: collectionReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

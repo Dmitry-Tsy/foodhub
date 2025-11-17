@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -13,7 +13,7 @@ import {
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { RootStackParamList } from '../types';
-import { DishCard, Loading, Button, GuestPrompt } from '../components';
+import { DishCard, Loading, Button, GuestPrompt, FilterModal } from '../components';
 import { Theme } from '../constants/theme';
 import { Colors } from '../constants/colors';
 import { useAppDispatch, useAppSelector } from '../store';
@@ -23,6 +23,9 @@ import { formatDistance, formatRating } from '../utils/formatters';
 import { exitGuestMode } from '../store/slices/authSlice';
 import { toggleRestaurantFavorite } from '../store/slices/favoritesSlice';
 import { getOrCreateRestaurantInDB } from '../services/restaurantService';
+import { filterDishes, sortDishes } from '../utils/filters';
+import type { FilterOption, SortOption } from '../components/FilterModal';
+import { addToHistory } from '../store/slices/historySlice';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'RestaurantDetail'>;
 
@@ -62,6 +65,10 @@ const RestaurantDetailScreen: React.FC<Props> = ({ route, navigation }) => {
   });
 
   const [showGuestPrompt, setShowGuestPrompt] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState<FilterOption>({});
+  const [sortBy, setSortBy] = useState<SortOption>('rating');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const scrollY = useState(new Animated.Value(0))[0];
   
   const isFavorite = restaurantIds.includes(restaurantId);
@@ -161,6 +168,11 @@ const RestaurantDetailScreen: React.FC<Props> = ({ route, navigation }) => {
   // Добавляем отдельный useEffect для перезагрузки меню когда currentRestaurant изменился
   // Это нужно на случай если ресторан загрузился после первого useEffect
   useEffect(() => {
+    if (currentRestaurant) {
+      // Добавляем ресторан в историю просмотров
+      dispatch(addToHistory({ type: 'restaurant', item: currentRestaurant }));
+    }
+    
     if (currentRestaurant && currentRestaurant.id === restaurantId && restaurantId.startsWith('ChIJ')) {
       // Ресторан загружен, но меню могло не загрузиться из-за того что currentRestaurant был null
       const reloadMenu = async () => {
@@ -491,22 +503,55 @@ const RestaurantDetailScreen: React.FC<Props> = ({ route, navigation }) => {
         dishIds: safeDishes.map(d => ({ name: d.name, restaurantId: d.restaurantId })),
       });
       
+      // Применяем фильтры и сортировку к блюдам
+      const filteredAndSortedDishes = useMemo(() => {
+        let result = [...safeDishes];
+        
+        // Применяем фильтры
+        result = filterDishes(result, filters);
+        
+        // Применяем сортировку
+        result = sortDishes(result, sortBy, sortOrder);
+        
+        return result;
+      }, [safeDishes, filters, sortBy, sortOrder]);
+
       return (
         <>
           <View style={styles.menuHeader}>
             <View>
               <Text style={styles.sectionTitle}>Меню</Text>
               <Text style={styles.sectionSubtitle}>
-                {safeDishes.length > 0 ? `${safeDishes.length} блюд` : 'Пока нет блюд'}
+                {filteredAndSortedDishes.length > 0 
+                  ? `${filteredAndSortedDishes.length} из ${safeDishes.length} блюд`
+                  : safeDishes.length > 0
+                  ? 'Нет блюд по фильтрам'
+                  : 'Пока нет блюд'}
               </Text>
             </View>
             
-            <TouchableOpacity onPress={handleAddDish}>
-              <View style={[styles.addButton, { backgroundColor: Colors.primary }]}>
-                <Ionicons name="add" size={24} color={Colors.textInverse} />
-                <Text style={styles.addButtonText}>Добавить</Text>
-              </View>
-            </TouchableOpacity>
+            <View style={styles.menuHeaderActions}>
+              {safeDishes.length > 0 && (
+                <TouchableOpacity
+                  style={styles.filterMenuButton}
+                  onPress={() => setShowFilters(true)}
+                >
+                  <Ionicons name="options" size={20} color={Colors.primary} />
+                  {(Object.keys(filters).length > 0 || sortBy !== 'rating') && (
+                    <View style={styles.filterMenuBadge}>
+                      <Text style={styles.filterMenuBadgeText}>!</Text>
+                    </View>
+                  )}
+                </TouchableOpacity>
+              )}
+              
+              <TouchableOpacity onPress={handleAddDish}>
+                <View style={[styles.addButton, { backgroundColor: Colors.primary }]}>
+                  <Ionicons name="add" size={24} color={Colors.textInverse} />
+                  <Text style={styles.addButtonText}>Добавить</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
           </View>
 
           <GuestPrompt
@@ -519,9 +564,9 @@ const RestaurantDetailScreen: React.FC<Props> = ({ route, navigation }) => {
 
           {dishesLoading ? (
             <Loading text="Загрузка меню..." />
-          ) : safeDishes.length > 0 ? (
+          ) : filteredAndSortedDishes.length > 0 ? (
             <View style={styles.dishesGrid}>
-              {safeDishes.map((dish) => (
+              {filteredAndSortedDishes.map((dish) => (
                 <DishCard
                   key={dish.id}
                   dish={dish}
@@ -635,6 +680,20 @@ const RestaurantDetailScreen: React.FC<Props> = ({ route, navigation }) => {
             })()}
           </View>
         </ScrollView>
+        
+        <FilterModal
+          visible={showFilters}
+          onClose={() => setShowFilters(false)}
+          onApply={(newFilters, newSortBy, newSortOrder) => {
+            setFilters(newFilters);
+            setSortBy(newSortBy);
+            setSortOrder(newSortOrder);
+          }}
+          type="dishes"
+          currentFilters={filters}
+          currentSort={sortBy}
+          currentSortOrder={sortOrder}
+        />
       </View>
     );
   } catch (error: any) {
@@ -825,6 +884,37 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: Theme.spacing.md,
   },
+  menuHeaderActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Theme.spacing.sm,
+  },
+  filterMenuButton: {
+    width: 40,
+    height: 40,
+    borderRadius: Theme.borderRadius.md,
+    backgroundColor: Colors.surface,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+    ...Theme.shadows.sm,
+  },
+  filterMenuBadge: {
+    position: 'absolute',
+    top: 2,
+    right: 2,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: Colors.error,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  filterMenuBadgeText: {
+    fontSize: 9,
+    fontWeight: Theme.fontWeight.bold,
+    color: Colors.textInverse,
+  },
   sectionTitle: {
     fontSize: Theme.fontSize.xl,
     fontWeight: Theme.fontWeight.bold,
@@ -834,6 +924,15 @@ const styles = StyleSheet.create({
     fontSize: Theme.fontSize.sm,
     color: Colors.textSecondary,
     marginTop: 2,
+  },
+  menuSection: {
+    marginTop: Theme.spacing.lg,
+  },
+  emptyText: {
+    fontSize: Theme.fontSize.md,
+    color: Colors.textSecondary,
+    textAlign: 'center',
+    padding: Theme.spacing.lg,
   },
   addButton: {
     flexDirection: 'row',

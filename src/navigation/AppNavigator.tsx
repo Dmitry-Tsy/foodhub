@@ -29,6 +29,8 @@ import AchievementsScreen from '../screens/AchievementsScreen';
 import RecommendationsScreen from '../screens/RecommendationsScreen';
 import ConnectivityTestScreen from '../screens/ConnectivityTestScreen';
 import LogViewerScreen from '../screens/LogViewerScreen';
+import HistoryScreen from '../screens/HistoryScreen';
+import CollectionsScreen from '../screens/CollectionsScreen';
 
 import { Loading, ErrorBoundary } from '../components';
 
@@ -157,6 +159,20 @@ const AppNavigator: React.FC = () => {
                 title: '📝 Логи приложения',
                 headerStyle: { backgroundColor: Colors.textSecondary },
                 headerTintColor: Colors.textInverse,
+              }}
+            />
+            <Stack.Screen
+              name="History"
+              component={withErrorBoundary(HistoryScreen)}
+              options={{ 
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="Collections"
+              component={withErrorBoundary(CollectionsScreen)}
+              options={{ 
+                headerShown: false,
               }}
             />
           </>

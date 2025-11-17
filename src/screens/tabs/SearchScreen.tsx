@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -14,7 +14,7 @@ import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { MainTabParamList, RootStackParamList } from '../../types';
-import { RestaurantCard, Loading, RestaurantMap } from '../../components';
+import { RestaurantCard, Loading, RestaurantMap, FilterModal } from '../../components';
 import { Theme } from '../../constants/theme';
 import { Colors } from '../../constants/colors';
 import { useAppDispatch, useAppSelector } from '../../store';
@@ -24,6 +24,8 @@ import {
   setUserLocation,
 } from '../../store/slices/restaurantSlice';
 import * as locationService from '../../services/locationService';
+import { filterRestaurants, sortRestaurants } from '../../utils/filters';
+import type { FilterOption, SortOption } from '../../components/FilterModal';
 
 type NavigationProp = CompositeNavigationProp<
   BottomTabNavigationProp<MainTabParamList, 'Search'>,
@@ -53,6 +55,10 @@ const SearchScreen: React.FC<Props> = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const [showMap, setShowMap] = useState(false); // Переключение между списком и картой
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState<FilterOption>({});
+  const [sortBy, setSortBy] = useState<SortOption>('rating');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   useEffect(() => {
     console.log('SearchScreen mounted, loading location...');
@@ -116,6 +122,29 @@ const SearchScreen: React.FC<Props> = ({ navigation }) => {
     navigation.navigate('RestaurantDetail', { restaurantId });
   };
 
+  const handleFilterApply = (
+    newFilters: FilterOption,
+    newSortBy: SortOption,
+    newSortOrder: 'asc' | 'desc'
+  ) => {
+    setFilters(newFilters);
+    setSortBy(newSortBy);
+    setSortOrder(newSortOrder);
+  };
+
+  // Применяем фильтры и сортировку
+  const filteredAndSortedRestaurants = useMemo(() => {
+    let result = [...restaurants];
+    
+    // Применяем фильтры
+    result = filterRestaurants(result, filters);
+    
+    // Применяем сортировку
+    result = sortRestaurants(result, sortBy, sortOrder);
+    
+    return result;
+  }, [restaurants, filters, sortBy, sortOrder]);
+
   return (
     <View style={styles.container}>
       {/* Debug info */}
@@ -146,7 +175,19 @@ const SearchScreen: React.FC<Props> = ({ navigation }) => {
         </View>
         
         <TouchableOpacity
-          style={[styles.filterButton, showMap && styles.filterButtonActive]}
+          style={styles.filterButton}
+          onPress={() => setShowFilters(true)}
+        >
+          <Ionicons name="options" size={22} color={Colors.primary} />
+          {(Object.keys(filters).length > 0 || sortBy !== 'rating') && (
+            <View style={styles.filterBadge}>
+              <Text style={styles.filterBadgeText}>!</Text>
+            </View>
+          )}
+        </TouchableOpacity>
+        
+        <TouchableOpacity
+          style={[styles.mapButton, showMap && styles.mapButtonActive]}
           onPress={() => setShowMap(!showMap)}
         >
           <Ionicons
@@ -167,7 +208,7 @@ const SearchScreen: React.FC<Props> = ({ navigation }) => {
         />
       ) : (
         <FlatList
-          data={restaurants}
+          data={filteredAndSortedRestaurants}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <RestaurantCard
@@ -188,7 +229,9 @@ const SearchScreen: React.FC<Props> = ({ navigation }) => {
             <View style={styles.emptyContainer}>
               <Ionicons name="restaurant-outline" size={64} color={Colors.textLight} />
               <Text style={styles.emptyText}>
-                {searchQuery ? 'Рестораны не найдены' : 'Рестораны поблизости отсутствуют'}
+                {searchQuery || Object.keys(filters).length > 0
+                  ? 'Рестораны не найдены'
+                  : 'Рестораны поблизости отсутствуют'}
               </Text>
               {!searchQuery && (
                 <>
@@ -211,6 +254,16 @@ const SearchScreen: React.FC<Props> = ({ navigation }) => {
           }
         />
       )}
+      
+      <FilterModal
+        visible={showFilters}
+        onClose={() => setShowFilters(false)}
+        onApply={handleFilterApply}
+        type="restaurants"
+        currentFilters={filters}
+        currentSort={sortBy}
+        currentSortOrder={sortOrder}
+      />
     </View>
   );
 };
@@ -247,8 +300,35 @@ const styles = StyleSheet.create({
     borderRadius: Theme.borderRadius.md,
     justifyContent: 'center',
     alignItems: 'center',
+    position: 'relative',
+    ...Theme.shadows.sm,
   },
-  filterButtonActive: {
+  filterBadge: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: Colors.error,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  filterBadgeText: {
+    fontSize: 10,
+    fontWeight: Theme.fontWeight.bold,
+    color: Colors.textInverse,
+  },
+  mapButton: {
+    width: 48,
+    height: 48,
+    backgroundColor: Colors.surface,
+    borderRadius: Theme.borderRadius.md,
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...Theme.shadows.sm,
+  },
+  mapButtonActive: {
     backgroundColor: `${Colors.primary}20`,
     borderWidth: 2,
     borderColor: Colors.primary,

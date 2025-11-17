@@ -16,6 +16,7 @@ import userRoutes from './routes/users';
 import feedRoutes from './routes/feed';
 import searchRoutes from './routes/search';
 import photoRatingRoutes from './routes/photoRating';
+import collectionRoutes from './routes/collection';
 
 dotenv.config();
 
@@ -56,6 +57,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/feed', feedRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/photo-ratings', photoRatingRoutes);
+app.use('/api/collections', collectionRoutes);
 
 // 404 handler
 app.use((req, res) => {

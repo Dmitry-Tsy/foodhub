@@ -14,4 +14,9 @@ export { default as ErrorBoundary } from './ErrorBoundary';
 export { CategoryPicker } from './CategoryPicker';
 export { IngredientInput } from './IngredientInput';
 export { ReviewPhotosGallery } from './ReviewPhotosGallery';
+export { GradientButton } from './GradientButton';
+export { FilterModal } from './FilterModal';
+export type { FilterOption, SortOption } from './FilterModal';
+export { ThemeToggle } from './ThemeToggle';
+export { CollectionCard } from './CollectionCard';
 

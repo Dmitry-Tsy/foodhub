@@ -7,6 +7,8 @@ import Follow from './Follow';
 import Favorite from './Favorite';
 import UserAchievement from './UserAchievement';
 import PhotoRating from './PhotoRating';
+import Collection from './Collection';
+import CollectionDish from './CollectionDish';
 
 // Определение связей между моделями
 
@@ -100,6 +102,50 @@ UserAchievement.belongsTo(User, {
   as: 'user',
 });
 
+// User → Collections
+User.hasMany(Collection, {
+  foreignKey: 'userId',
+  as: 'collections',
+});
+Collection.belongsTo(User, {
+  foreignKey: 'userId',
+  as: 'user',
+});
+
+// Collection → Dishes (many-to-many through CollectionDish)
+Collection.belongsToMany(Dish, {
+  through: CollectionDish,
+  as: 'dishes',
+  foreignKey: 'collectionId',
+  otherKey: 'dishId',
+});
+Dish.belongsToMany(Collection, {
+  through: CollectionDish,
+  as: 'collections',
+  foreignKey: 'dishId',
+  otherKey: 'collectionId',
+});
+
+// Collection → CollectionDish
+Collection.hasMany(CollectionDish, {
+  foreignKey: 'collectionId',
+  as: 'collectionDishes',
+});
+CollectionDish.belongsTo(Collection, {
+  foreignKey: 'collectionId',
+  as: 'collection',
+});
+
+// Dish → CollectionDish
+Dish.hasMany(CollectionDish, {
+  foreignKey: 'dishId',
+  as: 'collectionDishes',
+});
+CollectionDish.belongsTo(Dish, {
+  foreignKey: 'dishId',
+  as: 'dish',
+});
+
 export {
   User,
   Restaurant,
@@ -110,5 +156,7 @@ export {
   Favorite,
   UserAchievement,
   PhotoRating,
+  Collection,
+  CollectionDish,
 };
 

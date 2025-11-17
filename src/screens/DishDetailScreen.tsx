@@ -22,6 +22,8 @@ import { formatRating, formatPrice } from '../utils/formatters';
 import { getRatingColor } from '../constants/colors';
 import { exitGuestMode } from '../store/slices/authSlice';
 import { suggestPairings } from '../services/recommendationService';
+import { ReviewPhoto } from '../types';
+import { addToHistory } from '../store/slices/historySlice';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'DishDetail'>;
 
@@ -50,10 +52,12 @@ const DishDetailScreen: React.FC<Props> = ({ route, navigation }) => {
 
   useEffect(() => {
     if (currentDish) {
+      // Добавляем блюдо в историю просмотров
+      dispatch(addToHistory({ type: 'dish', item: currentDish }));
       loadPairings();
       loadReviewPhotos();
     }
-  }, [currentDish]);
+  }, [currentDish, dispatch]);
   
   // Загружаем фото из отзывов и выбираем лучшую для главной фотографии
   const loadReviewPhotos = async () => {
@@ -77,12 +81,12 @@ const DishDetailScreen: React.FC<Props> = ({ route, navigation }) => {
       return currentDish?.photo || null;
     }
     
-    // Сортируем по score (rating * voteCount)
-    const sortedPhotos = [...reviewPhotos].sort((a, b) => (b.score || 0) - (a.score || 0));
-    const bestPhoto = sortedPhotos[0];
-    
-    // Если есть фото с лайками, используем его
-    if (bestPhoto && bestPhoto.score > 0) {
+           // Сортируем по score (rating * voteCount)
+           const sortedPhotos = [...reviewPhotos].sort((a, b) => (b.score || 0) - (a.score || 0));
+           const bestPhoto = sortedPhotos[0];
+           
+           // Если есть фото с лайками, используем его
+           if (bestPhoto && (bestPhoto.score ?? 0) > 0) {
       return bestPhoto.url;
     }
     
@@ -421,6 +425,27 @@ const styles = StyleSheet.create({
     fontSize: Theme.fontSize.md,
     color: Colors.textLight,
     marginTop: Theme.spacing.xs,
+  },
+  photosSection: {
+    marginTop: Theme.spacing.md,
+    marginBottom: Theme.spacing.lg,
+  },
+  photosSectionTitle: {
+    fontSize: Theme.fontSize.lg,
+    fontWeight: Theme.fontWeight.semibold,
+    color: Colors.text,
+    marginBottom: Theme.spacing.md,
+  },
+  photosScrollContainer: {
+    paddingRight: Theme.spacing.lg,
+    gap: Theme.spacing.sm,
+  },
+  reviewPhoto: {
+    width: 120,
+    height: 120,
+    borderRadius: Theme.borderRadius.md,
+    marginRight: Theme.spacing.sm,
+    backgroundColor: Colors.surface,
   },
 });
 
