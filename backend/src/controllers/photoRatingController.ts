@@ -4,6 +4,12 @@ import PhotoRating from '../models/PhotoRating';
 import DishReview from '../models/DishReview';
 import { Op } from 'sequelize';
 
+// Валидация UUID
+const isValidUUID = (uuid: string): boolean => {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(uuid);
+};
+
 // Поставить лайк фото
 export const ratePhoto = async (req: AuthRequest, res: Response) => {
   try {
@@ -14,6 +20,14 @@ export const ratePhoto = async (req: AuthRequest, res: Response) => {
       return res.status(400).json({
         success: false,
         error: 'photoUrl и reviewId обязательны',
+      });
+    }
+
+    // Валидация UUID
+    if (!isValidUUID(reviewId)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Неверный формат reviewId (должен быть UUID)',
       });
     }
 
@@ -76,7 +90,8 @@ export const ratePhoto = async (req: AuthRequest, res: Response) => {
 };
 
 // Получить статистику по фото (количество лайков)
-export const getPhotoStats = async (req: AuthRequest, res: Response) => {
+// Можно вызывать без авторизации
+export const getPhotoStats = async (req: Request, res: Response) => {
   try {
     const { photoUrl, reviewId } = req.query;
 
@@ -87,10 +102,20 @@ export const getPhotoStats = async (req: AuthRequest, res: Response) => {
       });
     }
 
+    const reviewIdStr = reviewId as string;
+    
+    // Валидация UUID
+    if (!isValidUUID(reviewIdStr)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Неверный формат reviewId (должен быть UUID)',
+      });
+    }
+
     const voteCount = await PhotoRating.count({
       where: {
         photoUrl: photoUrl as string,
-        reviewId: reviewId as string,
+        reviewId: reviewIdStr,
       },
     });
 
@@ -101,7 +126,7 @@ export const getPhotoStats = async (req: AuthRequest, res: Response) => {
     return res.json({
       success: true,
       photoUrl: photoUrl as string,
-      reviewId: reviewId as string,
+      reviewId: reviewIdStr,
       rating,
       voteCount,
       score: rating * voteCount, // Для сортировки
@@ -125,6 +150,14 @@ export const getDishPhotoRatings = async (req: Request, res: Response) => {
       return res.status(400).json({
         success: false,
         error: 'dishId обязателен',
+      });
+    }
+
+    // Валидация UUID
+    if (!isValidUUID(dishId)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Неверный формат dishId (должен быть UUID)',
       });
     }
 

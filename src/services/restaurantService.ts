@@ -1,7 +1,14 @@
 import { Restaurant, Location } from '../types';
 import { mockRestaurants, simulateDelay } from './mockData';
 import * as googlePlacesService from './googlePlacesService';
+import * as osmService from './openStreetMapService';
+import * as foursquareService from './foursquareService';
+import { RESTAURANT_DATA_SOURCE } from '../config/api.config';
 import api from './api';
+
+// Приоритет источников данных (проверяются по порядку)
+// По умолчанию: OpenStreetMap -> Foursquare -> Google -> Mock
+const DATA_SOURCE_PRIORITY = (RESTAURANT_DATA_SOURCE || 'osm,foursquare,google,mock').split(',');
 
 // Вычисление расстояния между двумя точками (формула Haversine)
 const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number): number => {
@@ -26,22 +33,92 @@ export const getNearbyRestaurants = async (
 ): Promise<Restaurant[]> => {
   console.log('🏪 getNearbyRestaurants called with:', { location, radius, useRealData });
   
-  // Пробуем использовать Google Places API если доступен
-  if (useRealData && googlePlacesService.isGooglePlacesAvailable()) {
-    try {
-      console.log('🗺️ Загрузка реальных ресторанов из Google Places API...');
-      const realRestaurants = await googlePlacesService.searchNearbyRestaurants(location, radius);
-      console.log('✅ Google Places вернул:', realRestaurants.length, 'ресторанов');
-      // Обновляем кеш
-      updateRestaurantsCache(realRestaurants);
-      return realRestaurants;
-    } catch (error: any) {
-      console.warn('⚠️ Google Places API недоступен, используем mock данные:', error.message);
-      // Fallback к mock данным при ошибке
-    }
-  } else {
-    console.log('📋 Google Places недоступен, используем mock данные');
+  if (!useRealData) {
+    console.log('📋 useRealData=false, используем mock данные');
+    return getMockRestaurants(location, radius);
   }
+
+  // Пробуем загрузить из различных источников по приоритету
+  for (const source of DATA_SOURCE_PRIORITY) {
+    try {
+      switch (source.trim()) {
+        case 'osm':
+          if (osmService.isOSMAvailable()) {
+            console.log('🗺️ Попытка загрузки через OpenStreetMap...');
+            const osmRestaurants = await osmService.searchNearbyRestaurantsOSM(location, radius, 60);
+            if (osmRestaurants.length > 0) {
+              console.log('✅ OpenStreetMap вернул:', osmRestaurants.length, 'ресторанов');
+              updateRestaurantsCache(osmRestaurants);
+              return osmRestaurants;
+            }
+          }
+          break;
+
+        case 'foursquare':
+          if (foursquareService.isFoursquareAvailable()) {
+            console.log('🏪 Попытка загрузки через Foursquare...');
+            const fsqRestaurants = await foursquareService.searchNearbyRestaurantsFoursquare(location, radius, 50);
+            if (fsqRestaurants.length > 0) {
+              console.log('✅ Foursquare вернул:', fsqRestaurants.length, 'ресторанов');
+              updateRestaurantsCache(fsqRestaurants);
+              return fsqRestaurants;
+            }
+          }
+          break;
+
+        case 'google':
+          if (googlePlacesService.isGooglePlacesAvailable()) {
+            console.log('🗺️ Попытка загрузки через Google Places API...');
+            const googleRestaurants = await googlePlacesService.searchNearbyRestaurants(location, radius, undefined, 60);
+            if (googleRestaurants.length > 0) {
+              console.log('✅ Google Places вернул:', googleRestaurants.length, 'ресторанов');
+              updateRestaurantsCache(googleRestaurants);
+              return googleRestaurants;
+            }
+          }
+          break;
+      }
+    } catch (error: any) {
+      console.warn(`⚠️ ${source} недоступен:`, error.message);
+      // Продолжаем к следующему источнику
+      continue;
+    }
+  }
+
+  // Если все источники не сработали, используем mock данные
+  console.log('📋 Все внешние источники недоступны, используем mock данные');
+  return getMockRestaurants(location, radius);
+};
+
+/**
+ * Получение mock ресторанов с расчетом расстояний
+ */
+const getMockRestaurants = async (location: Location, radius: number): Promise<Restaurant[]> => {
+  await simulateDelay();
+  
+  // Вычисляем расстояния и фильтруем
+  const restaurantsWithDistance = mockRestaurants.map((restaurant) => {
+    const distance = calculateDistance(
+      location.latitude,
+      location.longitude,
+      restaurant.location.latitude,
+      restaurant.location.longitude
+    );
+    
+    return {
+      ...restaurant,
+      distance: Math.round(distance),
+    };
+  });
+  
+  // Фильтруем по радиусу и сортируем по расстоянию
+  const filtered = restaurantsWithDistance
+    .filter((r) => r.distance <= radius)
+    .sort((a, b) => a.distance - b.distance);
+  
+  // Если нет ресторанов в радиусе, показываем все (для demo)
+  return filtered.length > 0 ? filtered : restaurantsWithDistance.sort((a, b) => a.distance - b.distance);
+};
   
   // Используем mock данные
   console.log('📋 Используем mock рестораны, всего:', mockRestaurants.length);
@@ -100,15 +177,38 @@ export const getRestaurantById = async (restaurantId: string): Promise<Restauran
   if (!restaurant && googlePlacesService.isGooglePlacesAvailable()) {
     try {
       console.log('🗺️ Загрузка деталей ресторана из Google Places...');
-      restaurant = await googlePlacesService.getRestaurantDetails(restaurantId);
-      if (restaurant) {
-        // Добавляем в кеш
-        restaurantsCache.push(restaurant);
-        console.log('✅ Детали ресторана загружены из Google Places');
-        return restaurant;
+      const placeDetails = await googlePlacesService.getPlaceDetails(restaurantId);
+      if (placeDetails) {
+        // Конвертируем Google Place в Restaurant
+        const location = placeDetails.geometry?.location 
+          ? { latitude: placeDetails.geometry.location.lat, longitude: placeDetails.geometry.location.lng }
+          : undefined;
+        
+        const photos = placeDetails.photos?.map((photo: any) => 
+          googlePlacesService.getPlacePhotoUrl(photo.photo_reference, 800)
+        ) || [];
+        
+        restaurant = {
+          id: restaurantId,
+          name: placeDetails.name || 'Ресторан',
+          address: placeDetails.formatted_address || '',
+          location: location || { latitude: 0, longitude: 0 },
+          cuisineType: placeDetails.types?.[0]?.replace(/_/g, ' ') || 'Ресторан',
+          phone: placeDetails.formatted_phone_number,
+          photos: photos.slice(0, 3),
+          averageRating: placeDetails.rating ? placeDetails.rating * 2 : undefined,
+          reviewCount: placeDetails.user_ratings_total,
+        };
+        
+        if (restaurant) {
+          // Добавляем в кеш
+          restaurantsCache.push(restaurant);
+          console.log('✅ Детали ресторана загружены из Google Places');
+          return restaurant;
+        }
       }
-    } catch (error) {
-      console.warn('⚠️ Не удалось загрузить детали из Google Places:', error);
+    } catch (error: any) {
+      console.warn('⚠️ Не удалось загрузить детали из Google Places:', error.message);
     }
   }
   

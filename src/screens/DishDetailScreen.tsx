@@ -11,7 +11,7 @@ import {
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { RootStackParamList, Pairing } from '../types';
-import { ReviewItem, Loading, Button, GuestPrompt, PairingCard } from '../components';
+import { ReviewItem, Loading, Button, GuestPrompt, PairingCard, AddToCollectionModal } from '../components';
 import { Theme } from '../constants/theme';
 import { Colors } from '../constants/colors';
 import { useAppDispatch, useAppSelector } from '../store';
@@ -41,6 +41,7 @@ const DishDetailScreen: React.FC<Props> = ({ route, navigation }) => {
 
   const [refreshing, setRefreshing] = useState(false);
   const [showGuestPrompt, setShowGuestPrompt] = useState(false);
+  const [showCollectionModal, setShowCollectionModal] = useState(false);
   const [pairings, setPairings] = useState<Pairing[]>([]);
   const [loadingPairings, setLoadingPairings] = useState(false);
   const [reviewPhotos, setReviewPhotos] = useState<ReviewPhoto[]>([]);

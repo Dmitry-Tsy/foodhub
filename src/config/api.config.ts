@@ -61,6 +61,14 @@ export const getCurrentConfig = (isEmulator: boolean = true) => {
   };
 };
 
+/**
+ * Приоритет источников данных для поиска ресторанов
+ * Варианты: 'osm', 'foursquare', 'google', 'mock'
+ * Разделять запятой, например: 'osm,foursquare,google,mock'
+ * По умолчанию: OpenStreetMap -> Foursquare -> Google -> Mock
+ */
+export const RESTAURANT_DATA_SOURCE: string | undefined = undefined; // По умолчанию: osm,foursquare,google,mock
+
 // Экспорт для удобства
 export default {
   CURRENT_ENV,
@@ -68,5 +76,6 @@ export default {
   getApiBaseUrl,
   getApiUrl,
   getCurrentConfig,
+  RESTAURANT_DATA_SOURCE,
 };
 

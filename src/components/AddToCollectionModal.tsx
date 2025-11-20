@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -102,7 +103,7 @@ export const AddToCollectionModal: React.FC<AddToCollectionModalProps> = ({
       <View style={styles.overlay}>
         <View style={[styles.modalContainer, { backgroundColor: colors.background }]}>
           <LinearGradient
-            colors={Theme.gradients.primary}
+            colors={['#FF6B35', '#FF8F6B', '#FFB020']}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.header}
@@ -134,7 +135,7 @@ export const AddToCollectionModal: React.FC<AddToCollectionModalProps> = ({
             <FlatList
               data={collections}
               keyExtractor={(item) => item.id}
-              renderItem={renderCollection}
+              renderItem={({ item }) => renderCollection({ item })}
               contentContainerStyle={styles.listContent}
               showsVerticalScrollIndicator={false}
             />

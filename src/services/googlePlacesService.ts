@@ -35,31 +35,61 @@ interface NearbySearchResponse {
 
 /**
  * Поиск ресторанов поблизости через Google Places API
+ * Поддерживает пагинацию для получения более 20 результатов
  */
 export const searchNearbyRestaurants = async (
   location: Location,
   radius: number = 5000,
-  keyword?: string
+  keyword?: string,
+  maxResults: number = 60 // Максимум результатов (3 страницы по 20)
 ): Promise<Restaurant[]> => {
   try {
-    const params = {
-      location: `${location.latitude},${location.longitude}`,
-      radius: radius.toString(),
-      type: 'restaurant',
-      key: GOOGLE_PLACES_API_KEY,
-      ...(keyword && { keyword }),
-    };
+    const allResults: Restaurant[] = [];
+    let nextPageToken: string | undefined;
+    let pageCount = 0;
+    const maxPages = Math.ceil(maxResults / 20); // Google Places API возвращает максимум 20 за раз
 
-    const response = await axios.get<NearbySearchResponse>(
-      `${PLACES_API_URL}/nearbysearch/json`,
-      { params }
-    );
+    do {
+      const params: any = {
+        location: `${location.latitude},${location.longitude}`,
+        radius: radius.toString(),
+        type: 'restaurant',
+        key: GOOGLE_PLACES_API_KEY,
+        ...(keyword && { keyword }),
+        ...(nextPageToken && { pagetoken: nextPageToken }),
+      };
 
-    if (response.data.status !== 'OK' && response.data.status !== 'ZERO_RESULTS') {
-      throw new Error(`Google Places API error: ${response.data.status}`);
-    }
+      const response = await axios.get<NearbySearchResponse>(
+        `${PLACES_API_URL}/nearbysearch/json`,
+        { params }
+      );
 
-    return response.data.results.map(place => convertGooglePlaceToRestaurant(place, location));
+      if (response.data.status !== 'OK' && response.data.status !== 'ZERO_RESULTS') {
+        throw new Error(`Google Places API error: ${response.data.status}`);
+      }
+
+      if (response.data.status === 'ZERO_RESULTS') {
+        break;
+      }
+
+      const restaurants = response.data.results.map(place => 
+        convertGooglePlaceToRestaurant(place, location)
+      );
+      allResults.push(...restaurants);
+
+      nextPageToken = response.data.next_page_token;
+      pageCount++;
+
+      // Если есть next_page_token, нужно подождать немного перед следующим запросом
+      // Google требует небольшую задержку между запросами с pagetoken
+      if (nextPageToken && pageCount < maxPages) {
+        // Ждем 2 секунды перед следующим запросом (Google требует минимум 2 секунды)
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
+    } while (nextPageToken && pageCount < maxPages && allResults.length < maxResults);
+
+    // Ограничиваем до maxResults если получили больше
+    return allResults.slice(0, maxResults);
   } catch (error: any) {
     console.error('Error searching nearby restaurants:', error);
     throw new Error('Не удалось загрузить рестораны');
