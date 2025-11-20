@@ -31,6 +31,9 @@ import ConnectivityTestScreen from '../screens/ConnectivityTestScreen';
 import LogViewerScreen from '../screens/LogViewerScreen';
 import HistoryScreen from '../screens/HistoryScreen';
 import CollectionsScreen from '../screens/CollectionsScreen';
+import CollectionDetailScreen from '../screens/CollectionDetailScreen';
+import CreateCollectionScreen from '../screens/CreateCollectionScreen';
+import EditCollectionScreen from '../screens/EditCollectionScreen';
 
 import { Loading, ErrorBoundary } from '../components';
 
@@ -171,6 +174,27 @@ const AppNavigator: React.FC = () => {
             <Stack.Screen
               name="Collections"
               component={withErrorBoundary(CollectionsScreen)}
+              options={{ 
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="CollectionDetail"
+              component={withErrorBoundary(CollectionDetailScreen)}
+              options={{ 
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="CreateCollection"
+              component={withErrorBoundary(CreateCollectionScreen)}
+              options={{ 
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="EditCollection"
+              component={withErrorBoundary(EditCollectionScreen)}
               options={{ 
                 headerShown: false,
               }}

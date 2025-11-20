@@ -47,6 +47,14 @@ const CollectionsScreen: React.FC<Props> = ({ navigation }) => {
     navigation.navigate('CreateCollection');
   };
 
+  // Перезагружаем коллекции после создания новой
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      loadCollections();
+    });
+    return unsubscribe;
+  }, [navigation]);
+
   if (isLoading && collections.length === 0) {
     return <Loading fullScreen text="Загрузка коллекций..." />;
   }

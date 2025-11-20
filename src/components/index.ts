@@ -19,4 +19,5 @@ export { FilterModal } from './FilterModal';
 export type { FilterOption, SortOption } from './FilterModal';
 export { ThemeToggle } from './ThemeToggle';
 export { CollectionCard } from './CollectionCard';
+export { AddToCollectionModal } from './AddToCollectionModal';
 

@@ -255,19 +255,39 @@ const DishDetailScreen: React.FC<Props> = ({ route, navigation }) => {
           </View>
         </View>
 
-        <Button
-          title={isGuest ? "Войдите чтобы написать отзыв" : "Написать отзыв"}
-          onPress={handleAddReview}
-          style={styles.addReviewButton}
-        />
+        <View style={styles.actionButtons}>
+          <Button
+            title={isGuest ? "Войдите чтобы написать отзыв" : "Написать отзыв"}
+            onPress={handleAddReview}
+            style={[styles.actionButton, { flex: 1 }]}
+          />
+          {!isGuest && (
+            <TouchableOpacity
+              style={[styles.addToCollectionButton, { backgroundColor: Colors.secondary }]}
+              onPress={() => setShowCollectionModal(true)}
+            >
+              <Ionicons name="albums-outline" size={20} color={Colors.textInverse} />
+            </TouchableOpacity>
+          )}
+        </View>
 
         <GuestPrompt
-          visible={showGuestPrompt}
-          onClose={() => setShowGuestPrompt(false)}
-          onLogin={handleGuestLogin}
-          title="Требуется авторизация"
-          message="Чтобы оставлять отзывы, необходимо войти в систему или создать аккаунт"
-        />
+                visible={showGuestPrompt}
+                onClose={() => setShowGuestPrompt(false)}
+                onLogin={handleGuestLogin}
+                title="Требуется авторизация"
+                message="Чтобы оставлять отзывы, необходимо войти в систему или создать аккаунт"
+              />
+
+              <AddToCollectionModal
+                visible={showCollectionModal}
+                onClose={() => setShowCollectionModal(false)}
+                dishId={dishId}
+                onSuccess={() => {
+                  // Можно показать уведомление об успехе
+                  console.log('✅ Блюдо добавлено в коллекцию');
+                }}
+              />
 
         <View style={styles.reviewsHeader}>
           <Text style={styles.reviewsTitle}>
