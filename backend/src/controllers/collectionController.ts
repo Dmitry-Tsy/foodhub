@@ -203,9 +203,10 @@ export const addDishToCollection = async (req: AuthRequest, res: Response) => {
     }
 
     // Получаем текущий максимальный order
-    const maxOrder = await CollectionDish.max('order', {
+    const maxOrderResult = await CollectionDish.max('order', {
       where: { collectionId },
-    }) || 0;
+    });
+    const maxOrder = typeof maxOrderResult === 'number' ? maxOrderResult : 0;
 
     // Добавляем блюдо
     await CollectionDish.create({
