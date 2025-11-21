@@ -1,0 +1,308 @@
+★ eas-cli@16.28.0 is now available.
+To upgrade, run:
+npm install -g eas-cli
+Proceeding with outdated version.
+
+The field "cli.appVersionSource" is not set, but it will be required in the future. Learn more: https://docs.expo.dev/build-reference/app-versions/
+Resolved "preview" environment for the build. Learn more: https://docs.expo.dev/eas/environment-variables/#setting-the-environment-for-your-builds
+No environment variables with visibility "Plain text" and "Sensitive" found for the "preview" environment on EAS.
+
+Specified value for "android.package" in app.json is ignored because an android directory was detected in the project.
+EAS Build will use the value found in the native code.
+The field "cli.appVersionSource" is not set, but it will be required in the future. Learn more: https://docs.expo.dev/build-reference/app-versions/
+- Compressing project files
+ANDROID_NDK_HOME environment variable was not specified, continuing build without NDK
+[SETUP_WORKINGDIR] Preparing workingdir /var/folders/qd/mqn6nyss00q954qwd7j5_cfw0000gn/T/eas-build-local-nodejs/8db36617-8e63-441d-9669-09907b47e4f1
+[START_BUILD] Starting build
+  "job": {
+    "type": "generic",
+    "platform": "android",
+    "projectRootDirectory": ".",
+    "projectArchive": {
+      "type": "PATH",
+      "path": "/var/folders/qd/mqn6nyss00q954qwd7j5_cfw0000gn/T/eas-cli-nodejs/d4775b71-6299-4150-9f3b-98be67d7cddc.tar.gz"
+    },
+    "builderEnvironment": {
+      "env": {}
+    },
+    "cache": {
+      "disabled": false,
+      "paths": [],
+      "clear": false
+    },
+    "updates": {},
+    "gradleCommand": ":app:assembleDebug",
+    "buildType": "apk",
+    "username": "popapp",
+    "experimental": {},
+    "mode": "build",
+    "triggeredBy": "EAS_CLI",
+    "appId": "4dcf4250-6b85-40e9-9337-1dc4bb543c49",
+    "initiatingUserId": "a2bcdbe7-0db0-4b11-a920-4758275c42b4"
+  }
+Local build, skipping project archive refresh
+[READ_PACKAGE_JSON] Using package.json:
+[READ_PACKAGE_JSON] {
+  "name": "foodhub",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web",
+    "lint": "eslint .",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@expo/vector-icons": "^14.0.0",
+    "@react-native-async-storage/async-storage": "^2.2.0",
+    "@react-native-community/slider": "^4.4.2",
+    "@react-navigation/bottom-tabs": "^6.5.11",
+    "@react-navigation/native": "^6.1.9",
+    "@react-navigation/native-stack": "^6.9.17",
+    "@reduxjs/toolkit": "^2.0.1",
+    "axios": "^1.6.5",
+    "date-fns": "^3.0.6",
+    "expo": "~50.0.6",
+    "expo-clipboard": "~5.0.1",
+    "expo-font": "~11.10.2",
+    "expo-image-picker": "~14.7.1",
+    "expo-linear-gradient": "^15.0.7",
+    "expo-location": "~16.5.5",
+    "expo-modules-core": "~1.11.14",
+    "expo-secure-store": "~12.8.1",
+    "expo-splash-screen": "~0.26.5",
+    "expo-status-bar": "~1.11.1",
+    "react": "18.2.0",
+    "react-native": "0.73.6",
+    "react-native-animatable": "^1.4.0",
+    "react-native-paper": "^5.11.6",
+    "react-native-safe-area-context": "4.8.2",
+    "react-native-screens": "~3.29.0",
+    "react-native-vector-icons": "^10.0.3",
+    "react-native-webview": "^13.16.0",
+    "react-redux": "^9.0.4",
+    "string-similarity": "^4.0.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.23.7",
+    "@types/react": "~18.2.45",
+    "@types/string-similarity": "^4.0.2",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "babel-preset-expo": "~10.0.1",
+    "eslint": "^8.56.0",
+    "typescript": "^5.3.3"
+  },
+  "private": true
+}
+[INSTALL_DEPENDENCIES] Running "npm install" in /var/folders/qd/mqn6nyss00q954qwd7j5_cfw0000gn/T/eas-build-local-nodejs/8db36617-8e63-441d-9669-09907b47e4f1/build directory
+[INSTALL_DEPENDENCIES] npm warn deprecated osenv@0.1.5: This package is no longer supported.
+[INSTALL_DEPENDENCIES] npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+[INSTALL_DEPENDENCIES] npm warn deprecated @npmcli/move-file@1.1.2: This functionality has been moved to @npmcli/fs
+[INSTALL_DEPENDENCIES] npm warn deprecated @babel/plugin-proposal-optional-catch-binding@7.18.6: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-optional-catch-binding instead.
+[INSTALL_DEPENDENCIES] npm warn deprecated @babel/plugin-proposal-numeric-separator@7.18.6: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-numeric-separator instead.
+[INSTALL_DEPENDENCIES] npm warn deprecated @babel/plugin-proposal-nullish-coalescing-operator@7.18.6: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-nullish-coalescing-operator instead.
+[INSTALL_DEPENDENCIES] npm warn deprecated @babel/plugin-proposal-class-properties@7.18.6: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-class-properties instead.
+[INSTALL_DEPENDENCIES] npm warn deprecated rimraf@2.6.3: Rimraf versions prior to v4 are no longer supported
+[INSTALL_DEPENDENCIES] npm warn deprecated string-similarity@4.0.4: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+[INSTALL_DEPENDENCIES] npm warn deprecated @humanwhocodes/config-array@0.13.0: Use @eslint/config-array instead
+[INSTALL_DEPENDENCIES] npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+[INSTALL_DEPENDENCIES] npm warn deprecated @babel/plugin-proposal-optional-chaining@7.21.0: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-optional-chaining instead.
+[INSTALL_DEPENDENCIES] npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+[INSTALL_DEPENDENCIES] npm warn deprecated sudo-prompt@9.2.1: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+[INSTALL_DEPENDENCIES] npm warn deprecated glob@7.1.6: Glob versions prior to v9 are no longer supported
+[INSTALL_DEPENDENCIES] npm warn deprecated glob@7.1.6: Glob versions prior to v9 are no longer supported
+[INSTALL_DEPENDENCIES] npm warn deprecated glob@7.1.6: Glob versions prior to v9 are no longer supported
+[INSTALL_DEPENDENCIES] npm warn deprecated @babel/plugin-proposal-async-generator-functions@7.20.7: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-async-generator-functions instead.
+[INSTALL_DEPENDENCIES] npm warn deprecated @babel/plugin-proposal-object-rest-spread@7.20.7: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-object-rest-spread instead.
+[INSTALL_DEPENDENCIES] npm warn deprecated @humanwhocodes/object-schema@2.0.3: Use @eslint/object-schema instead
+[INSTALL_DEPENDENCIES] npm warn deprecated @xmldom/xmldom@0.7.13: this version is no longer supported, please update to at least 0.8.*
+[INSTALL_DEPENDENCIES] npm warn deprecated react-native-vector-icons@10.3.0: react-native-vector-icons package has moved to a new model of per-icon-family packages. See the https://github.com/oblador/react-native-vector-icons/blob/master/MIGRATION.md on how to migrate
+[INSTALL_DEPENDENCIES] npm warn deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+[INSTALL_DEPENDENCIES] added 1232 packages, and audited 1233 packages in 12s
+[INSTALL_DEPENDENCIES] 174 packages are looking for funding
+[INSTALL_DEPENDENCIES]   run `npm fund` for details
+[INSTALL_DEPENDENCIES] 9 vulnerabilities (2 low, 1 moderate, 6 high)
+[INSTALL_DEPENDENCIES] 
+[INSTALL_DEPENDENCIES] To address issues that do not require attention, run:
+[INSTALL_DEPENDENCIES]   npm audit fix
+[INSTALL_DEPENDENCIES] 
+[INSTALL_DEPENDENCIES] To address all issues (including breaking changes), run:
+[INSTALL_DEPENDENCIES]   npm audit fix --force
+[INSTALL_DEPENDENCIES] 
+[INSTALL_DEPENDENCIES] Run `npm audit` for details.
+The NODE_ENV environment variable is required but was not specified. Ensure the project is bundled with Expo CLI or NODE_ENV is set.
+Proceeding without mode-specific .env
+[READ_APP_CONFIG] Using app configuration:
+[READ_APP_CONFIG] {
+  "name": "FoodHub",
+  "slug": "foodhub",
+  "owner": "popapp",
+  "version": "1.14.0",
+  "orientation": "portrait",
+  "icon": "./assets/icon.png",
+  "userInterfaceStyle": "automatic",
+  "splash": {
+    "image": "./assets/splash.png",
+    "resizeMode": "contain",
+    "backgroundColor": "#FF6B35"
+  },
+  "assetBundlePatterns": [
+    "**/*"
+  ],
+  "ios": {
+    "supportsTablet": true,
+    "bundleIdentifier": "com.foodhub.app",
+    "infoPlist": {
+      "NSLocationWhenInUseUsageDescription": "FoodHub использует вашу геолокацию для поиска ресторанов поблизости",
+      "NSCameraUsageDescription": "FoodHub нужен доступ к камере для фотографий блюд",
+      "NSPhotoLibraryUsageDescription": "FoodHub нужен доступ к галерее для выбора фотографий блюд"
+    }
+  },
+  "android": {
+    "adaptiveIcon": {
+      "foregroundImage": "./assets/adaptive-icon.png",
+      "backgroundColor": "#FF6B35"
+    },
+    "package": "com.foodhub.app",
+    "permissions": [
+      "android.permission.ACCESS_FINE_LOCATION",
+      "android.permission.ACCESS_COARSE_LOCATION",
+      "android.permission.CAMERA",
+      "android.permission.READ_EXTERNAL_STORAGE",
+      "android.permission.WRITE_EXTERNAL_STORAGE",
+      "android.permission.RECORD_AUDIO"
+    ]
+  },
+  "web": {
+    "favicon": "./assets/favicon.png"
+  },
+  "plugins": [
+    [
+      "expo-location",
+      {
+        "locationAlwaysAndWhenInUsePermission": "Разрешите FoodHub доступ к вашей геолокации"
+      }
+    ],
+    [
+      "expo-image-picker",
+      {
+        "photosPermission": "FoodHub нужен доступ к вашим фотографиям для загрузки изображений блюд"
+      }
+    ]
+  ],
+  "extra": {
+    "eas": {
+      "projectId": "4dcf4250-6b85-40e9-9337-1dc4bb543c49"
+    }
+  },
+  "sdkVersion": "50.0.0",
+  "platforms": [
+    "ios",
+    "android"
+  ]
+}
+[RUN_EXPO_DOCTOR] Running "expo doctor"
+[RUN_EXPO_DOCTOR] Running 15 checks on your project...
+[RUN_EXPO_DOCTOR] 12/15 checks passed. 3 checks failed. Possible issues detected:
+[RUN_EXPO_DOCTOR] Use the --verbose flag to see more details about passed checks.
+[RUN_EXPO_DOCTOR] 
+[RUN_EXPO_DOCTOR] ✖ Check dependencies for packages that should not be installed directly
+[RUN_EXPO_DOCTOR] The package "expo-modules-core" should not be installed directly in your project. You should instead use the exported API from the expo package.
+[RUN_EXPO_DOCTOR] Advice:
+[RUN_EXPO_DOCTOR] Remove these packages from your package.json.
+[RUN_EXPO_DOCTOR] ✖ Check for app config fields that may not be synced in a non-CNG project
+[RUN_EXPO_DOCTOR] This project contains native project folders but also has native configuration properties in app.json, indicating it is configured to use Prebuild. When the android/ios folders are present, EAS Build will not sync the following properties: orientation, icon, userInterfaceStyle, splash, ios, android, plugins. 
+[RUN_EXPO_DOCTOR] 
+[RUN_EXPO_DOCTOR] Advice:
+[RUN_EXPO_DOCTOR] Add '/android' to your .gitignore file if you intend to use CNG / Prebuild. Learn more: https://docs.expo.dev/workflow/prebuild/#usage-with-eas-build
+[RUN_EXPO_DOCTOR] 
+[RUN_EXPO_DOCTOR] ✖ Check that packages match versions required by installed Expo SDK
+[RUN_EXPO_DOCTOR] The following packages should be updated for best compatibility with the installed expo version:
+[RUN_EXPO_DOCTOR]   @react-native-async-storage/async-storage@2.2.0 - expected version: 1.21.0
+[RUN_EXPO_DOCTOR]   expo-linear-gradient@15.0.7 - expected version: ~12.7.2
+[RUN_EXPO_DOCTOR]   react-native-webview@13.16.0 - expected version: 13.6.4
+[RUN_EXPO_DOCTOR] Your project may not work correctly until you install the correct versions of the packages.
+[RUN_EXPO_DOCTOR] Found outdated dependencies
+[RUN_EXPO_DOCTOR] Advice:
+[RUN_EXPO_DOCTOR] Use 'npx expo install --check' to review and upgrade your dependencies.
+[RUN_EXPO_DOCTOR] To ignore specific packages, add them to "expo.install.exclude" in package.json. Learn more: https://expo.fyi/dependency-validation
+[RUN_EXPO_DOCTOR] 3 checks failed, indicating possible issues with the project.
+[RUN_EXPO_DOCTOR] Command "expo doctor" failed.
+Error: npx -y expo-doctor exited with non-zero code: 1
+    at ChildProcess.completionListener (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/@expo/spawn-async/build/spawnAsync.js:42:23)
+    at Object.onceWrapper (node:events:623:26)
+    at ChildProcess.emit (node:events:508:28)
+    at maybeClose (node:internal/child_process:1085:16)
+    at ChildProcess._handle.onexit (node:internal/child_process:304:5)
+    ...
+    at spawnAsync (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/@expo/spawn-async/build/spawnAsync.js:7:23)
+    at spawn (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/@expo/turtle-spawn/dist/index.js:16:47)
+    at runExpoDoctor (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/@expo/build-tools/dist/common/setup.js:124:52)
+    at async /Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/@expo/build-tools/dist/common/setup.js:103:17
+    at async BuildContext.runBuildPhase (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/@expo/build-tools/dist/context.js:123:28)
+    at async setupAsync (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/@expo/build-tools/dist/common/setup.js:101:9)
+    at async buildAsync (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/@expo/build-tools/dist/builders/android.js:72:5)
+    at async runBuilderWithHooksAsync (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/@expo/build-tools/dist/builders/common.js:12:13)
+    at async Object.androidBuilder (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/@expo/build-tools/dist/builders/android.js:59:16)
+    at async buildAndroidAsync (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/eas-cli-local-build-plugin/dist/android.js:44:12)
+[PREBUILD] Skipped running "expo prebuild" because the "android" directory already exists. Learn more about the build process: https://docs.expo.dev/build-reference/android-builds/
+[RUN_GRADLEW] Running 'gradlew :app:assembleDebug' in /var/folders/qd/mqn6nyss00q954qwd7j5_cfw0000gn/T/eas-build-local-nodejs/8db36617-8e63-441d-9669-09907b47e4f1/build/android
+[RUN_GRADLEW] > Task :gradle-plugin:pluginDescriptors
+[RUN_GRADLEW] > Task :gradle-plugin:processResources
+[RUN_GRADLEW] > Task :gradle-plugin:compileKotlin
+[RUN_GRADLEW] > Task :gradle-plugin:compileJava NO-SOURCE
+[RUN_GRADLEW] > Task :gradle-plugin:classes
+[RUN_GRADLEW] > Task :gradle-plugin:jar
+[RUN_GRADLEW] > Task :gradle-plugin:inspectClassesForKotlinIC
+[RUN_GRADLEW] FAILURE: Build completed with 2 failures.
+[RUN_GRADLEW] 1: Task failed with an exception.
+[RUN_GRADLEW] -----------
+[RUN_GRADLEW] * Where:
+[RUN_GRADLEW] Build file '/private/var/folders/qd/mqn6nyss00q954qwd7j5_cfw0000gn/T/eas-build-local-nodejs/8db36617-8e63-441d-9669-09907b47e4f1/build/node_modules/expo-linear-gradient/android/build.gradle' line: 3
+[RUN_GRADLEW] * What went wrong:
+[RUN_GRADLEW] Plugin [id: 'expo-module-gradle-plugin'] was not found in any of the following sources:
+[RUN_GRADLEW] - Gradle Core Plugins (not a core plugin. For more available plugins, please refer to https://docs.gradle.org/8.3/userguide/plugin_reference.html in the Gradle documentation.)
+[RUN_GRADLEW] - Included Builds (None of the included builds contain this plugin)
+[RUN_GRADLEW] - Plugin Repositories (plugin dependency must include a version number for this source)
+[RUN_GRADLEW] * Try:
+[RUN_GRADLEW] > Run with --stacktrace option to get the stack trace.
+[RUN_GRADLEW] > Run with --info or --debug
+[RUN_GRADLEW] option to get more log output.
+[RUN_GRADLEW] > Run with --scan to get full insights.
+[RUN_GRADLEW] >
+[RUN_GRADLEW] Get more help at https://help.gradle.org.
+[RUN_GRADLEW] ==============================================================================
+[RUN_GRADLEW] 2: Task failed with an exception.
+[RUN_GRADLEW] -----------
+[RUN_GRADLEW] * Where:
+[RUN_GRADLEW] Script '/private/var/folders/qd/mqn6nyss00q954qwd7j5_cfw0000gn/T/eas-build-local-nodejs/8db36617-8e63-441d-9669-09907b47e4f1/build/node_modules/expo-modules-core/android/ExpoModulesCorePlugin.gradle' line: 76
+[RUN_GRADLEW] * What went wrong:
+[RUN_GRADLEW] A problem occurred configuring project ':expo'.
+[RUN_GRADLEW] > Could not get unknown property 'release' for SoftwareComponent container of type org.gradle.api.internal.component.DefaultSoftwareComponentContainer.
+[RUN_GRADLEW] * Try:
+[RUN_GRADLEW] > Run with --stacktrace option to get the stack trace.
+[RUN_GRADLEW] > Run with --info or --debug option to get more log output.
+[RUN_GRADLEW] > Run with --scan to get full insights.
+[RUN_GRADLEW] > Get more help at https://help.gradle.org.
+[RUN_GRADLEW] ==============================================================================
+[RUN_GRADLEW] BUILD FAILED in 31s
+[RUN_GRADLEW] 5 actionable tasks: 5 executed
+[RUN_GRADLEW] Error: Gradle build failed with unknown error. See logs for the "Run gradlew" phase for more information.
+
+Build failed
+Gradle build failed with unknown error. See logs for the "Run gradlew" phase for more information.
+Error: Gradle build failed with unknown error. See logs for the "Run gradlew" phase for more information.
+    at resolveBuildPhaseErrorAsync (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/@expo/build-tools/dist/buildErrors/detectError.js:69:12)
+    at async BuildContext.handleBuildPhaseErrorAsync (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/@expo/build-tools/dist/context.js:192:28)
+    at async BuildContext.runBuildPhase (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/@expo/build-tools/dist/context.js:135:35)
+    at async buildAsync (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/@expo/build-tools/dist/builders/android.js:183:5)
+    at async runBuilderWithHooksAsync (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/@expo/build-tools/dist/builders/common.js:12:13)
+    at async Object.androidBuilder (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/@expo/build-tools/dist/builders/android.js:59:16)
+    at async buildAndroidAsync (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/eas-cli-local-build-plugin/dist/android.js:44:12)
+    at async buildAsync (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/eas-cli-local-build-plugin/dist/build.js:55:29)
+    at async main (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/eas-cli-local-build-plugin/dist/main.js:16:9)
+npx -y eas-cli-local-build-plugin@1.0.243 eyJqb2IiOnsidHlwZSI6ImdlbmVyaWMiLCJwbGF0Zm9ybSI6ImFuZHJvaWQiLCJwcm9qZWN0Um9vdERpcmVjdG9yeSI6Ii4iLCJwcm9qZWN0QXJjaGl2ZSI6eyJ0eXBlIjoiUEFUSCIsInBhdGgiOiIvdmFyL2ZvbGRlcnMvcWQvbXFuNm55c3MwMHE5NTRxd2Q3ajVfY2Z3MDAwMGduL1QvZWFzLWNsaS1ub2RlanMvZDQ3NzViNzEtNjI5OS00MTUwLTlmM2ItOThiZTY3ZDdjZGRjLnRhci5neiJ9LCJidWlsZGVyRW52aXJvbm1lbnQiOnsiZW52Ijp7fX0sImNhY2hlIjp7ImRpc2FibGVkIjpmYWxzZSwicGF0aHMiOltdLCJjbGVhciI6ZmFsc2V9LCJzZWNyZXRzIjp7fSwidXBkYXRlcyI6e30sImdyYWRsZUNvbW1hbmQiOiI6YXBwOmFzc2VtYmxlRGVidWciLCJidWlsZFR5cGUiOiJhcGsiLCJ1c2VybmFtZSI6InBvcGFwcCIsImV4cGVyaW1lbnRhbCI6e30sIm1vZGUiOiJidWlsZCIsInRyaWdnZXJlZEJ5IjoiRUFTX0NMSSIsImFwcElkIjoiNGRjZjQyNTAtNmI4NS00MGU5LTkzMzctMWRjNGJiNTQzYzQ5IiwiaW5pdGlhdGluZ1VzZXJJZCI6ImEyYmNkYmU3LTBkYjAtNGIxMS1hOTIwLTQ3NTgyNzVjNDJiNCJ9LCJtZXRhZGF0YSI6eyJ0cmFja2luZ0NvbnRleHQiOnsidHJhY2tpbmdfaWQiOiJhZTllNTM2MC1mMWZmLTQ0YjQtODE1NS03NDZmYjU4MGFjOGMiLCJwbGF0Zm9ybSI6ImFuZHJvaWQiLCJzZGtfdmVyc2lvbiI6IjUwLjAuMCIsImFjY291bnRfaWQiOiJjN2NkN2I1ZS1lZDQ1LTQ5Y2MtOTVmMy0wOTM0Y2U4MDZlZWEiLCJwcm9qZWN0X2lkIjoiNGRjZjQyNTAtNmI4NS00MGU5LTkzMzctMWRjNGJiNTQzYzQ5IiwicHJvamVjdF90eXBlIjoiZ2VuZXJpYyIsImRldl9jbGllbnQiOmZhbHNlLCJub193YWl0IjpmYWxzZSwicnVuX2Zyb21fY2kiOmZhbHNlLCJsb2NhbCI6dHJ1ZX0sImFwcFZlcnNpb24iOiIxLjE0LjAiLCJhcHBCdWlsZFZlcnNpb24iOiIxIiwiY2xpVmVyc2lvbiI6IjE2LjI2LjAiLCJ3b3JrZmxvdyI6ImdlbmVyaWMiLCJjcmVkZW50aWFsc1NvdXJjZSI6InJlbW90ZSIsInNka1ZlcnNpb24iOiI1MC4wLjAiLCJyZWFjdE5hdGl2ZVZlcnNpb24iOiIwLjczLjYiLCJkaXN0cmlidXRpb24iOiJpbnRlcm5hbCIsImFwcE5hbWUiOiJGb29kSHViIiwiYXBwSWRlbnRpZmllciI6ImNvbS5mb29kaHViLmFwcCIsImJ1aWxkUHJvZmlsZSI6InByZXZpZXctbG9jYWwiLCJnaXRDb21taXRIYXNoIjoiMTc3MzRjYTUyMmRhYjdjZDVhOGZkMDFiM2M3YjM2MGY5ZGZiNGE1NCIsImdpdENvbW1pdE1lc3NhZ2UiOiJvcGVuU3RyZWV0c01hcHMiLCJpc0dpdFdvcmtpbmdUcmVlRGlydHkiOnRydWUsInVzZXJuYW1lIjoicG9wYXBwIiwicnVuV2l0aE5vV2FpdEZsYWciOmZhbHNlLCJydW5Gcm9tQ0kiOmZhbHNlLCJkZXZlbG9wbWVudENsaWVudCI6dHJ1ZSwicmVxdWlyZWRQYWNrYWdlTWFuYWdlciI6Im5wbSIsInNpbXVsYXRvciI6ZmFsc2V9fQ== exited with non-zero code: 1
+    Error: build command failed.

@@ -1,0 +1,333 @@
+🏗️  FoodHub - Локальная сборка APK
+====================================
+
+📍 Android SDK: /Users/dmitrytsymlyakov/Library/Android/sdk
+☕ Java версия:
+openjdk version "20.0.2" 2023-07-18
+
+🔍 Проверка компонентов...
+✅ Все компоненты на месте
+
+🚀 Запуск локальной сборки APK...
+⏱️  Это займет 5-10 минут при первой сборке
+
+📝 Логи будут выводиться в реальном времени - отлично для дебага!
+
+★ eas-cli@16.28.0 is now available.
+To upgrade, run:
+npm install -g eas-cli
+Proceeding with outdated version.
+
+The field "cli.appVersionSource" is not set, but it will be required in the future. Learn more: https://docs.expo.dev/build-reference/app-versions/
+Resolved "preview" environment for the build. Learn more: https://docs.expo.dev/eas/environment-variables/#setting-the-environment-for-your-builds
+No environment variables with visibility "Plain text" and "Sensitive" found for the "preview" environment on EAS.
+
+Specified value for "android.package" in app.json is ignored because an android directory was detected in the project.
+EAS Build will use the value found in the native code.
+The field "cli.appVersionSource" is not set, but it will be required in the future. Learn more: https://docs.expo.dev/build-reference/app-versions/
+✔ Using remote Android credentials (Expo server)
+✔ Using Keystore from configuration: Build Credentials LZ8ccUQf-p (default)
+- Compressing project files
+ANDROID_NDK_HOME environment variable was not specified, continuing build without NDK
+[SETUP_WORKINGDIR] Preparing workingdir /var/folders/qd/mqn6nyss00q954qwd7j5_cfw0000gn/T/eas-build-local-nodejs/649c3c37-37d8-44c7-9b07-0f23ef56fd2a
+[START_BUILD] Starting build
+  "job": {
+    "type": "generic",
+    "platform": "android",
+    "projectRootDirectory": ".",
+    "projectArchive": {
+      "type": "PATH",
+      "path": "/var/folders/qd/mqn6nyss00q954qwd7j5_cfw0000gn/T/eas-cli-nodejs/ecb84c90-122c-41cf-8609-b78ca352229e.tar.gz"
+    },
+    "builderEnvironment": {
+      "env": {}
+    },
+    "cache": {
+      "disabled": false,
+      "paths": [],
+      "clear": false
+    },
+    "updates": {},
+    "gradleCommand": ":app:assembleRelease",
+    "buildType": "apk",
+    "username": "popapp",
+    "experimental": {},
+    "mode": "build",
+    "triggeredBy": "EAS_CLI",
+    "appId": "4dcf4250-6b85-40e9-9337-1dc4bb543c49",
+    "initiatingUserId": "a2bcdbe7-0db0-4b11-a920-4758275c42b4"
+  }
+Local build, skipping project archive refresh
+[READ_PACKAGE_JSON] Using package.json:
+[READ_PACKAGE_JSON] {
+  "name": "foodhub",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web",
+    "lint": "eslint .",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@expo/vector-icons": "^14.0.0",
+    "@react-native-async-storage/async-storage": "^2.2.0",
+    "@react-native-community/slider": "^4.4.2",
+    "@react-navigation/bottom-tabs": "^6.5.11",
+    "@react-navigation/native": "^6.1.9",
+    "@react-navigation/native-stack": "^6.9.17",
+    "@reduxjs/toolkit": "^2.0.1",
+    "axios": "^1.6.5",
+    "date-fns": "^3.0.6",
+    "expo": "~50.0.6",
+    "expo-clipboard": "~5.0.1",
+    "expo-font": "~11.10.2",
+    "expo-image-picker": "~14.7.1",
+    "expo-linear-gradient": "^15.0.7",
+    "expo-location": "~16.5.5",
+    "expo-modules-core": "~1.11.14",
+    "expo-secure-store": "~12.8.1",
+    "expo-splash-screen": "~0.26.5",
+    "expo-status-bar": "~1.11.1",
+    "react": "18.2.0",
+    "react-native": "0.73.6",
+    "react-native-animatable": "^1.4.0",
+    "react-native-paper": "^5.11.6",
+    "react-native-safe-area-context": "4.8.2",
+    "react-native-screens": "~3.29.0",
+    "react-native-vector-icons": "^10.0.3",
+    "react-native-webview": "^13.16.0",
+    "react-redux": "^9.0.4",
+    "string-similarity": "^4.0.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.23.7",
+    "@types/react": "~18.2.45",
+    "@types/string-similarity": "^4.0.2",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "babel-preset-expo": "~10.0.1",
+    "eslint": "^8.56.0",
+    "typescript": "^5.3.3"
+  },
+  "private": true
+}
+[INSTALL_DEPENDENCIES] Running "npm install" in /var/folders/qd/mqn6nyss00q954qwd7j5_cfw0000gn/T/eas-build-local-nodejs/649c3c37-37d8-44c7-9b07-0f23ef56fd2a/build directory
+[INSTALL_DEPENDENCIES] npm warn deprecated osenv@0.1.5: This package is no longer supported.
+[INSTALL_DEPENDENCIES] npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+[INSTALL_DEPENDENCIES] npm warn deprecated @npmcli/move-file@1.1.2: This functionality has been moved to @npmcli/fs
+[INSTALL_DEPENDENCIES] npm warn deprecated @babel/plugin-proposal-optional-catch-binding@7.18.6: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-optional-catch-binding instead.
+[INSTALL_DEPENDENCIES] npm warn deprecated @babel/plugin-proposal-nullish-coalescing-operator@7.18.6: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-nullish-coalescing-operator instead.
+[INSTALL_DEPENDENCIES] npm warn deprecated @babel/plugin-proposal-class-properties@7.18.6: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-class-properties instead.
+[INSTALL_DEPENDENCIES] npm warn deprecated @babel/plugin-proposal-numeric-separator@7.18.6: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-numeric-separator instead.
+[INSTALL_DEPENDENCIES] npm warn deprecated rimraf@2.6.3: Rimraf versions prior to v4 are no longer supported
+[INSTALL_DEPENDENCIES] npm warn deprecated string-similarity@4.0.4: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+[INSTALL_DEPENDENCIES] npm warn deprecated @humanwhocodes/config-array@0.13.0: Use @eslint/config-array instead
+[INSTALL_DEPENDENCIES] npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+[INSTALL_DEPENDENCIES] npm warn deprecated @babel/plugin-proposal-optional-chaining@7.21.0: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-optional-chaining instead.
+[INSTALL_DEPENDENCIES] npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+[INSTALL_DEPENDENCIES] npm warn deprecated sudo-prompt@9.2.1: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+[INSTALL_DEPENDENCIES] npm warn deprecated glob@7.1.6: Glob versions prior to v9 are no longer supported
+[INSTALL_DEPENDENCIES] npm warn deprecated glob@7.1.6: Glob versions prior to v9 are no longer supported
+[INSTALL_DEPENDENCIES] npm warn deprecated glob@7.1.6: Glob versions prior to v9 are no longer supported
+[INSTALL_DEPENDENCIES] npm warn deprecated @babel/plugin-proposal-async-generator-functions@7.20.7: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-async-generator-functions instead.
+[INSTALL_DEPENDENCIES] npm warn deprecated @babel/plugin-proposal-object-rest-spread@7.20.7: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-object-rest-spread instead.
+[INSTALL_DEPENDENCIES] npm warn deprecated @humanwhocodes/object-schema@2.0.3: Use @eslint/object-schema instead
+[INSTALL_DEPENDENCIES] npm warn deprecated @xmldom/xmldom@0.7.13: this version is no longer supported, please update to at least 0.8.*
+[INSTALL_DEPENDENCIES] npm warn deprecated react-native-vector-icons@10.3.0: react-native-vector-icons package has moved to a new model of per-icon-family packages. See the https://github.com/oblador/react-native-vector-icons/blob/master/MIGRATION.md on how to migrate
+[INSTALL_DEPENDENCIES] npm warn deprecated eslint@8.57.1: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+[INSTALL_DEPENDENCIES] added 1232 packages, and audited 1233 packages in 25s
+[INSTALL_DEPENDENCIES] 174 packages are looking for funding
+[INSTALL_DEPENDENCIES] run `npm fund` for details
+[INSTALL_DEPENDENCIES] 9 vulnerabilities (2 low, 1 moderate, 6 high)
+[INSTALL_DEPENDENCIES] 
+[INSTALL_DEPENDENCIES] To address issues that do not require attention, run:
+[INSTALL_DEPENDENCIES]   npm audit fix
+[INSTALL_DEPENDENCIES] 
+[INSTALL_DEPENDENCIES] To address all issues (including breaking changes), run:
+[INSTALL_DEPENDENCIES]   npm audit fix --force
+[INSTALL_DEPENDENCIES] 
+[INSTALL_DEPENDENCIES] Run `npm audit` for details.
+The NODE_ENV environment variable is required but was not specified. Ensure the project is bundled with Expo CLI or NODE_ENV is set.
+Proceeding without mode-specific .env
+[READ_APP_CONFIG] Using app configuration:
+[READ_APP_CONFIG] {
+  "name": "FoodHub",
+  "slug": "foodhub",
+  "owner": "popapp",
+  "version": "1.14.0",
+  "orientation": "portrait",
+  "icon": "./assets/icon.png",
+  "userInterfaceStyle": "automatic",
+  "splash": {
+    "image": "./assets/splash.png",
+    "resizeMode": "contain",
+    "backgroundColor": "#FF6B35"
+  },
+  "assetBundlePatterns": [
+    "**/*"
+  ],
+  "ios": {
+    "supportsTablet": true,
+    "bundleIdentifier": "com.foodhub.app",
+    "infoPlist": {
+      "NSLocationWhenInUseUsageDescription": "FoodHub использует вашу геолокацию для поиска ресторанов поблизости",
+      "NSCameraUsageDescription": "FoodHub нужен доступ к камере для фотографий блюд",
+      "NSPhotoLibraryUsageDescription": "FoodHub нужен доступ к галерее для выбора фотографий блюд"
+    }
+  },
+  "android": {
+    "adaptiveIcon": {
+      "foregroundImage": "./assets/adaptive-icon.png",
+      "backgroundColor": "#FF6B35"
+    },
+    "package": "com.foodhub.app",
+    "permissions": [
+      "android.permission.ACCESS_FINE_LOCATION",
+      "android.permission.ACCESS_COARSE_LOCATION",
+      "android.permission.CAMERA",
+      "android.permission.READ_EXTERNAL_STORAGE",
+      "android.permission.WRITE_EXTERNAL_STORAGE",
+      "android.permission.RECORD_AUDIO"
+    ]
+  },
+  "web": {
+    "favicon": "./assets/favicon.png"
+  },
+  "plugins": [
+    [
+      "expo-location",
+      {
+        "locationAlwaysAndWhenInUsePermission": "Разрешите FoodHub доступ к вашей геолокации"
+      }
+    ],
+    [
+      "expo-image-picker",
+      {
+        "photosPermission": "FoodHub нужен доступ к вашим фотографиям для загрузки изображений блюд"
+      }
+    ]
+  ],
+  "extra": {
+    "eas": {
+      "projectId": "4dcf4250-6b85-40e9-9337-1dc4bb543c49"
+    }
+  },
+  "sdkVersion": "50.0.0",
+  "platforms": [
+    "ios",
+    "android"
+  ]
+}
+[RUN_EXPO_DOCTOR] Running "expo doctor"
+[RUN_EXPO_DOCTOR] Running 15 checks on your project...
+[RUN_EXPO_DOCTOR] 12/15 checks passed. 3 checks failed. Possible issues detected:
+[RUN_EXPO_DOCTOR] Use the --verbose flag to see more details about passed checks.
+[RUN_EXPO_DOCTOR] ✖ Check dependencies for packages that should not be installed directly
+[RUN_EXPO_DOCTOR] The package "expo-modules-core" should not be installed directly in your project. You should instead use the exported API from the expo package.
+[RUN_EXPO_DOCTOR] Advice:
+[RUN_EXPO_DOCTOR] Remove these packages from your package.json.
+[RUN_EXPO_DOCTOR] ✖ Check for app config fields that may not be synced in a non-CNG project
+[RUN_EXPO_DOCTOR] This project contains native project folders but also has native configuration properties in app.json, indicating it is configured to use Prebuild. When the android/ios folders are present, EAS Build will not sync the following properties: orientation, icon, userInterfaceStyle, splash, ios, android, plugins. 
+[RUN_EXPO_DOCTOR] 
+[RUN_EXPO_DOCTOR] Advice:
+[RUN_EXPO_DOCTOR] Add '/android' to your .gitignore file if you intend to use CNG / Prebuild. Learn more: https://docs.expo.dev/workflow/prebuild/#usage-with-eas-build
+[RUN_EXPO_DOCTOR] 
+[RUN_EXPO_DOCTOR] ✖ Check that packages match versions required by installed Expo SDK
+[RUN_EXPO_DOCTOR] The following packages should be updated for best compatibility with the installed expo version:
+[RUN_EXPO_DOCTOR]   @react-native-async-storage/async-storage@2.2.0 - expected version: 1.21.0
+[RUN_EXPO_DOCTOR]   expo-linear-gradient@15.0.7 - expected version: ~12.7.2
+[RUN_EXPO_DOCTOR]   react-native-webview@13.16.0 - expected version: 13.6.4
+[RUN_EXPO_DOCTOR] Your project may not work correctly until you install the correct versions of the packages.
+[RUN_EXPO_DOCTOR] Found outdated dependencies
+[RUN_EXPO_DOCTOR] Advice:
+[RUN_EXPO_DOCTOR] Use 'npx expo install --check' to review and upgrade your dependencies.
+[RUN_EXPO_DOCTOR] To ignore specific packages, add them to "expo.install.exclude" in package.json. Learn more: https://expo.fyi/dependency-validation
+[RUN_EXPO_DOCTOR] 3 checks failed, indicating possible issues with the project.
+[RUN_EXPO_DOCTOR] Command "expo doctor" failed.
+Error: npx -y expo-doctor exited with non-zero code: 1
+    at ChildProcess.completionListener (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/@expo/spawn-async/build/spawnAsync.js:42:23)
+    at Object.onceWrapper (node:events:623:26)
+    at ChildProcess.emit (node:events:508:28)
+    at maybeClose (node:internal/child_process:1085:16)
+    at ChildProcess._handle.onexit (node:internal/child_process:304:5)
+    ...
+    at spawnAsync (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/@expo/spawn-async/build/spawnAsync.js:7:23)
+    at spawn (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/@expo/turtle-spawn/dist/index.js:16:47)
+    at runExpoDoctor (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/@expo/build-tools/dist/common/setup.js:124:52)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async /Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/@expo/build-tools/dist/common/setup.js:103:17
+    at async BuildContext.runBuildPhase (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/@expo/build-tools/dist/context.js:123:28)
+    at async setupAsync (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/@expo/build-tools/dist/common/setup.js:101:9)
+    at async buildAsync (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/@expo/build-tools/dist/builders/android.js:72:5)
+    at async runBuilderWithHooksAsync (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/@expo/build-tools/dist/builders/common.js:12:13)
+    at async Object.androidBuilder (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/@expo/build-tools/dist/builders/android.js:59:16)
+[PREBUILD] Skipped running "expo prebuild" because the "android" directory already exists. Learn more about the build process: https://docs.expo.dev/build-reference/android-builds/
+[PREPARE_CREDENTIALS] Writing secrets to the project's directory
+[PREPARE_CREDENTIALS] Injecting signing config into build.gradle
+[RUN_GRADLEW] Running 'gradlew :app:assembleRelease' in /var/folders/qd/mqn6nyss00q954qwd7j5_cfw0000gn/T/eas-build-local-nodejs/649c3c37-37d8-44c7-9b07-0f23ef56fd2a/build/android
+[RUN_GRADLEW] Starting a Gradle Daemon, 1 busy and 1 stopped Daemons could not be reused, use --status for details
+[RUN_GRADLEW] > Task :gradle-plugin:pluginDescriptors
+[RUN_GRADLEW] > Task :gradle-plugin:processResources
+[RUN_GRADLEW] > Task :gradle-plugin:compileKotlin
+[RUN_GRADLEW] > Task :gradle-plugin:compileJava NO-SOURCE
+[RUN_GRADLEW] > Task :gradle-plugin:classes
+[RUN_GRADLEW] > Task :gradle-plugin:jar
+[RUN_GRADLEW] > Task :gradle-plugin:inspectClassesForKotlinIC
+[RUN_GRADLEW] FAILURE: Build completed with 2 failures.
+[RUN_GRADLEW] 1: Task failed with an exception.
+[RUN_GRADLEW] -----------
+[RUN_GRADLEW] * Where:
+[RUN_GRADLEW] Build file '/private/var/folders/qd/mqn6nyss00q954qwd7j5_cfw0000gn/T/eas-build-local-nodejs/649c3c37-37d8-44c7-9b07-0f23ef56fd2a/build/node_modules/expo-linear-gradient/android/build.gradle' line: 3
+[RUN_GRADLEW] * What went wrong:
+[RUN_GRADLEW] Plugin [id: 'expo-module-gradle-plugin'] was not found in any of the following sources:
+[RUN_GRADLEW] - Gradle Core Plugins (not a core plugin. For more available plugins, please refer to https://docs.gradle.org/8.3/userguide/plugin_reference.html in the Gradle documentation.)
+[RUN_GRADLEW] - Included Builds (None of the included builds contain this plugin)
+[RUN_GRADLEW] - Plugin Repositories (plugin dependency must include a version number for this source)
+[RUN_GRADLEW] * Try:
+[RUN_GRADLEW] > Run with --stacktrace option to get the stack trace.
+[RUN_GRADLEW] > Run with --info or --debug option to get more log output.
+[RUN_GRADLEW] > Run with
+[RUN_GRADLEW] --scan to get full insights.
+[RUN_GRADLEW] > Get more help at https://help.gradle.org.
+[RUN_GRADLEW] ==============================================================================
+[RUN_GRADLEW] 2:
+[RUN_GRADLEW] Task failed with an exception.
+[RUN_GRADLEW] -----------
+[RUN_GRADLEW] * Where:
+[RUN_GRADLEW] Script '/private/var/folders/qd/mqn6nyss00q954qwd7j5_cfw0000gn/T/eas-build-local-nodejs/649c3c37-37d8-44c7-9b07-0f23ef56fd2a/build/node_modules/expo-modules-core/android/ExpoModulesCorePlugin.gradle' line: 76
+[RUN_GRADLEW] * What went wrong:
+[RUN_GRADLEW] A problem occurred configuring project ':expo'.
+[RUN_GRADLEW] > Could not get unknown property 'release' for SoftwareComponent container of type org.gradle.api.internal.component.DefaultSoftwareComponentContainer.
+[RUN_GRADLEW] * Try:
+[RUN_GRADLEW] > Run with --stacktrace option to get the stack trace.
+[RUN_GRADLEW] > Run with --info
+[RUN_GRADLEW] or --debug option to get more log output.
+[RUN_GRADLEW] > Run with
+[RUN_GRADLEW] --scan to get full insights.
+[RUN_GRADLEW] >
+[RUN_GRADLEW] Get more help at https://help.gradle.org.
+[RUN_GRADLEW] ==============================================================================
+[RUN_GRADLEW] BUILD FAILED in 1m 8s
+[RUN_GRADLEW] 5 actionable tasks: 5 executed
+[RUN_GRADLEW] Error: Gradle build failed with unknown error. See logs for the "Run gradlew" phase for more information.
+
+Build failed
+Gradle build failed with unknown error. See logs for the "Run gradlew" phase for more information.
+Error: Gradle build failed with unknown error. See logs for the "Run gradlew" phase for more information.
+    at resolveBuildPhaseErrorAsync (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/@expo/build-tools/dist/buildErrors/detectError.js:69:12)
+    at async BuildContext.handleBuildPhaseErrorAsync (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/@expo/build-tools/dist/context.js:192:28)
+    at async BuildContext.runBuildPhase (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/@expo/build-tools/dist/context.js:135:35)
+    at async buildAsync (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/@expo/build-tools/dist/builders/android.js:183:5)
+    at async runBuilderWithHooksAsync (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/@expo/build-tools/dist/builders/common.js:12:13)
+    at async Object.androidBuilder (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/@expo/build-tools/dist/builders/android.js:59:16)
+    at async buildAndroidAsync (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/eas-cli-local-build-plugin/dist/android.js:44:12)
+    at async buildAsync (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/eas-cli-local-build-plugin/dist/build.js:55:29)
+    at async main (/Users/dmitrytsymlyakov/.npm/_npx/51b74c4db9e60cb6/node_modules/eas-cli-local-build-plugin/dist/main.js:16:9)
+npx -y eas-cli-local-build-plugin@1.0.243 eyJqb2IiOnsidHlwZSI6ImdlbmVyaWMiLCJwbGF0Zm9ybSI6ImFuZHJvaWQiLCJwcm9qZWN0Um9vdERpcmVjdG9yeSI6Ii4iLCJwcm9qZWN0QXJjaGl2ZSI6eyJ0eXBlIjoiUEFUSCIsInBhdGgiOiIvdmFyL2ZvbGRlcnMvcWQvbXFuNm55c3MwMHE5NTRxd2Q3ajVfY2Z3MDAwMGduL1QvZWFzLWNsaS1ub2RlanMvZWNiODRjOTAtMTIyYy00MWNmLTg2MDktYjc4Y2EzNTIyMjllLnRhci5neiJ9LCJidWlsZGVyRW52aXJvbm1lbnQiOnsiZW52Ijp7fX0sImNhY2hlIjp7ImRpc2FibGVkIjpmYWxzZSwicGF0aHMiOltdLCJjbGVhciI6ZmFsc2V9LCJzZWNyZXRzIjp7ImJ1aWxkQ3JlZGVudGlhbHMiOnsia2V5c3RvcmUiOnsiZGF0YUJhc2U2NCI6Ii91Mys3UUFBQUFJQUFBQUJBQUFBQVFBZ1l6WXhOalE1WWpNMk5USXhZbVZqWTJKa05HWTFNVGswTVRNNVpqRTBaVFFBQUFHYWJaaUlPUUFBQlFFd2dnVDlNQTRHQ2lzR0FRUUJLZ0lSQVFFRkFBU0NCT2w2TGdsSjJFcVRFTDIzRUljY0ZtemxmUTdiU1BESjkxZlNadTNKVWpxeE1RYWpRc1RnOHBldlJuVEFxTXNkb0laaFdQS2ZqMno4TWVleHgzZG5qSWE2bFpvQW1nOE9NL0lUQW1MWGc5S3VIdC9tdlQxTFdiVFRGWG9IYVlEQWNSQ2hVc2ZyUDd4eDFYc2JWSTFUWSt2V09vNGNYZW5PNEI1d1dxUFFIK2RjT2FyRGtSdU1IOGZCR2Jhamkxd0N0Zm9vQXUyTVUvWHNBRFhoVW1KcFdUeXJ5dTNsVDlQM1ZtU0ZNVm15T1JGa2Zwa2FiYXZwUGVqUVZ3Y0Y3RW9ucTJKR21QUGE2NnY1cVdjQkxwZHBNWlQwNE9TeGhqZ0RhT3lGZjlodk5TcHFmZDEyNUN1aW8vbi9SR3lIUm5Udy9sSjlFUURFQVNabmV2MENhd1FJNUtFcnhqdnhJUEZtSFZCKzVjWUtjU2I0YWUrQzUzMkxQeFdkNzM2dUh3ZWVIM0dWb05HUXJ5Y3hXYlVxUTg2bFg5alVnZ1dsb3F3ekc4cmg0N3hxRVIxR1g3ZUlrd2t3M1ZOajRxY3hmSUVNcTdiM0ZtWUZPcFlicEhFOURGN0lOUkJlVDVVY3BjcGJTM0xuR0J2a2tVd1p3L2ZjcXNLaFVBT2tTS0pIeEx4cDdLZW8vd0d3NDQyQklIYzBhMkVmNjB0czR5TVNyV0JVMGN6eldYckMxb29CQzdkNG9hcWZGQkNNbDRJV05CZS9MN29oU2F0cTg0aFBjT2RHWUtUUWFiZlF1bWdhRXhwbVVuUkZoUGU0Rzd4SzVkd05qWmJKZjdQQk02c044SnFLNkpYY01VNytCeHZVejdXaG9GcUhyMzFUQkRHSHBJY0F1UlhkSHgxdjR5OGlFMm9FVk9scHJ4NjNLTHcwZ0R3dTQram9EczlrNHZKU0pJSW5LeXlPbkp4NGN0Z1d6TS9YdXJybkErcjRuOWhxc2hSM20wdEdKR1RmVkhPb01ONjZuNkFZS0czWEVxSjRGSjlNSFBuVWcwc2krdWdLRFhYa252L3Z2WFY5cEZrUWxvMW43VXJqSjBEM1ZzUUt6bUNBcHBTQUlrSHMzbDdIbnFBMzRwa2VXa2VRVDRKUy9RdmdLbFBMdFZBSlZBQmQ4dnR0SU5jQkhydDcySlA3UEhCamp3OHhtdElLL1phOVBqcmwyb1dUYnpjUUV2T0MwcGRFRHhEcTBuakY5azVCZlZRZzhsUGRLdzNsYkxtK0dhYUo4WkVMdWZDMnNBT0NEUXNkTmJVaTVPbm1sZ3NySEdPcGlsR0Q1bzI0YW50UTB6MG5EYXVsN0pyYXhrYTlyY0RsQ3FNL0YxRDlrMmNzZnJCZ0E1SFZ1UFVZMXc5d3BGY1pNSVF4cXRaZnkyaWluTHRjMGMzM244aURVMFE2Wll1UmZDaUxoU0xrcFJ0TlRtc0JGczllWTdpbXlJdmF5bGc2NUN2MFpQbFZGblY5RCtKUmRGQkhkd29tUk50b0psdDlXUjNZRlRDV3BxZ1JhNGNMZEZYZXNRSE9hamcycGhJVC9oUzFVSURRQ3B3UFZuVkdpTXVDNXFMQ0lCU0ZtOGRFcU01bWhabzU2Rzh4UlBxdDFVSkRFOFcxVVlMcXdBcXEvZDJ0eUZ4UlB0MmVJR3FMRjJXQnl2N1lvZDNLUk5GaTdMcG9tRERtdlhpZEtWWUJvb1NHUmxncXhTajZiS2pWbWpZVUF6MmhSSjdzdnhickxlWDRXV3NCdnhFaExUOGJRU2JFbm8wOVhtMjQxQVAvZVcrTEtNMW5SdDBNTDJtUllNSTNiVjNVUTFyUVBDeWtpWElpZE4vOWxRUytJOERVZjJnV2N5a3o5WjBnZTdlNXlkZzluZUxGL0pMVmtMWmc4cS9wcHN1clVTOHlZRVFpZDFwSW5SdCt0Z3h3OGV5UXVGd1JZMnJPQ0p2elNDTzRncVFYUk4wMWVvT3A2eU96VGU2M2tJcTlkN09XdWg5enBuREpORHJKRmNYSEY0cENSYmZSTmpUT2FLRHhiTW5pUlQwVjBkN1NjN1ZyUmh3YkN2YU5TZjQ5ZnZ0NWphak5lOEl6SHJKTmRLdzVjM3pyQld5ZTlCNVhWMG5iMTc5dDFvZkNjbU9kbWNOa2cwR1FKdGhuaFpWSFNObXEvbWtYcFEzMDZYdG1oN2YwUTZsMzdkWUVHNWtJQVBSb0ZzTUFBQUFCQUFWWUxqVXdPUUFBQXpJd2dnTXVNSUlDRnFBREFnRUNBZ2tBMHJlZ3dIb0IwNE13RFFZSktvWklodmNOQVFFTUJRQXdSREVMTUFrR0ExVUVCaE1DVlZNeENUQUhCZ05WQkFnVEFERUpNQWNHQTFVRUJ4TUFNUWt3QndZRFZRUUtFd0F4Q1RBSEJnTlZCQXNUQURFSk1BY0dBMVVFQXhNQU1DQVhEVEkxTVRFeE1ERXhORGd5TkZvWUR6SXdOVE13TXpJNE1URTBPREkwV2pCRU1Rc3dDUVlEVlFRR0V3SlZVekVKTUFjR0ExVUVDQk1BTVFrd0J3WURWUVFIRXdBeENUQUhCZ05WQkFvVEFERUpNQWNHQTFVRUN4TUFNUWt3QndZRFZRUURFd0F3Z2dFaU1BMEdDU3FHU0liM0RRRUJBUVVBQTRJQkR3QXdnZ0VLQW9JQkFRQ1N5YnQrR1ppc01URzljWGtaaXZIaG1mRTBXNW41Q2pFK3EzK05ienpXUlJDZkorZ2JjQjlkRnZnQXZKTHZGWjlCYkd1Rmxvd2FZeVhKSkZyaU5xZlZIeWpkelMxYW1Kd05wek45V1JPWHNxM0pFZmxpVlhkMHFjVFlyVVhEdU9tSDljUXZwdGE1ZnR1TW5GcUFqemJ5YUVaUkJwTWlVdEQ4SlFhVStjYnZIN3czV05vKzQzYUg0enArMnpGRnBGbDFrTHFZSFFpdDNtQ3RHMkh6MTFMb2J2OVkxdURnamk0aUhyM05DakhUL2NkOVFMam1RUHdSbDhoSGFKSDFzL0ZGeWxyS2V6aVdYdFRzK2U0bWs1V3IxNUFFUER6UnVFQWpPR1J2STBtM2RQcTJCL1AydzRMK3ljQ2pzUHI2Uzd5dGZ6c1VodEp1UGRQMkNLaUxETnJWQWdNQkFBR2pJVEFmTUIwR0ExVWREZ1FXQkJSR2dodlJoVGFpWFhQUkhzRkx0Q2FOUmltM2VqQU5CZ2txaGtpRzl3MEJBUXdGQUFPQ0FRRUFTSSszdHVPSXJJem5jcTU4QjlLL25lV210VzJTYzV6WHZ6WHFZU3VqbTBVZi9RTW4xV0U4OWw3eXk3SVQzVGlTTkRpUkxqTDI0MGpzTklxRXpYR0RqSzR1TWxzY0NlWXh0cWJIVnJacWt6K0hPWDQ2ZXFlREF5b1RyTmVIcllYNE8wVTlBdHpkMG4yeUYzN0M1MFM1dW55eGh1UDlQWnl1OExTT29vRGxuMlpoYThLNUpKWFJnZE9SUnJydVFHN2d1SEwwQmNjUCtiQUhNU296Nm9hbW0wTW5CZ0VBMkE5d0I2TlpmVVZ4R2t4WXpVeFA4bGNIaGVBRWRHUTNtT01mZDBSUytjSTFpeUMwckI1VURHSEw2d1BVWWNvRERSeEJVTXRXYlprMFdpNG1SdzFIQWxobndFcmQrYmhEaEkzMlg2KzgxaTUzSWE2OVdRZHMwVXNBNFlVN0xyazRaZDZIVy9nVC9Vd0pXMDMwK2kzQyIsImtleXN0b3JlUGFzc3dvcmQiOiI4NzY3ODBjNTUxZGRkMmZmZTE5MmFjNmI2MGQ1YzIxOCIsImtleUFsaWFzIjoiYzYxNjQ5YjM2NTIxYmVjY2JkNGY1MTk0MTM5ZjE0ZTQiLCJrZXlQYXNzd29yZCI6ImMxMmQ1ZGZkMjU3ZDRmYTE4NmM3ZjNlN2IyMTFiYWI4In19fSwidXBkYXRlcyI6e30sImdyYWRsZUNvbW1hbmQiOiI6YXBwOmFzc2VtYmxlUmVsZWFzZSIsImJ1aWxkVHlwZSI6ImFwayIsInVzZXJuYW1lIjoicG9wYXBwIiwiZXhwZXJpbWVudGFsIjp7fSwibW9kZSI6ImJ1aWxkIiwidHJpZ2dlcmVkQnkiOiJFQVNfQ0xJIiwiYXBwSWQiOiI0ZGNmNDI1MC02Yjg1LTQwZTktOTMzNy0xZGM0YmI1NDNjNDkiLCJpbml0aWF0aW5nVXNlcklkIjoiYTJiY2RiZTctMGRiMC00YjExLWE5MjAtNDc1ODI3NWM0MmI0In0sIm1ldGFkYXRhIjp7InRyYWNraW5nQ29udGV4dCI6eyJ0cmFja2luZ19pZCI6IjhiNmJlOGI1LWFiYjMtNDZhOS04MjdlLTY1ODI0YzYyOGNiNiIsInBsYXRmb3JtIjoiYW5kcm9pZCIsInNka192ZXJzaW9uIjoiNTAuMC4wIiwiYWNjb3VudF9pZCI6ImM3Y2Q3YjVlLWVkNDUtNDljYy05NWYzLTA5MzRjZTgwNmVlYSIsInByb2plY3RfaWQiOiI0ZGNmNDI1MC02Yjg1LTQwZTktOTMzNy0xZGM0YmI1NDNjNDkiLCJwcm9qZWN0X3R5cGUiOiJnZW5lcmljIiwiZGV2X2NsaWVudCI6ZmFsc2UsIm5vX3dhaXQiOmZhbHNlLCJydW5fZnJvbV9jaSI6ZmFsc2UsImxvY2FsIjp0cnVlfSwiYXBwVmVyc2lvbiI6IjEuMTQuMCIsImFwcEJ1aWxkVmVyc2lvbiI6IjEiLCJjbGlWZXJzaW9uIjoiMTYuMjYuMCIsIndvcmtmbG93IjoiZ2VuZXJpYyIsImNyZWRlbnRpYWxzU291cmNlIjoicmVtb3RlIiwic2RrVmVyc2lvbiI6IjUwLjAuMCIsInJlYWN0TmF0aXZlVmVyc2lvbiI6IjAuNzMuNiIsImRpc3RyaWJ1dGlvbiI6ImludGVybmFsIiwiYXBwTmFtZSI6IkZvb2RIdWIiLCJhcHBJZGVudGlmaWVyIjoiY29tLmZvb2RodWIuYXBwIiwiYnVpbGRQcm9maWxlIjoicHJldmlldyIsImdpdENvbW1pdEhhc2giOiIxNzczNGNhNTIyZGFiN2NkNWE4ZmQwMWIzYzdiMzYwZjlkZmI0YTU0IiwiZ2l0Q29tbWl0TWVzc2FnZSI6Im9wZW5TdHJlZXRzTWFwcyIsImlzR2l0V29ya2luZ1RyZWVEaXJ0eSI6dHJ1ZSwidXNlcm5hbWUiOiJwb3BhcHAiLCJydW5XaXRoTm9XYWl0RmxhZyI6ZmFsc2UsInJ1bkZyb21DSSI6ZmFsc2UsImRldmVsb3BtZW50Q2xpZW50IjpmYWxzZSwicmVxdWlyZWRQYWNrYWdlTWFuYWdlciI6Im5wbSIsInNpbXVsYXRvciI6ZmFsc2V9fQ== exited with non-zero code: 1
+    Error: build command failed.
+
+✅ Сборка завершена!
+📱 APK файл сохранен локально
